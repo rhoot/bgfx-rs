@@ -70,6 +70,8 @@ fn build_linux(bitness: u32, compiler: &str) {
     // Build bgfx
     let status = Command::new("make")
         .current_dir("bgfx")
+        .env("CPPFLAGS", "-fPIC")
+        .env("CFLAGS", "-fPIC")
         .arg("-R")
         .arg("-C")
         .arg(".build/projects/gmake-linux")
@@ -89,6 +91,9 @@ fn build_linux(bitness: u32, compiler: &str) {
     path.push(format!("linux{}_gcc", bitness));
     path.push("bin");
 
-    println!("cargo:rustc-link-lib=static=bgfxRelease");
-    println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
+    println!("cargo:rustc-link-lib=bgfxRelease");
+    println!("cargo:rustc-link-lib=stdc++");
+    println!("cargo:rustc-link-lib=GL");
+    println!("cargo:rustc-link-lib=X11");
+    println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }

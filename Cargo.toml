@@ -2,5 +2,7 @@
 name = "bgfx"
 version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
-links = "bgfxRelease"
 build = "build.rs"
+
+[dependencies]
+libc = "*"
