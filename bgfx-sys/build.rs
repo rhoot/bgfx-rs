@@ -20,39 +20,30 @@ fn build_windows(bitness: u32, compiler: &str) {
         panic!("Unsupported compiler");
     }
 
-    // projects
-    {
-        Command::new("make.exe")
-            .current_dir("bgfx")
-            .arg(".build/projects/gmake-mingw-gcc")
-            .output()
-            .unwrap();
-    }
+    Command::new("make.exe")
+        .current_dir("bgfx")
+        .arg(".build/projects/gmake-mingw-gcc")
+        .output()
+        .unwrap();
 
-    // lib
-    {
-        Command::new("make.exe")
-            .current_dir("bgfx")
-            .arg("-R")
-            .arg("-C")
-            .arg(".build/projects/gmake-mingw-gcc")
-            .arg(format!("config=release{}", bitness))
-            .arg("bgfx")
-            .output()
-            .unwrap();
-    }
+    Command::new("make.exe")
+        .current_dir("bgfx")
+        .arg("-R")
+        .arg("-C")
+        .arg(".build/projects/gmake-mingw-gcc")
+        .arg(format!("config=release{}", bitness))
+        .arg("bgfx")
+        .output()
+        .unwrap();
 
-    // link config
-    {
-        let mut path = PathBuf::from(env::current_dir().unwrap());
-        path.push("bgfx");
-        path.push(".build");
-        path.push(format!("win{}_mingw-gcc", bitness));
-        path.push("bin");
+    let mut path = PathBuf::from(env::current_dir().unwrap());
+    path.push("bgfx");
+    path.push(".build");
+    path.push(format!("win{}_mingw-gcc", bitness));
+    path.push("bin");
 
-        println!("cargo:rustc-link-lib=static=bgfxRelease");
-        println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
-    }
+    println!("cargo:rustc-link-lib=static=bgfxRelease");
+    println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
 }
 
 fn build_linux(bitness: u32, compiler: &str) {
