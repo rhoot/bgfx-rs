@@ -1,8 +1,11 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-type __builtin_va_list = ::libc::c_void;
-type size_t            = ::libc::size_t;
+extern crate libc;
+
+pub type __builtin_va_list = ::libc::c_void;
+pub type va_list           = ::libc::c_void;
+pub type size_t            = ::libc::size_t;
 
 include!("ffi.rs");
 
