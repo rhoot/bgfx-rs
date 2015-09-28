@@ -4,4 +4,7 @@ version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
 
 [dependencies]
-bgfx-sys = "*"
+libc = "*"
+
+[dependencies.bgfx-sys]
+path = "bgfx-sys/"

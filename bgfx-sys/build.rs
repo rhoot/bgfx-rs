@@ -3,19 +3,16 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
-    let target = env::var("TARGET").unwrap();
-    let target_quad = target.split("-").collect::<Vec<_>>();
-    let (arch, _, os, compiler) = (target_quad[0], target_quad[1], target_quad[2], target_quad[3]);
-    let bitness = if arch == "x86_64" { 64 } else { 32 };
+    let target           = env::var("TARGET").unwrap();
+    let target_quad      = target.split("-").collect::<Vec<_>>();
+    let (arch, compiler) = (target_quad.first().unwrap(), target_quad.last().unwrap());
+    let bitness          = if *arch == "x86_64" { 64 } else { 32 };
 
-    match os {
-        "windows" => build_windows(bitness, compiler),
-        "linux"   => build_linux(bitness, compiler),
-        _         => panic!("Unsupported platform"),
-    }
+    build(bitness, compiler);
 }
 
-fn build_windows(bitness: u32, compiler: &str) {
+#[cfg(target_os="windows")]
+fn build(bitness: u32, compiler: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
@@ -46,7 +43,8 @@ fn build_windows(bitness: u32, compiler: &str) {
     println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
 }
 
-fn build_linux(bitness: u32, compiler: &str) {
+#[cfg(target_os="linux")]
+fn build(bitness: u32, compiler: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
