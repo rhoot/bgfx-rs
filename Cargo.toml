@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
 
 [dependencies]
+bitflags = "*"
 libc = "*"
 
 [dependencies.bgfx-sys]
