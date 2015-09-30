@@ -105,39 +105,30 @@ impl Drop for Bgfx {
 
 impl Bgfx {
     pub fn reset(&self, width: u32, height: u32, reset: ResetFlags) {
-        println!("bgfx_reset({}, {}, {:?})", width, height, reset);
-
         unsafe {
             bgfx_sys::bgfx_reset(width, height, reset.bits());
         }
     }
 
     pub fn set_debug(&self, debug: DebugFlags) {
-        println!("bgfx_set_debug({:?})", debug);
-
         unsafe {
             bgfx_sys::bgfx_set_debug(debug.bits());
         }
     }
 
     pub fn set_view_clear(&self, id: u8, flags: ClearFlags, rgba: u32, depth: f32, stencil: u8) {
-        println!("bgfx_set_view_clear({}, {:?}, {}, {}, {})", id, flags, rgba, depth, stencil);
-
         unsafe {
             bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil);
         }
     }
 
     pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u32, height: u32) {
-        println!("bgfx_set_view_rect({}, {}, {}, {}, {})", id, x, y, width, height);
-
         unsafe {
             bgfx_sys::bgfx_set_view_rect(id, x, y, width as u16, height as u16);
         }
     }
 
     pub fn touch(&self, id: u8) {
-        println!("bgfx_touch({})", id);
         unsafe {
             bgfx_sys::bgfx_touch(id);
         }
@@ -147,29 +138,24 @@ impl Bgfx {
         let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
         let attr  = attr.unwrap_or(0);
 
-        println!("bgfx_dbg_text_clear({}, {})", attr, small);
-
         unsafe {
             bgfx_sys::bgfx_dbg_text_clear(attr, small);
         }
     }
 
     pub fn dbg_text_image(&self, x: u16, y: u16, width: u32, height: u32, data: &[u8], pitch: u16) {
-        println!("bgfx_dbg_text_image({}, {}, {}, {}, {}, {})", x, y, width, height, "data", pitch);
         unsafe {
             bgfx_sys::bgfx_dbg_text_image(x, y, width as u16, height as u16, data.as_ptr() as *const libc::c_void, pitch);
         }
     }
 
     pub fn dbg_text_print(&self, x: u16, y: u16, attr: u8, text: &str) {
-        println!("bgfx_dbg_text_printf({}, {}, {}, {})", x, y, attr, text);
         unsafe {
             bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr() as *const i8);
         }
     }
 
     pub fn frame(&self) -> u32 {
-        println!("bgfx_frame()");
         unsafe {
             bgfx_sys::bgfx_frame()
         }
@@ -178,7 +164,6 @@ impl Bgfx {
 
 pub fn init(platform: &mut BgfxPlatform, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) -> Bgfx {
     unsafe {
-        println!("bgfx_set_platform_data({{{:?}, {:?}, {:?}}})", platform.data.ndt, platform.data.nwh, platform.data.context);
         bgfx_sys::bgfx_set_platform_data(
             &mut platform.data,
         );
