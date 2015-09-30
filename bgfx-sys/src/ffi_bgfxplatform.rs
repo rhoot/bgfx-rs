@@ -22,7 +22,6 @@ impl ::std::default::Default for Struct_bgfx_platform_data {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type bgfx_platform_data_t = Struct_bgfx_platform_data;
-#[link(name = "bgfxRelease", kind = "static")]
 extern "C" {
     pub fn bgfx_render_frame() -> bgfx_render_frame_t;
     pub fn bgfx_set_platform_data(_pd: *mut bgfx_platform_data_t) -> ();

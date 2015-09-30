@@ -606,7 +606,6 @@ impl ::std::default::Default for Struct_bgfx_reallocator_vtbl {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type bgfx_reallocator_vtbl_t = Struct_bgfx_reallocator_vtbl;
-#[link(name = "bgfxRelease", kind = "static")]
 extern "C" {
     pub fn bgfx_vertex_decl_begin(_decl: *mut bgfx_vertex_decl_t,
                                   _renderer: bgfx_renderer_type_t) -> ();

@@ -6,7 +6,6 @@ rust-bindgen/target/release/bindgen: rust-bindgen
 
 src/ffi_bgfx.rs: rust-bindgen/target/release/bindgen bgfx/include/bgfx/c99/bgfx.h bgfx/include/bgfx/c99/bgfxplatform.h
 	rust-bindgen/target/release/bindgen \
-		-static-link bgfxRelease \
 		-match bgfx.h \
 		-I bgfx/include \
 		-I bx/include \
@@ -15,7 +14,6 @@ src/ffi_bgfx.rs: rust-bindgen/target/release/bindgen bgfx/include/bgfx/c99/bgfx.
 
 src/ffi_bgfxplatform.rs: rust-bindgen/target/release/bindgen bgfx/include/bgfx/c99/bgfx.h bgfx/include/bgfx/c99/bgfxplatform.h
 	rust-bindgen/target/release/bindgen \
-		-static-link bgfxRelease \
 		-match bgfxplatform.h \
 		-I bgfx/include \
 		-I bx/include \

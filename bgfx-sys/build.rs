@@ -4,15 +4,16 @@ use std::process::Command;
 
 fn main() {
     let target           = env::var("TARGET").unwrap();
+    let profile          = env::var("PROFILE").unwrap();
     let target_quad      = target.split("-").collect::<Vec<_>>();
     let (arch, compiler) = (target_quad.first().unwrap(), target_quad.last().unwrap());
     let bitness          = if *arch == "x86_64" { 64 } else { 32 };
 
-    build(bitness, compiler);
+    build(bitness, compiler, &profile);
 }
 
 #[cfg(target_os="windows")]
-fn build(bitness: u32, compiler: &str) {
+fn build(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
@@ -28,7 +29,7 @@ fn build(bitness: u32, compiler: &str) {
         .arg("-R")
         .arg("-C")
         .arg(".build/projects/gmake-mingw-gcc")
-        .arg(format!("config=release{}", bitness))
+        .arg(format!("config={}{}", profile, bitness))
         .arg("bgfx")
         .output()
         .unwrap();
@@ -39,12 +40,12 @@ fn build(bitness: u32, compiler: &str) {
     path.push(format!("win{}_mingw-gcc", bitness));
     path.push("bin");
 
-    println!("cargo:rustc-link-lib=static=bgfxRelease");
+    println!("cargo:rustc-link-lib=bgfx{}", if profile == "debug" { "Debug" } else { "Release" });
     println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
 }
 
 #[cfg(target_os="linux")]
-fn build(bitness: u32, compiler: &str) {
+fn build(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
@@ -64,7 +65,7 @@ fn build(bitness: u32, compiler: &str) {
         .arg("-R")
         .arg("-C")
         .arg(".build/projects/gmake-linux")
-        .arg(format!("config=release{}", bitness))
+        .arg(format!("config={}{}", profile, bitness))
         .arg("bgfx")
         .status()
         .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
@@ -80,7 +81,7 @@ fn build(bitness: u32, compiler: &str) {
     path.push(format!("linux{}_gcc", bitness));
     path.push("bin");
 
-    println!("cargo:rustc-link-lib=bgfxRelease");
+    println!("cargo:rustc-link-lib=bgfx{}", if profile == "debug" { "Debug" } else { "Release" });
     println!("cargo:rustc-link-lib=stdc++");
     println!("cargo:rustc-link-lib=GL");
     println!("cargo:rustc-link-lib=X11");
