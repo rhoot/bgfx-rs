@@ -2,40 +2,46 @@ extern crate bgfx;
 extern crate glfw;
 extern crate libc;
 
-use bgfx::BgfxPlatform;
 use glfw::{Context, Glfw, Window, WindowEvent};
 use std::sync::mpsc::Receiver;
 
 pub struct Example {
-    glfw:         Glfw,
-    events:       Receiver<(f64, WindowEvent)>,
-    window:       Window,
-    pub platform: BgfxPlatform,
+    glfw:   Glfw,
+    events: Receiver<(f64, WindowEvent)>,
+    window: Window,
 }
 
 impl Example {
-    pub fn process_events(&mut self, bgfx: &bgfx::Bgfx, width: u32, height: u32, reset: bgfx::ResetFlags) -> bool {
+    pub fn process_events(&mut self, bgfx: &bgfx::RenderContext) -> bool {
+        bgfx.render_frame();
         self.glfw.poll_events();
 
         for _event in glfw::flush_messages(&self.events) {
             // TODO: Handle events... at some point
         }
 
-        bgfx.reset(width, height, reset);
         self.window.should_close()
+    }
+
+    pub fn render_thread(&mut self, bgfx: &bgfx::RenderContext) {
+        loop {
+            self.process_events(bgfx);
+        }
     }
 }
 
-#[cfg(target_os="linux")]
-fn make_platform_internal(glfw: &Glfw, window: &Window) -> bgfx::BgfxPlatform {
-    bgfx::BgfxPlatform::from_glfw(
+#[cfg(target_os = "linux")]
+fn make_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Bgfx {
+    bgfx::create(
         glfw.get_x11_display(),
         window.get_x11_window(),
         window.get_glx_context()
     )
 }
 
-pub fn make_platform(width: u32, height: u32) -> Example {
+pub fn run_example<M>(width: u32, height: u32, main: M) where
+    M : Send + 'static + Fn(&bgfx::MainContext) {
+
     let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
     let (mut window, events) = glfw.create_window(width, height, "BGFX", glfw::WindowMode::Windowed)
@@ -43,13 +49,14 @@ pub fn make_platform(width: u32, height: u32) -> Example {
 
     window.make_current();
 
-    let platform = make_platform_internal(&glfw, &window);
+    let mut example = Example {
+        glfw:   glfw,
+        events: events,
+        window: window,
+    };
 
-    Example {
-        glfw:     glfw,
-        events:   events,
-        window:   window,
-        platform: platform,
-    }
-
+    let bgfx = make_bgfx(&example.glfw, &example.window);
+    bgfx.run(main, |bgfx: &bgfx::RenderContext| {
+        example.render_thread(bgfx);
+    });
 }

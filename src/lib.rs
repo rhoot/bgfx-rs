@@ -5,6 +5,7 @@ extern crate libc;
 
 use std::option::Option;
 use std::ptr;
+use std::thread;
 
 #[repr(u32)]
 pub enum RendererType {
@@ -75,65 +76,69 @@ bitflags! {
     }
 }
 
-pub struct BgfxPlatform {
-    data: bgfx_sys::Struct_bgfx_platform_data,
+pub struct MainContext {
+    __: u32,
 }
 
-impl BgfxPlatform {
-    pub fn from_glfw(display: *mut libc::c_void, window: *mut libc::c_void, context: *mut libc::c_void) -> BgfxPlatform {
-        BgfxPlatform {
-            data: bgfx_sys::Struct_bgfx_platform_data {
-                ndt:          display,
-                nwh:          window,
-                context:      context,
-                backBuffer:   ptr::null_mut(),
-                backBufferDS: ptr::null_mut(),
-            },
-        }
-    }
+pub struct RenderContext {
+    __: u32,
 }
 
-pub struct Bgfx;
+pub struct Bgfx {
+    __: u32,
+}
 
-impl Drop for Bgfx {
-    fn drop(&mut self) {
+// impl MainContext for MainThread {
+impl MainContext {
+    #[inline]
+    pub fn init(&self, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) {
         unsafe {
-            bgfx_sys::bgfx_shutdown();
+            bgfx_sys::bgfx_init(
+                renderer.unwrap_or(RendererType::Default) as bgfx_sys::bgfx_renderer_type_t,
+                vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE),
+                device_id.unwrap_or(0_u16),
+                ptr::null_mut(),
+                ptr::null_mut()
+            );
         }
     }
-}
 
-impl Bgfx {
-    pub fn reset(&self, width: u32, height: u32, reset: ResetFlags) {
+    #[inline]
+    pub fn reset(&self, width: u16, height: u16, reset: ResetFlags) {
         unsafe {
-            bgfx_sys::bgfx_reset(width, height, reset.bits());
+            bgfx_sys::bgfx_reset(width as u32, height as u32, reset.bits());
         }
     }
 
+    #[inline]
     pub fn set_debug(&self, debug: DebugFlags) {
         unsafe {
             bgfx_sys::bgfx_set_debug(debug.bits());
         }
     }
 
+    #[inline]
     pub fn set_view_clear(&self, id: u8, flags: ClearFlags, rgba: u32, depth: f32, stencil: u8) {
         unsafe {
             bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil);
         }
     }
 
-    pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u32, height: u32) {
+    #[inline]
+    pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u16, height: u16) {
         unsafe {
-            bgfx_sys::bgfx_set_view_rect(id, x, y, width as u16, height as u16);
+            bgfx_sys::bgfx_set_view_rect(id, x, y, width, height);
         }
     }
 
+    #[inline]
     pub fn touch(&self, id: u8) {
         unsafe {
             bgfx_sys::bgfx_touch(id);
         }
     }
 
+    #[inline]
     pub fn dbg_text_clear(&self, attr: Option<u8>, small: Option<bool>) {
         let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
         let attr  = attr.unwrap_or(0);
@@ -143,18 +148,21 @@ impl Bgfx {
         }
     }
 
-    pub fn dbg_text_image(&self, x: u16, y: u16, width: u32, height: u32, data: &[u8], pitch: u16) {
+    #[inline]
+    pub fn dbg_text_image(&self, x: u16, y: u16, width: u16, height: u16, data: &[u8], pitch: u16) {
         unsafe {
-            bgfx_sys::bgfx_dbg_text_image(x, y, width as u16, height as u16, data.as_ptr() as *const libc::c_void, pitch);
+            bgfx_sys::bgfx_dbg_text_image(x, y, width, height, data.as_ptr() as *const libc::c_void, pitch);
         }
     }
 
+    #[inline]
     pub fn dbg_text_print(&self, x: u16, y: u16, attr: u8, text: &str) {
         unsafe {
             bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr() as *const i8);
         }
     }
 
+    #[inline]
     pub fn frame(&self) -> u32 {
         unsafe {
             bgfx_sys::bgfx_frame()
@@ -162,20 +170,53 @@ impl Bgfx {
     }
 }
 
-pub fn init(platform: &mut BgfxPlatform, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) -> Bgfx {
-    unsafe {
-        bgfx_sys::bgfx_set_platform_data(
-            &mut platform.data,
-        );
+// impl RenderContext for RenderThread {
+impl RenderContext {
+    #[inline]
+    pub fn render_frame(&self) {
+        unsafe {
+            bgfx_sys::bgfx_render_frame();
+        }
+    }
+}
 
-        bgfx_sys::bgfx_init(
-            renderer.unwrap_or(RendererType::Default) as bgfx_sys::bgfx_renderer_type_t,
-            vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE),
-            device_id.unwrap_or(0_u16),
-            ptr::null_mut(),
-            ptr::null_mut()
-        );
+impl Bgfx {
+    pub fn run<M, R>(&self, mut main: M, mut render: R) where
+        M: Send + 'static + FnMut(&MainContext),
+        R: FnMut(&RenderContext) {
+
+        // We need to launch the render thread *before* the main thread starts
+        // executing things, so let's do it now.
+        let ctx = RenderContext { __: 0 };
+        ctx.render_frame();
+
+        // Many platforms require rendering to happen on the main thread. With
+        // *no* platform is this a problem. As such, we spawn a *new* thread
+        // to use as the main thread, and adopt the current one as the render
+        // thread.
+        thread::spawn(move || {
+            let ctx = MainContext { __: 0 };
+            main(&ctx);
+        });
+
+        render(&ctx);
+    }
+}
+
+pub fn create(display: *mut libc::c_void, window: *mut libc::c_void, context: *mut libc::c_void) -> Bgfx {
+    // TODO: Only allow one instance
+
+    let mut data = bgfx_sys::Struct_bgfx_platform_data {
+        ndt: display,
+        nwh: window,
+        context: context,
+        backBuffer: ptr::null_mut(),
+        backBufferDS: ptr::null_mut(),
+    };
+
+    unsafe {
+        bgfx_sys::bgfx_set_platform_data(&mut data);
     }
 
-    Bgfx
+    Bgfx { __: 0 }
 }
