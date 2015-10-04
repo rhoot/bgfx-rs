@@ -88,7 +88,6 @@ pub struct Bgfx {
     __: u32,
 }
 
-// impl MainContext for MainThread {
 impl MainContext {
     #[inline]
     pub fn init(&self, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) {
@@ -170,7 +169,6 @@ impl MainContext {
     }
 }
 
-// impl RenderContext for RenderThread {
 impl RenderContext {
     #[inline]
     pub fn render_frame(&self) {
