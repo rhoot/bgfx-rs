@@ -5,7 +5,7 @@ use std::cmp::max;
 
 mod logo;
 
-fn example(bgfx: &bgfx::MainContext) {
+fn example(bgfx: &bgfx::MainContext, example: &common::Example) {
     let width  = 1024_u16;
     let height = 720_u16;
     let debug  = bgfx::DEBUG_TEXT;
@@ -21,7 +21,7 @@ fn example(bgfx: &bgfx::MainContext) {
     let clear = bgfx::CLEAR_COLOR | bgfx::CLEAR_DEPTH;
     bgfx.set_view_clear(0, clear, 0x303030ff, 1.0_f32, 0);
 
-    loop {
+    while !example.handle_events() {
         // Set view 0 default viewport.
         bgfx.set_view_rect(0, 0, 0, width, height);
 

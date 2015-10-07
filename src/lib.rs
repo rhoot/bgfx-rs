@@ -77,15 +77,15 @@ bitflags! {
 }
 
 pub struct MainContext {
-    __: u32,
+    __: u32,    // This field is purely used to prevent consumers from creating their own instance
 }
 
 pub struct RenderContext {
-    __: u32,
+    __: u32,    // This field is purely used to prevent consumers from creating their own instance
 }
 
-pub struct Bgfx {
-    __: u32,
+pub struct Application {
+    __: u32,    // This field is purely used to prevent consumers from creating their own instance
 }
 
 impl MainContext {
@@ -178,11 +178,11 @@ impl RenderContext {
     }
 }
 
-impl Bgfx {
-    pub fn run<M, R>(&self, mut main: M, mut render: R) where
-        M: Send + 'static + FnMut(&MainContext),
-        R: FnMut(&RenderContext) {
-
+impl Application {
+    pub fn run<M, R>(&self, main: M, render: R) where
+        M: Send + 'static + FnOnce(&MainContext),
+        R: FnOnce(&RenderContext)
+    {
         // We need to launch the render thread *before* the main thread starts
         // executing things, so let's do it now.
         let ctx = RenderContext { __: 0 };
@@ -192,16 +192,18 @@ impl Bgfx {
         // *no* platform is this a problem. As such, we spawn a *new* thread
         // to use as the main thread, and adopt the current one as the render
         // thread.
-        thread::spawn(move || {
+        let main_thread = thread::spawn(move || {
             let ctx = MainContext { __: 0 };
             main(&ctx);
         });
 
         render(&ctx);
+
+        main_thread.join().unwrap();
     }
 }
 
-pub fn create(display: *mut libc::c_void, window: *mut libc::c_void, context: *mut libc::c_void) -> Bgfx {
+pub fn create(display: *mut libc::c_void, window: *mut libc::c_void, context: *mut libc::c_void) -> Application {
     // TODO: Only allow one instance
 
     let mut data = bgfx_sys::Struct_bgfx_platform_data {
@@ -216,5 +218,5 @@ pub fn create(display: *mut libc::c_void, window: *mut libc::c_void, context: *m
         bgfx_sys::bgfx_set_platform_data(&mut data);
     }
 
-    Bgfx { __: 0 }
+    Application { __: 0 }
 }
