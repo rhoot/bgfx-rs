@@ -5,4 +5,4 @@ authors = ["Johan Sköld <johan@skold.cc>"]
 build = "build.rs"
 
 [dependencies]
-libc = "*"
+libc = "0.1.10"
