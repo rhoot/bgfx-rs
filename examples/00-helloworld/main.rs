@@ -11,7 +11,7 @@ const LOGO: &'static [u8] = include_bytes!("logo.bin");
 /// examples in the C++ version of bgfx as well, and not exlusive to Rust.
 fn get_renderer_type() -> Option<bgfx::RendererType> {
     if cfg!(windows) && cfg!(target_env = "gnu") {
-        Some(bgfx::RendererType::OpenGL)
+        Some(bgfx::RendererType::Direct3D11)
     } else {
         None
     }
