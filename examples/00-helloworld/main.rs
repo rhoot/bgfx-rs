@@ -3,7 +3,7 @@ extern crate common;
 
 use std::cmp::max;
 
-mod logo;
+const LOGO: &'static [u8] = include_bytes!("logo.bin");
 
 /// Determines the renderer to use based on platform. The sole reason for this to happen instead
 /// of using `bgfx::RendererType::Default` is cause `Direct3D12` - which is the default in
@@ -45,7 +45,7 @@ fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
         let x = (max(width / 2 / 8, 20) - 20) as u16;
         let y = (max(height / 2 / 16, 6) - 6) as u16;
         bgfx.dbg_text_clear(None, None);
-        bgfx.dbg_text_image(x, y, 40, 12, &logo::DATA, 160);
+        bgfx.dbg_text_image(x, y, 40, 12, LOGO, 160);
         bgfx.dbg_text_print(0, 1, 0x4f, "bgfx/examples/00-helloworld");
         bgfx.dbg_text_print(0, 2, 0x6f, "Description: Initialization and debug text.");
 
@@ -55,7 +55,7 @@ fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
     }
 
     // bgfx will automatically be shut down when the local `bgfx` binding
-    // goes out of scope.    
+    // goes out of scope.
 }
 
 fn main() {
