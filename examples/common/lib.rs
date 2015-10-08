@@ -2,6 +2,7 @@ extern crate bgfx;
 extern crate glfw;
 extern crate libc;
 
+use std::ptr;
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::mpsc;
 
@@ -89,16 +90,22 @@ impl ExampleData {
 ///
 /// * `glfw` - Reference to the `Glfw` object.
 /// * `window` - Reference to the GLFW window object.
+#[cfg(target_os = "linux")]
 fn create_bgfx_app(glfw: &Glfw, window: &Window) -> bgfx::Application {
-    if cfg!(target_os = "linux") {
-        return bgfx::create(
-            glfw.get_x11_display(),
-            window.get_x11_window(),
-            window.get_glx_context()
-        );
-    }
+    bgfx::create(
+        glfw.get_x11_display(),
+        window.get_x11_window(),
+        window.get_glx_context()
+    )
+}
 
-    unreachable!()
+#[cfg(target_os = "windows")]
+fn create_bgfx_app(_: &Glfw, window: &Window) -> bgfx::Application {
+    bgfx::create(
+        ptr::null_mut(),
+        window.get_win32_window(),
+        ptr::null_mut() // window.get_wgl_context()
+    )
 }
 
 /// Runs an example.
@@ -109,7 +116,7 @@ fn create_bgfx_app(glfw: &Glfw, window: &Window) -> bgfx::Application {
 /// * `height` - Initial height of the window, in pixels.
 /// * `main` - Function to act as the entry point for the example.
 pub fn run_example<M>(width: u32, height: u32, main: M) where
-    M : Send + 'static + FnOnce(&bgfx::MainContext, &Example)
+    M : Send + 'static + FnOnce(&mut bgfx::MainContext, &Example)
 {
     // Initialize GLFW and create the window.
     let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
@@ -135,7 +142,7 @@ pub fn run_example<M>(width: u32, height: u32, main: M) where
     let bgfx_app = create_bgfx_app(&data.glfw, &data.window);
 
     // Main thread implementation.
-    let main_thread = move |bgfx: &bgfx::MainContext| {
+    let main_thread = move |bgfx: &mut bgfx::MainContext| {
         let example = Example {
             event_rx: event_rx,
         };

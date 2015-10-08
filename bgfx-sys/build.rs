@@ -12,7 +12,7 @@ fn main() {
     build(bitness, compiler, &profile);
 }
 
-#[cfg(target_os="windows")]
+#[cfg(target_os = "windows")]
 fn build(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
@@ -24,15 +24,21 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
         .output()
         .unwrap();
 
-    Command::new("make.exe")
+    let status = Command::new("make.exe")
         .current_dir("bgfx")
+        .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1") //  -DBGFX_CONFIG_MULTITHREADED=0
+        .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
         .arg("-R")
         .arg("-C")
         .arg(".build/projects/gmake-mingw-gcc")
         .arg(format!("config={}{}", profile, bitness))
         .arg("bgfx")
-        .output()
-        .unwrap();
+        .status()
+        .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
+
+    if status.code().unwrap() != 0 {
+        panic!("Failed to build bgfx.");
+    }
 
     let mut path = PathBuf::from(env::current_dir().unwrap());
     path.push("bgfx");
@@ -41,10 +47,13 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
     path.push("bin");
 
     println!("cargo:rustc-link-lib=bgfx{}", if profile == "debug" { "Debug" } else { "Release" });
-    println!("cargo:rustc-link-search={}", path.as_os_str().to_str().unwrap());
+    println!("cargo:rustc-link-lib=stdc++");
+    println!("cargo:rustc-link-lib=opengl32");
+    println!("cargo:rustc-link-lib=psapi");
+    println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }
 
-#[cfg(target_os="linux")]
+#[cfg(target_os = "linux")]
 fn build(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");

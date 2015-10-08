@@ -5,13 +5,25 @@ use std::cmp::max;
 
 mod logo;
 
-fn example(bgfx: &bgfx::MainContext, example: &common::Example) {
+/// Determines the renderer to use based on platform. The sole reason for this to happen instead
+/// of using `bgfx::RendererType::Default` is cause `Direct3D12` - which is the default in
+/// Windows - currently (2015-10-08) crashes when compiled with MinGW. This is true with the
+/// examples in the C++ version of bgfx as well, and not exlusive to Rust.
+fn get_renderer_type() -> Option<bgfx::RendererType> {
+    if cfg!(windows) && cfg!(target_env = "gnu") {
+        Some(bgfx::RendererType::OpenGL)
+    } else {
+        None
+    }
+}
+
+fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
     let width  = 1024_u16;
     let height = 720_u16;
     let debug  = bgfx::DEBUG_TEXT;
     let reset  = bgfx::RESET_VSYNC;
 
-    bgfx.init(None, None, None);
+    bgfx.init(get_renderer_type(), None, None);
     bgfx.reset(width, height, reset);
 
     // Enable debug text.

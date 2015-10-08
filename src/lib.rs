@@ -3,11 +3,13 @@ extern crate bgfx_sys;
 extern crate bitflags;
 extern crate libc;
 
+use std::mem;
 use std::option::Option;
 use std::ptr;
 use std::thread;
 
 #[repr(u32)]
+#[derive(PartialEq, Eq, Debug)]
 pub enum RendererType {
     Null        = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
     Direct3D9   = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
@@ -18,6 +20,14 @@ pub enum RendererType {
     OpenGL      = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
     Vulkan      = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
     Default     = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+}
+
+#[repr(u32)]
+#[derive(PartialEq, Eq, Debug)]
+pub enum RenderFrame {
+    NoContext   = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
+    Render      = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
+    Exiting     = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
 }
 
 bitflags! {
@@ -77,7 +87,7 @@ bitflags! {
 }
 
 pub struct MainContext {
-    __: u32,    // This field is purely used to prevent consumers from creating their own instance
+    did_init: bool,
 }
 
 pub struct RenderContext {
@@ -90,16 +100,22 @@ pub struct Application {
 
 impl MainContext {
     #[inline]
-    pub fn init(&self, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) {
+    pub fn init(&mut self, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) -> bool {
+        assert!(!self.did_init);
+
         unsafe {
-            bgfx_sys::bgfx_init(
+            let res = bgfx_sys::bgfx_init(
                 renderer.unwrap_or(RendererType::Default) as bgfx_sys::bgfx_renderer_type_t,
                 vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE),
                 device_id.unwrap_or(0_u16),
                 ptr::null_mut(),
                 ptr::null_mut()
             );
+
+            self.did_init = res != 0;
         }
+
+        self.did_init
     }
 
     #[inline]
@@ -169,18 +185,32 @@ impl MainContext {
     }
 }
 
+impl Drop for MainContext {
+    fn drop(&mut self) {
+        if self.did_init {
+            unsafe {
+                bgfx_sys::bgfx_shutdown();
+            }
+        }
+    }
+}
+
 impl RenderContext {
     #[inline]
-    pub fn render_frame(&self) {
+    pub fn render_frame(&self) -> RenderFrame {
         unsafe {
-            bgfx_sys::bgfx_render_frame();
+            let max = bgfx_sys::BGFX_RENDER_FRAME_COUNT;
+            let res = bgfx_sys::bgfx_render_frame();
+            assert!(res < max);
+
+            mem::transmute(res)
         }
     }
 }
 
 impl Application {
     pub fn run<M, R>(&self, main: M, render: R) where
-        M: Send + 'static + FnOnce(&MainContext),
+        M: Send + 'static + FnOnce(&mut MainContext),
         R: FnOnce(&RenderContext)
     {
         // We need to launch the render thread *before* the main thread starts
@@ -193,11 +223,16 @@ impl Application {
         // to use as the main thread, and adopt the current one as the render
         // thread.
         let main_thread = thread::spawn(move || {
-            let ctx = MainContext { __: 0 };
-            main(&ctx);
+            let mut ctx = MainContext {
+                did_init: false,
+            };
+            main(&mut ctx);
         });
 
         render(&ctx);
+        while ctx.render_frame() != RenderFrame::NoContext {
+            thread::sleep_ms(1);
+        }
 
         main_thread.join().unwrap();
     }
