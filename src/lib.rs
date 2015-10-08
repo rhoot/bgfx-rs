@@ -223,9 +223,7 @@ impl Application {
         // to use as the main thread, and adopt the current one as the render
         // thread.
         let main_thread = thread::spawn(move || {
-            let mut ctx = MainContext {
-                did_init: false,
-            };
+            let mut ctx = MainContext { did_init: false };
             main(&mut ctx);
         });
 

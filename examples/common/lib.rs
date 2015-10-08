@@ -143,9 +143,7 @@ pub fn run_example<M>(width: u32, height: u32, main: M) where
 
     // Main thread implementation.
     let main_thread = move |bgfx: &mut bgfx::MainContext| {
-        let example = Example {
-            event_rx: event_rx,
-        };
+        let example = Example { event_rx: event_rx };
         main(bgfx, &example);
     };
 
