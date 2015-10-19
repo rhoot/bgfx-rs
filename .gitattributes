@@ -1,0 +1,4 @@
+* text=auto
+*.rs text
+*.toml text
+*.bin binary
