@@ -13,18 +13,14 @@ use glfw::{Context, Glfw, Window, WindowEvent};
 /// Events received by the main thread, sent by the render thread.
 #[derive(PartialEq, Eq, Hash, Debug)]
 pub enum Event {
-
     /// Window close event.
     Close,
-
 }
 
 /// Example application.
 pub struct Example {
-
     /// Receiver for events from the render thread.
     event_rx: Receiver<Event>,
-
 }
 
 impl Example {
@@ -51,7 +47,6 @@ impl Example {
 
 /// Example data used by the render thread.
 struct ExampleData {
-
     /// The 'Glfw' object.
     glfw: Glfw,
 
@@ -63,7 +58,6 @@ struct ExampleData {
 
     /// Sender of events to the main thread.
     event_tx: Sender<Event>,
-
 }
 
 impl ExampleData {
@@ -76,8 +70,12 @@ impl ExampleData {
 
         for (_, event) in glfw::flush_messages(&self.events) {
             match event {
-                WindowEvent::Close => { self.event_tx.send(Event::Close).unwrap(); },
-                ref e              => { panic!(format!("Unhandled event: {:?}", e)) },
+                WindowEvent::Close => {
+                    self.event_tx.send(Event::Close).unwrap();
+                }
+                ref e => {
+                    panic!(format!("Unhandled event: {:?}", e))
+                }
             }
         }
 
@@ -100,7 +98,10 @@ pub fn load_file(name: &str) -> Vec<u8> {
 /// # Arguments
 ///
 /// * ``
-pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext, vsh_name: &'b str, fsh_name: &'b str) -> bgfx::Program<'a> {
+pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
+                            vsh_name: &'b str,
+                            fsh_name: &'b str)
+                            -> bgfx::Program<'a> {
     let vsh_mem = bgfx::Memory::copy(&load_file(vsh_name));
     let fsh_mem = bgfx::Memory::copy(&load_file(fsh_name));
     let vsh = bgfx::Shader::new(bgfx, vsh_mem);
@@ -117,20 +118,14 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext, vsh_name: &'b str, fsh_
 /// * `window` - Reference to the GLFW window object.
 #[cfg(target_os = "linux")]
 fn create_bgfx_app(glfw: &Glfw, window: &Window) -> bgfx::Application {
-    bgfx::create(
-        glfw.get_x11_display(),
-        window.get_x11_window(),
-        window.get_glx_context()
-    )
+    bgfx::create(glfw.get_x11_display(), window.get_x11_window(), window.get_glx_context())
 }
 
 #[cfg(target_os = "windows")]
 fn create_bgfx_app(_: &Glfw, window: &Window) -> bgfx::Application {
-    bgfx::create(
-        ptr::null_mut(),
-        window.get_win32_window(),
-        ptr::null_mut() // window.get_wgl_context()
-    )
+    bgfx::create(ptr::null_mut(),
+                 window.get_win32_window(),
+                 ptr::null_mut() /* window.get_wgl_context() */)
 }
 
 /// Determines the renderer to use based on platform.
@@ -154,15 +149,17 @@ pub fn get_renderer_type() -> Option<bgfx::RendererType> {
 /// * `width` - Initial width of the window, in pixels.
 /// * `height` - Initial height of the window, in pixels.
 /// * `main` - Function to act as the entry point for the example.
-pub fn run_example<M>(width: u32, height: u32, main: M) where
-    M : Send + 'static + FnOnce(&mut bgfx::MainContext, &Example)
+pub fn run_example<M>(width: u32, height: u32, main: M)
+    where M: Send + 'static + FnOnce(&mut bgfx::MainContext, &Example)
 {
     // Initialize GLFW and create the window.
     let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
 
-    let (mut window, events) = glfw
-        .create_window(width, height, "BGFX", glfw::WindowMode::Windowed)
-        .expect("Failed to create GLFW window.");
+    let (mut window, events) = glfw.create_window(width,
+                                                  height,
+                                                  "BGFX",
+                                                  glfw::WindowMode::Windowed)
+                                   .expect("Failed to create GLFW window.");
 
     window.set_close_polling(true);
     window.make_current();

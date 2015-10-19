@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
-    let target           = env::var("TARGET").unwrap();
-    let profile          = env::var("PROFILE").unwrap();
-    let target_quad      = target.split("-").collect::<Vec<_>>();
+    let target = env::var("TARGET").unwrap();
+    let profile = env::var("PROFILE").unwrap();
+    let target_quad = target.split("-").collect::<Vec<_>>();
     let (arch, compiler) = (target_quad.first().unwrap(), target_quad.last().unwrap());
-    let bitness          = if *arch == "x86_64" { 64 } else { 32 };
+    let bitness = if *arch == "x86_64" { 64 } else { 32 };
 
     build(bitness, compiler, &profile);
 }
@@ -25,16 +25,16 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
         .unwrap();
 
     let status = Command::new("make.exe")
-        .current_dir("bgfx")
-        .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
-        .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
-        .arg("-R")
-        .arg("-C")
-        .arg(".build/projects/gmake-mingw-gcc")
-        .arg(format!("config={}{}", profile, bitness))
-        .arg("bgfx")
-        .status()
-        .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
+                     .current_dir("bgfx")
+                     .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
+                     .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
+                     .arg("-R")
+                     .arg("-C")
+                     .arg(".build/projects/gmake-mingw-gcc")
+                     .arg(format!("config={}{}", profile, bitness))
+                     .arg("bgfx")
+                     .status()
+                     .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
 
     if status.code().unwrap() != 0 {
         panic!("Failed to build bgfx.");
@@ -46,7 +46,8 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
     path.push(format!("win{}_mingw-gcc", bitness));
     path.push("bin");
 
-    println!("cargo:rustc-link-lib=bgfx{}", if profile == "debug" { "Debug" } else { "Release" });
+    println!("cargo:rustc-link-lib=bgfx{}",
+             if profile == "debug" { "Debug" } else { "Release" });
     println!("cargo:rustc-link-lib=stdc++");
     println!("cargo:rustc-link-lib=opengl32");
     println!("cargo:rustc-link-lib=psapi");
@@ -68,16 +69,16 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
 
     // Build bgfx
     let status = Command::new("make")
-        .current_dir("bgfx")
-        .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1") //  -DBGFX_CONFIG_MULTITHREADED=0
-        .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
-        .arg("-R")
-        .arg("-C")
-        .arg(".build/projects/gmake-linux")
-        .arg(format!("config={}{}", profile, bitness))
-        .arg("bgfx")
-        .status()
-        .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
+                     .current_dir("bgfx")
+                     .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
+                     .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
+                     .arg("-R")
+                     .arg("-C")
+                     .arg(".build/projects/gmake-linux")
+                     .arg(format!("config={}{}", profile, bitness))
+                     .arg("bgfx")
+                     .status()
+                     .unwrap_or_else(|e| panic!("Failed to build bgfx: {}", e));
 
     if status.code().unwrap() != 0 {
         panic!("Failed to build bgfx.");
@@ -90,7 +91,8 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
     path.push(format!("linux{}_gcc", bitness));
     path.push("bin");
 
-    println!("cargo:rustc-link-lib=bgfx{}", if profile == "debug" { "Debug" } else { "Release" });
+    println!("cargo:rustc-link-lib=bgfx{}",
+             if profile == "debug" { "Debug" } else { "Release" });
     println!("cargo:rustc-link-lib=stdc++");
     println!("cargo:rustc-link-lib=GL");
     println!("cargo:rustc-link-lib=X11");

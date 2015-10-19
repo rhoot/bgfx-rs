@@ -12,28 +12,28 @@ use std::thread;
 pub mod vertex;
 
 // Module re-exports
-pub use vertex::{Attrib, AttribType, IndexBuffer, VertexDecl, VertexBuffer};
+pub use vertex::{Attrib, AttribType, IndexBuffer, VertexBuffer, VertexDecl};
 
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug)]
 pub enum RendererType {
-    Null        = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
-    Direct3D9   = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
-    Direct3D11  = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
-    Direct3D12  = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
-    Metal       = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
-    OpenGLES    = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
-    OpenGL      = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
-    Vulkan      = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
-    Default     = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+    Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
+    Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
+    Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
+    Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
+    Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
+    OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
+    OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
+    Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
+    Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
 }
 
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug)]
 pub enum RenderFrame {
-    NoContext   = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
-    Render      = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
-    Exiting     = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+    NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
+    Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
+    Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
 }
 
 bitflags! {
@@ -125,11 +125,11 @@ pub struct MainContext {
 }
 
 pub struct RenderContext {
-    __: u32,    // This field is purely used to prevent consumers from creating their own instance
+    __: u32, // This field is purely used to prevent consumers from creating their own instance
 }
 
 pub struct Application {
-    __: u32,    // This field is purely used to prevent consumers from creating their own instance
+    __: u32, // This field is purely used to prevent consumers from creating their own instance
 }
 
 pub struct Memory<'a> {
@@ -150,7 +150,11 @@ pub struct Program<'a> {
 
 impl MainContext {
     #[inline]
-    pub fn init(&mut self, renderer: Option<RendererType>, vendor_id: Option<u16>, device_id: Option<u16>) -> bool {
+    pub fn init(&mut self,
+                renderer: Option<RendererType>,
+                vendor_id: Option<u16>,
+                device_id: Option<u16>)
+                -> bool {
         assert!(!self.did_init);
 
         unsafe {
@@ -206,7 +210,7 @@ impl MainContext {
     #[inline]
     pub fn dbg_text_clear(&self, attr: Option<u8>, small: Option<bool>) {
         let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
-        let attr  = attr.unwrap_or(0);
+        let attr = attr.unwrap_or(0);
 
         unsafe {
             bgfx_sys::bgfx_dbg_text_clear(attr, small);
@@ -214,9 +218,20 @@ impl MainContext {
     }
 
     #[inline]
-    pub fn dbg_text_image(&self, x: u16, y: u16, width: u16, height: u16, data: &[u8], pitch: u16) {
+    pub fn dbg_text_image(&self,
+                          x: u16,
+                          y: u16,
+                          width: u16,
+                          height: u16,
+                          data: &[u8],
+                          pitch: u16) {
         unsafe {
-            bgfx_sys::bgfx_dbg_text_image(x, y, width, height, data.as_ptr() as *const libc::c_void, pitch);
+            bgfx_sys::bgfx_dbg_text_image(x,
+                                          y,
+                                          width,
+                                          height,
+                                          data.as_ptr() as *const libc::c_void,
+                                          pitch);
         }
     }
 
@@ -229,9 +244,7 @@ impl MainContext {
 
     #[inline]
     pub fn frame(&self) -> u32 {
-        unsafe {
-            bgfx_sys::bgfx_frame()
-        }
+        unsafe { bgfx_sys::bgfx_frame() }
     }
 }
 
@@ -259,9 +272,9 @@ impl RenderContext {
 }
 
 impl Application {
-    pub fn run<M, R>(&self, main: M, render: R) where
-        M: Send + 'static + FnOnce(&mut MainContext),
-        R: FnOnce(&RenderContext)
+    pub fn run<M, R>(&self, main: M, render: R)
+        where M: Send + 'static + FnOnce(&mut MainContext),
+              R: FnOnce(&RenderContext)
     {
         // We need to launch the render thread *before* the main thread starts
         // executing things, so let's do it now.
@@ -290,29 +303,19 @@ impl<'a> Memory<'a> {
     /// WARNING: May leak if the memory goes unused.
     pub fn copy<'b, T>(data: &'b [T]) -> Memory<'a> {
         unsafe {
-            let handle = bgfx_sys::bgfx_copy(
-                data.as_ptr() as *const libc::c_void,
-                mem::size_of_val(data) as u32
-            );
+            let handle = bgfx_sys::bgfx_copy(data.as_ptr() as *const libc::c_void,
+                                             mem::size_of_val(data) as u32);
 
-            Memory {
-                handle: handle,
-                _phantom: PhantomData,
-            }
+            Memory { handle: handle, _phantom: PhantomData }
         }
     }
 
     pub fn reference<T>(data: &'a [T]) -> Memory<'a> {
         unsafe {
-            let handle = bgfx_sys::bgfx_make_ref(
-                data.as_ptr() as *const libc::c_void,
-                mem::size_of_val(data) as u32
-            );
+            let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const libc::c_void,
+                                                 mem::size_of_val(data) as u32);
 
-            Memory {
-                handle: handle,
-                _phantom: PhantomData,
-            }
+            Memory { handle: handle, _phantom: PhantomData }
         }
     }
 }
@@ -322,17 +325,16 @@ impl<'a> Shader<'a> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_shader(data.handle);
 
-            Shader {
-                handle: handle,
-                _phantom: PhantomData,
-            }
+            Shader { handle: handle, _phantom: PhantomData }
         }
     }
 }
 
 impl<'a> Drop for Shader<'a> {
     fn drop(&mut self) {
-        unsafe { bgfx_sys::bgfx_destroy_shader(self.handle); }
+        unsafe {
+            bgfx_sys::bgfx_destroy_shader(self.handle);
+        }
     }
 }
 
@@ -341,22 +343,23 @@ impl<'a> Program<'a> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, 0);
 
-            Program {
-                handle: handle,
-                _vsh: vsh,
-                _fsh: fsh
-            }
+            Program { handle: handle, _vsh: vsh, _fsh: fsh }
         }
     }
 }
 
 impl<'a> Drop for Program<'a> {
     fn drop(&mut self) {
-        unsafe { bgfx_sys::bgfx_destroy_program(self.handle); }
+        unsafe {
+            bgfx_sys::bgfx_destroy_program(self.handle);
+        }
     }
 }
 
-pub fn create(display: *mut libc::c_void, window: *mut libc::c_void, context: *mut libc::c_void) -> Application {
+pub fn create(display: *mut libc::c_void,
+              window: *mut libc::c_void,
+              context: *mut libc::c_void)
+              -> Application {
     // TODO: Only allow one instance
 
     let mut data = bgfx_sys::Struct_bgfx_platform_data {

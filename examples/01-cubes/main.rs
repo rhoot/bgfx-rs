@@ -12,15 +12,16 @@ struct PosColorVertex {
 impl PosColorVertex {
     fn build_decl() -> bgfx::VertexDecl {
         let decl = bgfx::VertexDecl::new(None)
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
-            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::UInt8, Some(true), None)
-            .end();
+                       .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
+                       .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::UInt8, Some(true), None)
+                       .end();
 
         decl
     }
 }
 
 #[repr(packed)]
+//#[rustfmt_skip]
 const CUBE_VERTICES: [PosColorVertex; 8] = [
     PosColorVertex { _x: -1.0, _y:  1.0, _z:  1.0, _abgr: 0xff000000 },
     PosColorVertex { _x:  1.0, _y:  1.0, _z:  1.0, _abgr: 0xff0000ff },
@@ -33,6 +34,7 @@ const CUBE_VERTICES: [PosColorVertex; 8] = [
 ];
 
 #[repr(packed)]
+//#[rustfmt_skip]
 const CUBE_INDICES: [u32; 36] = [
     0, 1, 2, // 0
     1, 3, 2,
