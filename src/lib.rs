@@ -3,10 +3,16 @@ extern crate bgfx_sys;
 extern crate bitflags;
 extern crate libc;
 
+use std::marker::PhantomData;
 use std::mem;
 use std::option::Option;
 use std::ptr;
 use std::thread;
+
+pub mod vertex;
+
+// Module re-exports
+pub use vertex::{Attrib, AttribType, IndexBuffer, VertexDecl, VertexBuffer};
 
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug)]
@@ -28,6 +34,34 @@ pub enum RenderFrame {
     NoContext   = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
     Render      = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
     Exiting     = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+}
+
+bitflags! {
+    flags BufferFlags: u16 {
+        const BUFFER_NONE                 = bgfx_sys::BGFX_BUFFER_NONE,
+        const BUFFER_COMPUTE_FORMAT_8X1   = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8x1,
+        const BUFFER_COMPUTE_FORMAT_8X2   = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8x2,
+        const BUFFER_COMPUTE_FORMAT_8X4   = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8x4,
+        const BUFFER_COMPUTE_FORMAT_16X1  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16x1,
+        const BUFFER_COMPUTE_FORMAT_16X2  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16x2,
+        const BUFFER_COMPUTE_FORMAT_16X4  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16x4,
+        const BUFFER_COMPUTE_FORMAT_32X1  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32x1,
+        const BUFFER_COMPUTE_FORMAT_32X2  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32x2,
+        const BUFFER_COMPUTE_FORMAT_32X4  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32x4,
+        const BUFFER_COMPUTE_FORMAT_SHIFT = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_SHIFT,
+        const BUFFER_COMPUTE_FORMAT_MASK  = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_MASK,
+        const BUFFER_COMPUTE_TYPE_UINT    = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_UINT,
+        const BUFFER_COMPUTE_TYPE_INT     = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_INT,
+        const BUFFER_COMPUTE_TYPE_FLOAT   = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_FLOAT,
+        const BUFFER_COMPUTE_TYPE_SHIFT   = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_SHIFT,
+        const BUFFER_COMPUTE_TYPE_MASK    = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_MASK,
+        const BUFFER_COMPUTE_READ         = bgfx_sys::BGFX_BUFFER_COMPUTE_READ,
+        const BUFFER_COMPUTE_WRITE        = bgfx_sys::BGFX_BUFFER_COMPUTE_WRITE,
+        const BUFFER_DRAW_INDIRECT        = bgfx_sys::BGFX_BUFFER_DRAW_INDIRECT,
+        const BUFFER_ALLOW_RESIZE         = bgfx_sys::BGFX_BUFFER_ALLOW_RESIZE,
+        const BUFFER_INDEX32              = bgfx_sys::BGFX_BUFFER_INDEX32,
+        const BUFFER_COMPUTE_READ_WRITE   = bgfx_sys::BGFX_BUFFER_COMPUTE_READ_WRITE,
+    }
 }
 
 bitflags! {
@@ -96,6 +130,22 @@ pub struct RenderContext {
 
 pub struct Application {
     __: u32,    // This field is purely used to prevent consumers from creating their own instance
+}
+
+pub struct Memory<'a> {
+    handle: *const bgfx_sys::bgfx_memory_t,
+    _phantom: PhantomData<&'a MainContext>,
+}
+
+pub struct Shader<'a> {
+    handle: bgfx_sys::bgfx_shader_handle_t,
+    _phantom: PhantomData<&'a MainContext>,
+}
+
+pub struct Program<'a> {
+    handle: bgfx_sys::bgfx_program_handle_t,
+    _vsh: Shader<'a>,
+    _fsh: Shader<'a>,
 }
 
 impl MainContext {
@@ -233,6 +283,76 @@ impl Application {
         }
 
         main_thread.join().unwrap();
+    }
+}
+
+impl<'a> Memory<'a> {
+    /// WARNING: May leak if the memory goes unused.
+    pub fn copy<'b, T>(data: &'b [T]) -> Memory<'a> {
+        unsafe {
+            let handle = bgfx_sys::bgfx_copy(
+                data.as_ptr() as *const libc::c_void,
+                mem::size_of_val(data) as u32
+            );
+
+            Memory {
+                handle: handle,
+                _phantom: PhantomData,
+            }
+        }
+    }
+
+    pub fn reference<T>(data: &'a [T]) -> Memory<'a> {
+        unsafe {
+            let handle = bgfx_sys::bgfx_make_ref(
+                data.as_ptr() as *const libc::c_void,
+                mem::size_of_val(data) as u32
+            );
+
+            Memory {
+                handle: handle,
+                _phantom: PhantomData,
+            }
+        }
+    }
+}
+
+impl<'a> Shader<'a> {
+    pub fn new(_bgfx: &'a MainContext, data: Memory<'a>) -> Shader<'a> {
+        unsafe {
+            let handle = bgfx_sys::bgfx_create_shader(data.handle);
+
+            Shader {
+                handle: handle,
+                _phantom: PhantomData,
+            }
+        }
+    }
+}
+
+impl<'a> Drop for Shader<'a> {
+    fn drop(&mut self) {
+        unsafe { bgfx_sys::bgfx_destroy_shader(self.handle); }
+    }
+}
+
+impl<'a> Program<'a> {
+    pub fn new(vsh: Shader<'a>, fsh: Shader<'a>) -> Program<'a> {
+        unsafe {
+            let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, 0);
+
+            Program {
+                handle: handle,
+                _vsh: vsh,
+                _fsh: fsh
+            }
+        }
+    }
+}
+
+impl<'a> Drop for Program<'a> {
+    fn drop(&mut self) {
+        unsafe { bgfx_sys::bgfx_destroy_program(self.handle); }
     }
 }
 

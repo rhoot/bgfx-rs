@@ -2,6 +2,8 @@ extern crate bgfx;
 extern crate glfw;
 extern crate libc;
 
+use std::fs::File;
+use std::io::Read;
 use std::ptr;
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::mpsc;
@@ -84,6 +86,29 @@ impl ExampleData {
 
 }
 
+/// Loads the contents of a file and returns it.
+pub fn load_file(name: &str) -> Vec<u8> {
+    let mut data = Vec::new();
+    let mut file = File::open(name).unwrap();
+    file.read_to_end(&mut data).unwrap();
+    data
+}
+
+/// Loads the two given shaders from disk, and creates a program using the new
+/// shaders.
+///
+/// # Arguments
+///
+/// * ``
+pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext, vsh_name: &'b str, fsh_name: &'b str) -> bgfx::Program<'a> {
+    let vsh_mem = bgfx::Memory::copy(&load_file(vsh_name));
+    let fsh_mem = bgfx::Memory::copy(&load_file(fsh_name));
+    let vsh = bgfx::Shader::new(bgfx, vsh_mem);
+    let fsh = bgfx::Shader::new(bgfx, fsh_mem);
+
+    bgfx::Program::new(vsh, fsh)
+}
+
 /// Returns a new `bgfx::Application`.
 ///
 /// # Arguments
@@ -106,6 +131,20 @@ fn create_bgfx_app(_: &Glfw, window: &Window) -> bgfx::Application {
         window.get_win32_window(),
         ptr::null_mut() // window.get_wgl_context()
     )
+}
+
+/// Determines the renderer to use based on platform.
+///
+/// The sole reason for using this instead of using `bgfx::RendererType::Default` is cause
+/// `Direct3D12` - which is the default under Windows 10 - currently (2015-10-08) crashes when
+/// compiled with MinGW. This is true with the examples in the C++ version of bgfx as well, and
+/// not exlusive to Rust.
+pub fn get_renderer_type() -> Option<bgfx::RendererType> {
+    if cfg!(windows) && cfg!(target_env = "gnu") {
+        Some(bgfx::RendererType::Direct3D11)
+    } else {
+        None
+    }
 }
 
 /// Runs an example.

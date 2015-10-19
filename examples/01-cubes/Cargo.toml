@@ -1,0 +1,14 @@
+[package]
+name = "01-cubes"
+version = "0.1.0"
+authors = ["Johan Sköld <johan@skold.cc>"]
+
+[[bin]]
+name = "01-cubes"
+path = "main.rs"
+
+[dependencies.bgfx]
+path = "../../"
+
+[dependencies.common]
+path = "../common/"
