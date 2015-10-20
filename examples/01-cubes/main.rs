@@ -82,10 +82,15 @@ impl<'a> Cubes<'a> {
         let decl = PosColorVertex::build_decl();
 
         // Create static vertex buffer.
-        let vbh = bgfx::VertexBuffer::new(bgfx, &CUBE_VERTICES, &decl, bgfx::BUFFER_NONE);
+        let vbh = bgfx::VertexBuffer::new(bgfx,
+                                          bgfx::Memory::reference(&CUBE_VERTICES),
+                                          &decl,
+                                          bgfx::BUFFER_NONE);
 
         // Create static index buffer.
-        let ibh = bgfx::IndexBuffer::new(bgfx, &CUBE_INDICES, bgfx::BUFFER_NONE);
+        let ibh = bgfx::IndexBuffer::new(bgfx,
+                                         bgfx::Memory::reference(&CUBE_INDICES),
+                                         bgfx::BUFFER_NONE);
 
         // Create program from shaders.
         let program = common::load_program(bgfx, "vs_cubes.sc", "fs_cubes.sc");
