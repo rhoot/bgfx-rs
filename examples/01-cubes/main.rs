@@ -20,7 +20,6 @@ impl PosColorVertex {
     }
 }
 
-#[repr(packed)]
 //#[rustfmt_skip]
 const CUBE_VERTICES: [PosColorVertex; 8] = [
     PosColorVertex { _x: -1.0, _y:  1.0, _z:  1.0, _abgr: 0xff000000 },
@@ -33,7 +32,6 @@ const CUBE_VERTICES: [PosColorVertex; 8] = [
     PosColorVertex { _x:  1.0, _y: -1.0, _z: -1.0, _abgr: 0xffffffff },
 ];
 
-#[repr(packed)]
 //#[rustfmt_skip]
 const CUBE_INDICES: [u32; 36] = [
     0, 1, 2, // 0
