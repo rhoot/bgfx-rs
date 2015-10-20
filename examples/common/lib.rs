@@ -123,9 +123,7 @@ fn create_bgfx_app(glfw: &Glfw, window: &Window) -> bgfx::Application {
 
 #[cfg(target_os = "windows")]
 fn create_bgfx_app(_: &Glfw, window: &Window) -> bgfx::Application {
-    bgfx::create(ptr::null_mut(),
-                 window.get_win32_window(),
-                 ptr::null_mut() /* window.get_wgl_context() */)
+    bgfx::create(ptr::null_mut(), window.get_win32_window(), ptr::null_mut())
 }
 
 /// Determines the renderer to use based on platform.
