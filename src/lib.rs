@@ -120,6 +120,25 @@ bitflags! {
     }
 }
 
+/// Wraps a raw memory buffer so that it can safely be passed to bgfx.
+pub struct Memory<'a> {
+    handle: *const bgfx_sys::bgfx_memory_t,
+    _phantom: PhantomData<&'a MainContext>,
+}
+
+/// Represents a shader program.
+pub struct Program<'a> {
+    handle: bgfx_sys::bgfx_program_handle_t,
+    _vsh: Shader<'a>,
+    _fsh: Shader<'a>,
+}
+
+/// Represents a raw shader.
+pub struct Shader<'a> {
+    handle: bgfx_sys::bgfx_shader_handle_t,
+    _phantom: PhantomData<&'a MainContext>,
+}
+
 pub struct MainContext {
     did_init: bool,
 }
@@ -130,22 +149,6 @@ pub struct RenderContext {
 
 pub struct Application {
     __: u32, // This field is purely used to prevent consumers from creating their own instance
-}
-
-pub struct Memory<'a> {
-    handle: *const bgfx_sys::bgfx_memory_t,
-    _phantom: PhantomData<&'a MainContext>,
-}
-
-pub struct Shader<'a> {
-    handle: bgfx_sys::bgfx_shader_handle_t,
-    _phantom: PhantomData<&'a MainContext>,
-}
-
-pub struct Program<'a> {
-    handle: bgfx_sys::bgfx_program_handle_t,
-    _vsh: Shader<'a>,
-    _fsh: Shader<'a>,
 }
 
 impl MainContext {
@@ -249,6 +252,7 @@ impl MainContext {
 }
 
 impl Drop for MainContext {
+    #[inline]
     fn drop(&mut self) {
         if self.did_init {
             unsafe {
