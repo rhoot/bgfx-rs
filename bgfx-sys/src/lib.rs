@@ -13,6 +13,7 @@ pub type uint64_t = u64;
 
 include!("ffi_bgfx.rs");
 include!("ffi_bgfxplatform.rs");
+include!("ffi_bx.rs");
 
 pub const BGFX_PCI_ID_NONE:                 u16 = 0;
 

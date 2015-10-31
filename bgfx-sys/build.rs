@@ -1,3 +1,5 @@
+extern crate gcc;
+
 use std::env;
 use std::path::PathBuf;
 use std::process::Command;
@@ -9,11 +11,20 @@ fn main() {
     let (arch, compiler) = (target_quad.first().unwrap(), target_quad.last().unwrap());
     let bitness = if *arch == "x86_64" { 64 } else { 32 };
 
-    build(bitness, compiler, &profile);
+    build_bgfx(bitness, compiler, &profile);
+    build_bx_helper();
+}
+
+fn build_bx_helper() {
+    gcc::Config::new()
+        .cpp(true)
+        .include("bx/include")
+        .file("src/bx-helper.cpp")
+        .compile("libbxhelper.a");
 }
 
 #[cfg(target_os = "windows")]
-fn build(bitness: u32, compiler: &str, profile: &str) {
+fn build_bgfx(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
@@ -49,13 +60,14 @@ fn build(bitness: u32, compiler: &str, profile: &str) {
     println!("cargo:rustc-link-lib=bgfx{}",
              if profile == "debug" { "Debug" } else { "Release" });
     println!("cargo:rustc-link-lib=stdc++");
+    println!("cargo:rustc-link-lib=gdi32");
     println!("cargo:rustc-link-lib=opengl32");
     println!("cargo:rustc-link-lib=psapi");
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }
 
 #[cfg(target_os = "linux")]
-fn build(bitness: u32, compiler: &str, profile: &str) {
+fn build_bgfx(bitness: u32, compiler: &str, profile: &str) {
     if compiler != "gnu" {
         panic!("Unsupported compiler");
     }
