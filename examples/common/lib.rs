@@ -102,8 +102,11 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
                             vsh_name: &'b str,
                             fsh_name: &'b str)
                             -> bgfx::Program<'a> {
-    let vsh_mem = bgfx::Memory::copy(&load_file(vsh_name));
-    let fsh_mem = bgfx::Memory::copy(&load_file(fsh_name));
+    let renderer = bgfx.get_renderer_type();
+    let vsh_path = format!("{:?}/{}.bin", renderer, vsh_name);
+    let fsh_path = format!("{:?}/{}.bin", renderer, fsh_name);
+    let vsh_mem = bgfx::Memory::copy(&load_file(&vsh_path));
+    let fsh_mem = bgfx::Memory::copy(&load_file(&fsh_path));
     let vsh = bgfx::Shader::new(bgfx, vsh_mem);
     let fsh = bgfx::Shader::new(bgfx, fsh_mem);
 

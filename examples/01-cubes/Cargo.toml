@@ -7,6 +7,9 @@ authors = ["Johan Sköld <johan@skold.cc>"]
 name = "01-cubes"
 path = "main.rs"
 
+[dependencies]
+time = "0.1.33"
+
 [dependencies.bgfx]
 path = "../../"
 

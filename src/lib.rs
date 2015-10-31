@@ -1,7 +1,10 @@
 extern crate bgfx_sys;
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate enum_primitive;
 extern crate libc;
+extern crate num;
 
 use std::marker::PhantomData;
 use std::mem;
@@ -9,18 +12,26 @@ use std::option::Option;
 use std::ptr;
 use std::thread;
 
-#[repr(u32)]
-#[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum RendererType {
-    Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
-    Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
-    Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
-    Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
-    Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
-    OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
-    OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
-    Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
-    Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+use num::FromPrimitive;
+
+mod state;
+
+pub use state::State;
+
+enum_from_primitive! {
+    #[repr(u32)]
+    #[derive(PartialEq, Eq, Debug, Copy, Clone)]
+    pub enum RendererType {
+        Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
+        Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
+        Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
+        Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
+        Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
+        OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
+        OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
+        Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
+        Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+    }
 }
 
 #[repr(u32)]
@@ -531,6 +542,14 @@ impl MainContext {
         }
     }
 
+    #[inline]
+    pub fn set_view_transform(&self, id: u8, view: &[f32; 16], proj: &[f32; 16]) {
+        unsafe {
+            bgfx_sys::bgfx_set_view_transform(id, view.as_ptr() as *const libc::c_void,
+                                              proj.as_ptr() as *const libc::c_void);
+        }
+    }
+
     /// Touch the view. ( ͡° ͜ʖ ͡°)
     ///
     /// # Arguments
@@ -586,6 +605,48 @@ impl MainContext {
     pub fn frame(&self) -> u32 {
         unsafe { bgfx_sys::bgfx_frame() }
     }
+
+    /// Sets the transform for rendering.
+    pub fn set_transform(&self, mtx: &[f32; 16]) {
+        unsafe {
+            bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const libc::c_void, 1);
+        }
+    }
+
+    /// Sets the vertex buffer for rendering.
+    pub fn set_vertex_buffer(&self, vbh: &VertexBuffer) {
+        // TODO: How to solve lifetimes...
+        unsafe {
+            bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX);
+        }
+    }
+
+    /// Sets the index buffer for rendering.
+    pub fn set_index_buffer(&self, ibh: &IndexBuffer) {
+        // TODO: How to solve lifetimes...
+        unsafe {
+            bgfx_sys::bgfx_set_index_buffer(ibh.handle, 0, std::u32::MAX);
+        }
+    }
+
+    /// Sets the render state.
+    pub fn set_state(&self, state: State, rgba: Option<u32>) {
+        unsafe {
+            bgfx_sys::bgfx_set_state(state.to_bits(), rgba.unwrap_or(0));
+        }
+    }
+
+    pub fn submit(&self, view: u8, program: &Program) {
+        unsafe {
+            bgfx_sys::bgfx_submit(view, program.handle, 0);
+        }
+    }
+
+    pub fn get_renderer_type(&self) -> RendererType {
+        assert!(self.did_init);
+        unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
+    }
+
 }
 
 impl Drop for MainContext {
@@ -685,4 +746,31 @@ pub fn create(display: *mut libc::c_void,
     }
 
     Application { __: 0 }
+}
+
+/// Creates a view matrix for looking at a point.
+pub fn mtx_look_at(eye: &[f32; 3], at: &[f32; 3]) -> [f32; 16] {
+    unsafe {
+        let mut mat: [f32; 16] = mem::uninitialized();
+        bgfx_sys::bx_mtx_look_at(mat.as_mut_ptr(), eye.as_ptr(), at.as_ptr(), ptr::null());
+        mat
+    }
+}
+
+/// Creates a projection matrix.
+pub fn mtx_proj(fovy: f32, aspect: f32, near: f32, far: f32) -> [f32; 16] {
+    unsafe {
+        let mut mat: [f32; 16] = mem::uninitialized();
+        bgfx_sys::bx_mtx_proj(mat.as_mut_ptr(), fovy, aspect, near, far, false);
+        mat
+    }
+}
+
+/// Creates a rotation matrix for rotating around both the X and Y axes.
+pub fn mtx_rotate_xy(x: f32, y: f32) -> [f32; 16] {
+    unsafe {
+        let mut mat: [f32; 16] = mem::uninitialized();
+        bgfx_sys::bx_mtx_rotate_xy(mat.as_mut_ptr(), x, y);
+        mat
+    }
 }
