@@ -545,7 +545,8 @@ impl MainContext {
     #[inline]
     pub fn set_view_transform(&self, id: u8, view: &[f32; 16], proj: &[f32; 16]) {
         unsafe {
-            bgfx_sys::bgfx_set_view_transform(id, view.as_ptr() as *const libc::c_void,
+            bgfx_sys::bgfx_set_view_transform(id,
+                                              view.as_ptr() as *const libc::c_void,
                                               proj.as_ptr() as *const libc::c_void);
         }
     }

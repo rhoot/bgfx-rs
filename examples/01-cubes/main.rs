@@ -151,15 +151,14 @@ impl<'a> Cubes<'a> {
             // Set view 0 default viewport.
             self.bgfx.set_view_rect(0, 0, 0, self.width, self.height);
 
-            // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls
-            // are submitted to view 0.
+            // This dummy draw call is here to make sure that view 0 is cleared if no other draw
+            // calls are submitted to view 0.
             self.bgfx.touch(0);
 
             // Submit 11x11 cubes
             for yy in 0..11 {
                 for xx in 0..11 {
-                    let mut mtx = bgfx::mtx_rotate_xy((time / 0.21) as f32,
-                                                      (time / 0.37) as f32);
+                    let mut mtx = bgfx::mtx_rotate_xy((time / 0.21) as f32, (time / 0.37) as f32);
                     mtx[12] = -15.0 + (xx as f32) * 3.0;
                     mtx[13] = -15.0 + (yy as f32) * 3.0;
                     mtx[14] = 0.0;
