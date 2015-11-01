@@ -15,6 +15,9 @@ use glfw::{Context, Glfw, Window, WindowEvent};
 pub enum Event {
     /// Window close event.
     Close,
+
+    /// Window size event.
+    Size(u16, u16),
 }
 
 /// Example application.
@@ -29,16 +32,26 @@ impl Example {
     /// instantly.
     ///
     /// Returns `true` if the app should exit.
-    pub fn handle_events(&self) -> bool {
+    pub fn handle_events(&self, bgfx: &bgfx::MainContext, width: &mut u16, height: &mut u16, reset: bgfx::ResetFlags) -> bool {
         let mut close = false;
 
-        let result = self.event_rx.try_recv();
+        loop {
+            let result = self.event_rx.try_recv();
 
-        if result.is_ok() {
+            if !result.is_ok() {
+                break;
+            }
+
             match result.ok().unwrap() {
                 Event::Close => close = true,
+                Event::Size(w, h) => {
+                    *width = w;
+                    *height = h;
+                    bgfx.reset(w, h, reset);
+                },
             }
         }
+
 
         close
     }
@@ -72,6 +85,9 @@ impl ExampleData {
             match event {
                 WindowEvent::Close => {
                     self.event_tx.send(Event::Close).unwrap();
+                }
+                WindowEvent::Size(w, h) => {
+                    self.event_tx.send(Event::Size(w as u16, h as u16)).unwrap();
                 }
                 ref e => {
                     panic!(format!("Unhandled event: {:?}", e))
@@ -163,6 +179,7 @@ pub fn run_example<M>(width: u32, height: u32, main: M)
                                    .expect("Failed to create GLFW window.");
 
     window.set_close_polling(true);
+    window.set_size_polling(true);
     window.make_current();
 
     // Create the channel used for communication between the main and render threads.

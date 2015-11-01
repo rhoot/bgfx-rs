@@ -56,7 +56,6 @@ struct Cubes<'a> {
     example: &'a common::Example,
     width: u16,
     height: u16,
-    debug: bgfx::DebugFlags,
     reset: bgfx::ResetFlags,
     vbh: bgfx::VertexBuffer<'a>,
     ibh: bgfx::IndexBuffer<'a>,
@@ -106,8 +105,7 @@ impl<'a> Cubes<'a> {
             example: example,
             width: 1280,
             height: 720,
-            debug: bgfx::DEBUG_TEXT,
-            reset: bgfx::RESET_VSYNC,
+            reset: reset,
             vbh: vbh,
             ibh: ibh,
             program: program,
@@ -123,7 +121,7 @@ impl<'a> Cubes<'a> {
     }
 
     pub fn update(&mut self) -> bool {
-        if !self.example.handle_events() {
+        if !self.example.handle_events(self.bgfx, &mut self.width, &mut self.height, self.reset) {
             let now = PreciseTime::now();
             let frame_time = self.last.to(now);
             self.last = now;
@@ -196,5 +194,5 @@ fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
 }
 
 fn main() {
-    common::run_example(1024, 768, example);
+    common::run_example(1280, 720, example);
 }
