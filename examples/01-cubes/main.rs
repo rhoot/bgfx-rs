@@ -36,7 +36,7 @@ static CUBE_VERTICES: [PosColorVertex; 8] = [
 ];
 
 //#[rustfmt_skip]
-static CUBE_INDICES: [u32; 36] = [
+static CUBE_INDICES: [u16; 36] = [
     0, 1, 2, // 0
     1, 3, 2,
     4, 6, 5, // 2
