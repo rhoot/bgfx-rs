@@ -32,7 +32,12 @@ impl Example {
     /// instantly.
     ///
     /// Returns `true` if the app should exit.
-    pub fn handle_events(&self, bgfx: &bgfx::MainContext, width: &mut u16, height: &mut u16, reset: bgfx::ResetFlags) -> bool {
+    pub fn handle_events(&self,
+                         bgfx: &bgfx::MainContext,
+                         width: &mut u16,
+                         height: &mut u16,
+                         reset: bgfx::ResetFlags)
+                         -> bool {
         let mut close = false;
 
         loop {
@@ -48,7 +53,7 @@ impl Example {
                     *width = w;
                     *height = h;
                     bgfx.reset(w, h, reset);
-                },
+                }
             }
         }
 
