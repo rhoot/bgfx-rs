@@ -14,5 +14,5 @@ impl State {
         self.0
     }
 
-    // TODO: Flag setters
+// TODO: Flag setters
 }
