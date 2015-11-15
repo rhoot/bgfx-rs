@@ -66,8 +66,8 @@ pub enum Attrib {
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum AttribType {
-    UInt8 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT8,
-    UInt10 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT10,
+    Uint8 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT8,
+    Uint10 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT10,
     Int16 = bgfx_sys::BGFX_ATTRIB_TYPE_INT16,
     Half = bgfx_sys::BGFX_ATTRIB_TYPE_HALF,
     Float = bgfx_sys::BGFX_ATTRIB_TYPE_FLOAT,
