@@ -56,62 +56,65 @@ struct Cubes<'a> {
     example: &'a common::Example,
     width: u16,
     height: u16,
+    debug: bgfx::DebugFlags,
     reset: bgfx::ResetFlags,
-    vbh: bgfx::VertexBuffer<'a>,
-    ibh: bgfx::IndexBuffer<'a>,
-    program: bgfx::Program<'a>,
-    time: time::PreciseTime,
-    last: time::PreciseTime,
+    vbh: Option<bgfx::VertexBuffer<'a>>,
+    ibh: Option<bgfx::IndexBuffer<'a>>,
+    program: Option<bgfx::Program<'a>>,
+    time: Option<time::PreciseTime>,
+    last: Option<time::PreciseTime>,
 }
 
 impl<'a> Cubes<'a> {
-    pub fn init(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
-        let width: u16 = 1280;
-        let height: u16 = 720;
-        let debug = bgfx::DEBUG_TEXT;
-        let reset = bgfx::RESET_VSYNC;
+    fn new(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
+        Cubes {
+            bgfx: bgfx,
+            example: example,
+            width: 0,
+            height: 0,
+            debug: bgfx::DEBUG_NONE,
+            reset: bgfx::RESET_NONE,
+            vbh: None,
+            ibh: None,
+            program: None,
+            time: None,
+            last: None,
+        }
+    }
 
-        // init is called by the bgfx library
-        bgfx.reset(width, height, reset);
+    fn init(&mut self) {
+        self.width = 1280;
+        self.height = 720;
+        self.debug = bgfx::DEBUG_TEXT;
+        self.reset = bgfx::RESET_VSYNC;
+
+        self.bgfx.reset(self.width, self.height, self.reset);
 
         // Enable debug text.
-        bgfx.set_debug(debug);
+        self.bgfx.set_debug(self.debug);
 
         // Set view 0 clear state.
         let clear_flags = bgfx::CLEAR_COLOR | bgfx::CLEAR_DEPTH;
-        bgfx.set_view_clear(0, clear_flags, 0x303030ff, 1.0_f32, 0);
+        self.bgfx.set_view_clear(0, clear_flags, 0x303030ff, 1.0_f32, 0);
 
         // Create vertex stream declaration
         let decl = PosColorVertex::build_decl();
 
         // Create static vertex buffer.
-        let vbh = bgfx::VertexBuffer::new(bgfx,
-                                          bgfx::Memory::reference(&CUBE_VERTICES),
-                                          &decl,
-                                          bgfx::BUFFER_NONE);
+        self.vbh = Some(bgfx::VertexBuffer::new(self.bgfx,
+                                                bgfx::Memory::reference(&CUBE_VERTICES),
+                                                &decl,
+                                                bgfx::BUFFER_NONE));
 
         // Create static index buffer.
-        let ibh = bgfx::IndexBuffer::new(bgfx,
-                                         bgfx::Memory::reference(&CUBE_INDICES),
-                                         bgfx::BUFFER_NONE);
+        self.ibh = Some(bgfx::IndexBuffer::new(self.bgfx,
+                                               bgfx::Memory::reference(&CUBE_INDICES),
+                                               bgfx::BUFFER_NONE));
 
         // Create program from shaders.
-        let program = common::load_program(bgfx, "vs_cubes", "fs_cubes");
+        self.program = Some(common::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
 
-        let now = PreciseTime::now();
-
-        Cubes {
-            bgfx: bgfx,
-            example: example,
-            width: 1280,
-            height: 720,
-            reset: reset,
-            vbh: vbh,
-            ibh: ibh,
-            program: program,
-            time: now,
-            last: now,
-        }
+        self.time = Some(PreciseTime::now());
     }
 
     pub fn shutdown(&mut self) {
@@ -123,10 +126,11 @@ impl<'a> Cubes<'a> {
     pub fn update(&mut self) -> bool {
         if !self.example.handle_events(self.bgfx, &mut self.width, &mut self.height, self.reset) {
             let now = PreciseTime::now();
-            let frame_time = self.last.to(now);
-            self.last = now;
+            let frame_time = self.last.unwrap_or(now).to(now);
+            self.last = Some(now);
 
-            let time = (self.time.to(now).num_microseconds().unwrap() as f64) / 1_000_000.0_f64;
+            let time = (self.time.unwrap().to(now).num_microseconds().unwrap() as f64) /
+                       1_000_000.0_f64;
 
             // Use debug font to print information about this example.
             let frame_info = format!("Frame: {:7.3}[ms]", frame_time.num_milliseconds());
@@ -165,14 +169,14 @@ impl<'a> Cubes<'a> {
                     self.bgfx.set_transform(&mtx);
 
                     // Set vertex and index buffer.
-                    self.bgfx.set_vertex_buffer(&self.vbh);
-                    self.bgfx.set_index_buffer(&self.ibh);
+                    self.bgfx.set_vertex_buffer(self.vbh.as_ref().unwrap());
+                    self.bgfx.set_index_buffer(self.ibh.as_ref().unwrap());
 
                     // Set render states.
                     self.bgfx.set_state(bgfx::State::new(), None);
 
                     // Submit primitive for rendering to view 0.
-                    self.bgfx.submit(0, &self.program);
+                    self.bgfx.submit(0, self.program.as_ref().unwrap());
                 }
             }
 
@@ -187,12 +191,11 @@ impl<'a> Cubes<'a> {
     }
 }
 
-fn example(bgfx: bgfx::MainContext, example: &common::Example) {
-    let mut cubes = Cubes::init(&bgfx, example);
-    while cubes.update() {}
-    cubes.shutdown();
-}
-
 fn main() {
-    common::run_example(1280, 720, example);
+    common::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &common::Example| {
+        let mut cubes = Cubes::new(&bgfx, example);
+        cubes.init();
+        while cubes.update() {}
+        cubes.shutdown();
+    });
 }

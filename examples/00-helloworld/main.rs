@@ -11,7 +11,6 @@ fn example(bgfx: bgfx::MainContext, example: &common::Example) {
     let debug = bgfx::DEBUG_TEXT;
     let reset = bgfx::RESET_VSYNC;
 
-    // init is called by the bgfx library
     bgfx.reset(width, height, reset);
 
     // Enable debug text.
