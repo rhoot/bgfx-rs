@@ -1,8 +1,6 @@
 extern crate bgfx_sys;
 #[macro_use]
 extern crate bitflags;
-#[macro_use]
-extern crate enum_primitive;
 extern crate libc;
 extern crate num;
 
@@ -17,63 +15,118 @@ mod state;
 
 pub use state::State;
 
-enum_from_primitive! {
-    #[repr(u32)]
-    #[derive(PartialEq, Eq, Debug, Copy, Clone)]
-    pub enum RendererType {
-        Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
-        Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
-        Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
-        Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
-        Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
-        OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
-        OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
-        Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
-        Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+/// Renderer type.
+#[repr(u32)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
+pub enum RendererType {
+    /// Null renderer, nothing is actually rendered but the library acts as if it was.
+    Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
+    /// DirectX 9 renderer. Only available on Windows.
+    Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
+    /// DirectX 11 renderer. Only available on Windows.
+    Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
+    /// DirectX 12 renderer. Only available on Windows.
+    Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
+    /// Metal renderer. Only available on Apple platforms.
+    Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
+    /// OpenGLES renderer.
+    OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
+    /// OpenGL renderer.
+    OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
+    /// Vulkan renderer.
+    Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
+    /// Used to tell bgfx to use whichever renderer makes most sense for the current platform.
+    Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
+}
+
+impl RendererType {
+    fn from_u32(n: u32) -> Option<RendererType> {
+        // It's `<=` as `Default` uses that as value...
+        if n <= bgfx_sys::BGFX_RENDERER_TYPE_COUNT {
+            unsafe { Some(mem::transmute(n)) }
+        } else {
+            None
+        }
     }
 }
 
-enum_from_primitive! {
-    #[repr(u32)]
-    #[derive(PartialEq, Eq, Debug, Copy, Clone)]
-    pub enum RenderFrame {
-        NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
-        Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
-        Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+/// `render_frame()` result enumeration.
+#[repr(u32)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
+pub enum RenderFrame {
+    /// No context is available. This usually means the main thread has exited.
+    NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
+    /// The render was performed.
+    Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
+    /// The renderer is exiting.
+    Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+}
+
+impl RenderFrame {
+    fn from_u32(n: u32) -> Option<RenderFrame> {
+        if n < bgfx_sys::BGFX_RENDER_FRAME_COUNT {
+            unsafe { Some(mem::transmute(n)) }
+        } else {
+            None
+        }
     }
 }
 
+/// Shader attribute.
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum Attrib {
+    /// Position attribute.
     Position = bgfx_sys::BGFX_ATTRIB_POSITION,
+    /// Normal attribute.
     Normal = bgfx_sys::BGFX_ATTRIB_NORMAL,
+    /// Tangent attribute.
     Tangent = bgfx_sys::BGFX_ATTRIB_TANGENT,
+    /// Bitangent attribute.
     Bitangent = bgfx_sys::BGFX_ATTRIB_BITANGENT,
+    /// Color 0 attribute.
     Color0 = bgfx_sys::BGFX_ATTRIB_COLOR0,
+    /// Color 1 attribute.
     Color1 = bgfx_sys::BGFX_ATTRIB_COLOR1,
+    /// Index list attribute.
     Indices = bgfx_sys::BGFX_ATTRIB_INDICES,
+    /// Bone weight attribute.
     Weight = bgfx_sys::BGFX_ATTRIB_WEIGHT,
+    /// Texture coordinate 0 attribute.
     TexCoord0 = bgfx_sys::BGFX_ATTRIB_TEXCOORD0,
+    /// Texture coordinate 1 attribute.
     TexCoord1 = bgfx_sys::BGFX_ATTRIB_TEXCOORD1,
+    /// Texture coordinate 2 attribute.
     TexCoord2 = bgfx_sys::BGFX_ATTRIB_TEXCOORD2,
+    /// Texture coordinate 3 attribute.
     TexCoord3 = bgfx_sys::BGFX_ATTRIB_TEXCOORD3,
+    /// Texture coordinate 4 attribute.
     TexCoord4 = bgfx_sys::BGFX_ATTRIB_TEXCOORD4,
+    /// Texture coordinate 5 attribute.
     TexCoord5 = bgfx_sys::BGFX_ATTRIB_TEXCOORD5,
+    /// Texture coordinate 6 attribute.
     TexCoord6 = bgfx_sys::BGFX_ATTRIB_TEXCOORD6,
+    /// Texture coordinate 7 attribute.
     TexCoord7 = bgfx_sys::BGFX_ATTRIB_TEXCOORD7,
 }
 
+/// Shader attribute data type.
 #[repr(u32)]
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum AttribType {
+    /// Unsigned 8-bit integer.
     Uint8 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT8,
+    /// Unsigned 10-bit integer.
     Uint10 = bgfx_sys::BGFX_ATTRIB_TYPE_UINT10,
+    /// Signed 16-bit integer.
     Int16 = bgfx_sys::BGFX_ATTRIB_TYPE_INT16,
+    /// 16-bit float.
     Half = bgfx_sys::BGFX_ATTRIB_TYPE_HALF,
+    /// 32-bit float.
     Float = bgfx_sys::BGFX_ATTRIB_TYPE_FLOAT,
 }
 
+// Pending rust-lang/rust#24822 being resolved we're stuck with non-documented bit flags.
 
 bitflags! {
     flags BufferFlags: u16 {
@@ -169,33 +222,29 @@ pub struct Memory<'a> {
 }
 
 impl<'a> Memory<'a> {
-    /// Copies the source data into a new bgfx-managed buffer, and returns said buffer.
+    /// Copies the source data into a new bgfx-managed buffer.
     ///
-    /// IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed.
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - Array of data to copy into this buffer.
+    /// IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed,
+    /// and will leak.
+    #[inline]
     pub fn copy<'b, T>(data: &'b [T]) -> Memory<'a> {
         unsafe {
             let handle = bgfx_sys::bgfx_copy(data.as_ptr() as *const libc::c_void,
                                              mem::size_of_val(data) as u32);
-
             Memory { handle: handle, _phantom: PhantomData }
         }
     }
 
-    /// Creates a reference to the source data for passing into bgfx, and returns said reference.
-    /// When using this constructor over the `copy` call, no copy will be created. Bgfx will read
-    /// the source memory directly.
+    /// Creates a reference to the source data for passing into bgfx. When using this constructor
+    /// over the `copy` call, no copy will be created. Bgfx will read the source memory directly.
     ///
     /// Note that this is only allowed for static memory, as it's the only way we can guarantee
-    /// that the memory will still be valid in a couple of frames.
+    /// that the memory will still be valid until bgfx has time to read it.
+    #[inline]
     pub fn reference<T>(data: &'static [T]) -> Memory<'static> {
         unsafe {
             let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const libc::c_void,
                                                  mem::size_of_val(data) as u32);
-
             Memory { handle: handle, _phantom: PhantomData }
         }
     }
@@ -211,27 +260,21 @@ pub struct Program<'a> {
 }
 
 impl<'a> Program<'a> {
-    /// Creates a new program from a vertex shader and a fragment shader. Ownership is moved to the
-    /// program.
-    ///
-    /// # Arguments
-    ///
-    /// * `vsh` - The vertex shader.
-    /// * `fsh` - The fragment shader.
+    /// Creates a new program from a vertex shader and a fragment shader. Ownerships of the shaders
+    /// are moved to the program.
+    #[inline]
     pub fn new(vsh: Shader<'a>, fsh: Shader<'a>) -> Program<'a> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, 0);
-
             Program { handle: handle, _vsh: vsh, _fsh: fsh }
         }
     }
 }
 
 impl<'a> Drop for Program<'a> {
+    #[inline]
     fn drop(&mut self) {
-        unsafe {
-            bgfx_sys::bgfx_destroy_program(self.handle);
-        }
+        unsafe { bgfx_sys::bgfx_destroy_program(self.handle) }
     }
 }
 
@@ -243,63 +286,46 @@ pub struct Shader<'a> {
 
 impl<'a> Shader<'a> {
     /// Creates a new shader from bgfx-managed memory.
-    ///
-    /// # Arguments
-    ///
-    /// * `context` - Reference to the main thread context.
-    /// * `data` - Memory to create the shader from. Ownership is claimed.
-    pub fn new(context: &'a MainContext, data: Memory<'a>) -> Shader<'a> {
-        let _ = context;
-
+    #[inline]
+    pub fn new(_context: &'a MainContext, data: Memory<'a>) -> Shader<'a> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_shader(data.handle);
-
             Shader { handle: handle, _phantom: PhantomData }
         }
     }
 }
 
 impl<'a> Drop for Shader<'a> {
+    #[inline]
     fn drop(&mut self) {
-        unsafe {
-            bgfx_sys::bgfx_destroy_shader(self.handle);
-        }
+        unsafe { bgfx_sys::bgfx_destroy_shader(self.handle) }
     }
 }
 
-/// A buffer holding vertex indices, with each triplet defining a triangle.
+/// A buffer holding vertex indices.
 pub struct IndexBuffer<'a> {
     handle: bgfx_sys::bgfx_index_buffer_handle_t,
     _phantom: PhantomData<&'a MainContext>,
 }
 
 impl<'a> IndexBuffer<'a> {
-    /// Creates a new index buffer containing the given bgfx-managed memory.
-    ///
-    /// # Arguments
-    ///
-    /// * `context` - Reference to the main thread context.
-    /// * `indices` - Indices to create the index buffer from.
-    /// * `flags` - Index buffer creation flags.
-    pub fn new(context: &'a MainContext,
+    /// Creates a new index buffer from bgfx-managed memory.
+    #[inline]
+    pub fn new(_context: &'a MainContext,
                indices: Memory<'a>,
                flags: BufferFlags)
                -> IndexBuffer<'a> {
-        let _ = context;
-
         unsafe {
             let handle = bgfx_sys::bgfx_create_index_buffer(indices.handle, flags.bits());
-
             IndexBuffer { handle: handle, _phantom: PhantomData }
         }
     }
 }
 
 impl<'a> Drop for IndexBuffer<'a> {
+    #[inline]
     fn drop(&mut self) {
-        unsafe {
-            bgfx_sys::bgfx_destroy_index_buffer(self.handle);
-        }
+        unsafe { bgfx_sys::bgfx_destroy_index_buffer(self.handle) }
     }
 }
 
@@ -310,36 +336,26 @@ pub struct VertexBuffer<'a> {
 }
 
 impl<'a> VertexBuffer<'a> {
-    /// Creates a new vertex buffer containing the given bgfx-managed memory.
-    ///
-    /// # Arguments
-    ///
-    /// * `context` - Reference to the main thread context.
-    /// * `verts` - Vertices to create the vertex buffer from.
-    /// * `decl` - `VertexDecl` describing the structure of each vertex.
-    /// * `flags` - Vertex buffer creation flags.
-    pub fn new<'b>(context: &'a MainContext,
+    /// Creates a new vertex buffer from bgfx-managed memory.
+    #[inline]
+    pub fn new<'b>(_context: &'a MainContext,
                    verts: Memory<'a>,
                    decl: &'b VertexDecl,
                    flags: BufferFlags)
                    -> VertexBuffer<'a> {
-        let _ = context;
-
         unsafe {
             let handle = bgfx_sys::bgfx_create_vertex_buffer(verts.handle,
                                                              &decl.decl,
                                                              flags.bits());
-
             VertexBuffer { handle: handle, _phantom: PhantomData }
         }
     }
 }
 
 impl<'a> Drop for VertexBuffer<'a> {
+    #[inline]
     fn drop(&mut self) {
-        unsafe {
-            bgfx_sys::bgfx_destroy_vertex_buffer(self.handle);
-        }
+        unsafe { bgfx_sys::bgfx_destroy_vertex_buffer(self.handle) }
     }
 }
 
@@ -351,27 +367,21 @@ pub struct VertexDecl {
 impl VertexDecl {
     /// Creates a new vertex declaration using a builder.
     ///
-    /// # Arguments
-    ///
-    /// * `renderer` - Optional renderer this vertex declaration applies to. If not specified,
-    ///                `RendererType::Null` is assumed.
-    ///
     /// # Example
     ///
     /// ```
     /// let decl = VertexDecl::new(None)
     ///          .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
-    ///          .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::UInt8, Some(true), None)
+    ///          .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, Some(true), None)
     ///          .end();
     /// ```
+    #[inline]
     pub fn new(renderer: Option<RendererType>) -> VertexDeclBuilder {
         let renderer = renderer.unwrap_or(RendererType::Null) as bgfx_sys::bgfx_renderer_type_t;
 
         unsafe {
             let mut descr = VertexDeclBuilder { decl: mem::uninitialized() };
-
             bgfx_sys::bgfx_vertex_decl_begin(&mut descr.decl, renderer);
-
             descr
         }
     }
@@ -384,17 +394,7 @@ pub struct VertexDeclBuilder {
 
 impl VertexDeclBuilder {
     /// Adds a field to the structure descriptor. See `VertexDecl::new()` for an example.
-    ///
-    /// # Arguments
-    ///
-    /// * `attrib` - The field's attribute.
-    /// * `count` - Amount of values this field is built up of.
-    /// * `kind` - Type of the field.
-    /// * `normalized` - Optional normalization. When using a fixed point `kind`, the value will be
-    ///                  normalized to be 0.0-1.0 in the vertex shader rather than the raw actual
-    ///                  values. The default is `false`.
-    /// * `as_int` - Optional packaging rule `AttribType::UInt8` and `AttribType::UInt16`. The
-    ///              default is `false`.
+    #[inline]
     pub fn add(&mut self,
                attrib: Attrib,
                count: u8,
@@ -418,19 +418,17 @@ impl VertexDeclBuilder {
     }
 
     /// Indicates a gap in the vertex structure.
-    ///
-    /// # Arguments
-    ///
-    /// * `count` - Size of the gap, in bytes.
-    pub fn skip(&mut self, count: u8) -> &mut Self {
+    #[inline]
+    pub fn skip(&mut self, bytes: u8) -> &mut Self {
         unsafe {
-            bgfx_sys::bgfx_vertex_decl_skip(&mut self.decl, count);
+            bgfx_sys::bgfx_vertex_decl_skip(&mut self.decl, bytes);
         }
 
         self
     }
 
     /// Finalizes the construction of the `VertexDecl`.
+    #[inline]
     pub fn end(&mut self) -> VertexDecl {
         unsafe {
             bgfx_sys::bgfx_vertex_decl_end(&mut self.decl);
@@ -442,7 +440,7 @@ impl VertexDeclBuilder {
 
 /// Main thread context.
 ///
-/// This will be passed to the callback provided to `Application::run(...)`. Functionality intended
+/// This will be passed to the callback provided to `Config::run(...)`. Functionality intended
 /// to be executed on the main thread is exposed through this object.
 pub struct MainContext {
     __: u32, // This field is purely used to prevent API consumers from creating their own instance
@@ -455,61 +453,27 @@ impl MainContext {
     }
 
     /// Resets the graphics device to the given size.
-    ///
-    /// # Arguments
-    ///
-    /// * `width` - Width of the back buffer, in pixels.
-    /// * `height` - Height of the back buffer, in pixels.
-    /// * `reset` - Flags for the device reset.
     #[inline]
     pub fn reset(&self, width: u16, height: u16, reset: ResetFlags) {
-        unsafe {
-            bgfx_sys::bgfx_reset(width as u32, height as u32, reset.bits());
-        }
+        unsafe { bgfx_sys::bgfx_reset(width as u32, height as u32, reset.bits()) }
     }
 
     /// Sets the debug flags in use.
-    ///
-    /// # Arguments
-    ///
-    /// * `debug` - Debug flags to use.
     #[inline]
     pub fn set_debug(&self, debug: DebugFlags) {
-        unsafe {
-            bgfx_sys::bgfx_set_debug(debug.bits());
-        }
+        unsafe { bgfx_sys::bgfx_set_debug(debug.bits()) }
     }
 
     /// Sets the options to use when clearing the given view.
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - ID of the view to set properties for.
-    /// * `flags` - Flags specifying how to clear.
-    /// * `rgba` - Color to fill the color buffer with, in RGBA format.
-    /// * `depth` - Value to fill the depth buffer with.
-    /// * `stencil` - Value to fill the stencil buffer with.
     #[inline]
     pub fn set_view_clear(&self, id: u8, flags: ClearFlags, rgba: u32, depth: f32, stencil: u8) {
-        unsafe {
-            bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil);
-        }
+        unsafe { bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil) }
     }
 
     /// Sets the rectangle to display the given view in.
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - ID of the view.
-    /// * `x` - X coordinate of the view rectangle.
-    /// * `y` - Y coordinate of the view rectangle.
-    /// * `width` - Width of the view rectangle.
-    /// * `height` - Height of the view rectangle.
     #[inline]
     pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u16, height: u16) {
-        unsafe {
-            bgfx_sys::bgfx_set_view_rect(id, x, y, width, height);
-        }
+        unsafe { bgfx_sys::bgfx_set_view_rect(id, x, y, width, height) }
     }
 
     #[inline]
@@ -517,15 +481,11 @@ impl MainContext {
         unsafe {
             bgfx_sys::bgfx_set_view_transform(id,
                                               view.as_ptr() as *const libc::c_void,
-                                              proj.as_ptr() as *const libc::c_void);
+                                              proj.as_ptr() as *const libc::c_void)
         }
     }
 
-    /// Touch the view. ( ͡° ͜ʖ ͡°)
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - ID of the view.
+    /// Touch a view. ( ͡° ͜ʖ ͡°)
     #[inline]
     pub fn touch(&self, id: u8) {
         unsafe {
@@ -539,9 +499,7 @@ impl MainContext {
         let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
         let attr = attr.unwrap_or(0);
 
-        unsafe {
-            bgfx_sys::bgfx_dbg_text_clear(attr, small);
-        }
+        unsafe { bgfx_sys::bgfx_dbg_text_clear(attr, small) }
     }
 
     /// Draws an image to the debug text overlay.
@@ -559,16 +517,14 @@ impl MainContext {
                                           width,
                                           height,
                                           data.as_ptr() as *const libc::c_void,
-                                          pitch);
+                                          pitch)
         }
     }
 
     /// Displays text in the debug text overlay.
     #[inline]
     pub fn dbg_text_print(&self, x: u16, y: u16, attr: u8, text: &str) {
-        unsafe {
-            bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr() as *const i8);
-        }
+        unsafe { bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr() as *const i8) }
     }
 
     /// Finish the frame, syncing up with the render thread. Returns an incrementing frame counter.
@@ -578,6 +534,7 @@ impl MainContext {
     }
 
     /// Sets the transform for rendering.
+    #[inline]
     pub fn set_transform(&self, mtx: &[f32; 16]) {
         unsafe {
             bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const libc::c_void, 1);
@@ -585,34 +542,33 @@ impl MainContext {
     }
 
     /// Sets the vertex buffer for rendering.
+    #[inline]
     pub fn set_vertex_buffer(&self, vbh: &VertexBuffer) {
         // TODO: How to solve lifetimes...
-        unsafe {
-            bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX);
-        }
+        unsafe { bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX) }
     }
 
     /// Sets the index buffer for rendering.
+    #[inline]
     pub fn set_index_buffer(&self, ibh: &IndexBuffer) {
         // TODO: How to solve lifetimes...
-        unsafe {
-            bgfx_sys::bgfx_set_index_buffer(ibh.handle, 0, std::u32::MAX);
-        }
+        unsafe { bgfx_sys::bgfx_set_index_buffer(ibh.handle, 0, std::u32::MAX) }
     }
 
     /// Sets the render state.
+    #[inline]
     pub fn set_state(&self, state: State, rgba: Option<u32>) {
-        unsafe {
-            bgfx_sys::bgfx_set_state(state.to_bits(), rgba.unwrap_or(0));
-        }
+        unsafe { bgfx_sys::bgfx_set_state(state.to_bits(), rgba.unwrap_or(0)) }
     }
 
+    #[inline]
     pub fn submit(&self, view: u8, program: &Program) {
         unsafe {
             bgfx_sys::bgfx_submit(view, program.handle, 0);
         }
     }
 
+    #[inline]
     pub fn get_renderer_type(&self) -> RendererType {
         unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
     }
@@ -622,15 +578,13 @@ impl MainContext {
 impl Drop for MainContext {
     #[inline]
     fn drop(&mut self) {
-        unsafe {
-            bgfx_sys::bgfx_shutdown();
-        }
+        unsafe { bgfx_sys::bgfx_shutdown() }
     }
 }
 
 /// Render thread context.
 ///
-/// This will be passed to the callback provided to `Application::run(...)`. Functionality intended
+/// This will be passed to the callback provided to `Config::run(...)`. Functionality intended
 /// to be executed on the render thread is exposed through this object.
 pub struct RenderContext {
     __: u32, // This field is purely used to prevent API consumers from creating their own instance
@@ -656,10 +610,7 @@ pub enum ConfigError {
     InvalidWindow,
 }
 
-/// Bgfx-based application object.
-///
-/// Acts as the entry point to your application. The application object is responsible for firing
-/// off the threads, and syncing up with them as they shut down.
+/// Bgfx configuration.
 pub struct Config {
     context: *mut libc::c_void,
     device_id: u16,
@@ -690,6 +641,7 @@ impl Config {
     }
 
     /// Sets the desired device to use for rendering.
+    #[inline]
     pub fn device(&mut self, vendor_id: Option<u16>, device_id: Option<u16>) -> &mut Self {
         self.device_id = device_id.unwrap_or(0);
         self.vendor_id = vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE);
@@ -802,11 +754,13 @@ impl Config {
 }
 
 /// Creates a `Bgfx` object. Only one instance may exist at any given point in time.
+#[inline]
 pub fn create() -> Config {
     Config::new()
 }
 
 /// Creates a view matrix for looking at a point.
+#[inline]
 pub fn mtx_look_at(eye: &[f32; 3], at: &[f32; 3]) -> [f32; 16] {
     unsafe {
         let mut mat: [f32; 16] = mem::uninitialized();
@@ -816,6 +770,7 @@ pub fn mtx_look_at(eye: &[f32; 3], at: &[f32; 3]) -> [f32; 16] {
 }
 
 /// Creates a projection matrix.
+#[inline]
 pub fn mtx_proj(fovy: f32, aspect: f32, near: f32, far: f32) -> [f32; 16] {
     unsafe {
         let mut mat: [f32; 16] = mem::uninitialized();
@@ -825,6 +780,7 @@ pub fn mtx_proj(fovy: f32, aspect: f32, near: f32, far: f32) -> [f32; 16] {
 }
 
 /// Creates a rotation matrix for rotating around both the X and Y axes.
+#[inline]
 pub fn mtx_rotate_xy(x: f32, y: f32) -> [f32; 16] {
     unsafe {
         let mut mat: [f32; 16] = mem::uninitialized();
