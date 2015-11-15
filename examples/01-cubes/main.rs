@@ -14,12 +14,10 @@ struct PosColorVertex {
 
 impl PosColorVertex {
     fn build_decl() -> bgfx::VertexDecl {
-        let decl = bgfx::VertexDecl::new(None)
-                       .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
-                       .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, Some(true), None)
-                       .end();
-
-        decl
+        bgfx::VertexDecl::new(None)
+            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
+            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, Some(true), None)
+            .end()
     }
 }
 
