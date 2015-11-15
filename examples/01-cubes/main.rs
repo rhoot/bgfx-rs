@@ -1,3 +1,6 @@
+// Copyright (c) 2015, Johan Sköld.
+// License: http://opensource.org/licenses/ISC
+
 extern crate bgfx;
 extern crate common;
 extern crate time;

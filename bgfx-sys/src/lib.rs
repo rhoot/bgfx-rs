@@ -1,3 +1,6 @@
+// Copyright (c) 2015, Johan Sköld.
+// License: http://opensource.org/licenses/ISC
+
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
