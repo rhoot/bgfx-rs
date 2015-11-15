@@ -187,8 +187,8 @@ impl<'a> Cubes<'a> {
     }
 }
 
-fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
-    let mut cubes = Cubes::init(bgfx, example);
+fn example(mut bgfx: bgfx::MainContext, example: &common::Example) {
+    let mut cubes = Cubes::init(&mut bgfx, example);
     while cubes.update() {}
     cubes.shutdown();
 }

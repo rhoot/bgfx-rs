@@ -449,6 +449,11 @@ pub struct MainContext {
 }
 
 impl MainContext {
+    #[inline]
+    fn new() -> Self {
+        MainContext { did_init: false }
+    }
+
     /// Initializes bgfx.
     ///
     /// This must be done before any other call. May only be called once.
@@ -670,6 +675,11 @@ pub struct RenderContext {
 }
 
 impl RenderContext {
+    #[inline]
+    fn new() -> Self {
+        RenderContext { __: 0 }
+    }
+
     /// Finish the frame, syncing up with the main thread.
     #[inline]
     pub fn render_frame(&self) -> RenderFrame {
@@ -683,70 +693,130 @@ impl RenderContext {
     }
 }
 
+#[derive(Debug)]
+pub enum ConfigError {
+    InvalidContext,
+    InvalidDisplay,
+    InvalidWindow,
+}
+
 /// Bgfx-based application object.
 ///
 /// Acts as the entry point to your application. The application object is responsible for firing
 /// off the threads, and syncing up with them as they shut down.
-pub struct Application {
-    __: u32, // This field is purely used to prevent consumers from creating their own instance
+pub struct Bgfx {
+    context: *mut libc::c_void,
+    display: *mut libc::c_void,
+    window: *mut libc::c_void,
 }
 
-impl Application {
-    /// Runs the application.
-    ///
-    /// # Arguments
-    ///
-    /// * `main` - Entry point for the main thread. It will be passed a single `&mut MainContext`
-    ///            for interacting with the library.
-    /// * `render` - Entry point for the render thread. It will be passed a single '&RenderContext'
-    ///              for interacting with the library.
-    pub fn run<M, R>(&self, main: M, render: R)
-        where M: Send + 'static + FnOnce(&mut MainContext),
-              R: FnOnce(&RenderContext)
-    {
-        // We need to launch the render thread *before* the main thread starts
-        // executing things, so let's do it now.
-        let ctx = RenderContext { __: 0 };
-        ctx.render_frame();
+impl Bgfx {
+    #[inline]
+    fn new() -> Self {
+        Bgfx {
+            context: ptr::null_mut(),
+            display: ptr::null_mut(),
+            window: ptr::null_mut(),
+        }
+    }
 
-        // Many platforms require rendering to happen on the main thread. With
-        // *no* platform is this a problem. As such, we spawn a *new* thread
-        // to use as the main thread, and adopt the current one as the render
-        // thread.
+    /// Sets the OpenGL context to use for rendering.
+    #[inline]
+    pub fn context(&mut self, context: *mut libc::c_void) -> &mut Self {
+        self.context = context;
+        self
+    }
+
+    /// Sets the X11 display to render to.
+    #[inline]
+    pub fn display(&mut self, display: *mut libc::c_void) -> &mut Self {
+        self.display = display;
+        self
+    }
+
+    /// Sets the window to render to.
+    #[inline]
+    pub fn window(&mut self, window: *mut libc::c_void) -> &mut Self {
+        self.window = window;
+        self
+    }
+
+    /// Verifies that all the required options have been passed.
+    fn verify_opts(&self) -> Result<(), ConfigError> {
+        if self.context == ptr::null_mut() {
+            if cfg!(any(bsd, linux, mac_os)) {
+                return Err(ConfigError::InvalidContext);
+            }
+        }
+
+        if self.display == ptr::null_mut() {
+            if cfg!(any(bsd, linux)) {
+                return Err(ConfigError::InvalidDisplay);
+            }
+        }
+
+        if self.window == ptr::null_mut() {
+            return Err(ConfigError::InvalidWindow);
+        }
+
+        Ok(())
+    }
+
+    /// Fires off the main and render threads. The calling thread becomes the main thread, and a
+    /// new thread is spawned to use as the main thread.
+    pub fn run<M, R>(&self, main: M, render: R) -> Result<(), ConfigError>
+        where M: Send + 'static + FnOnce(MainContext),
+              R: FnOnce(RenderContext)
+    {
+        let result = self.verify_opts();
+        if result.is_err() {
+            return result;
+        }
+
+        // Set the bgfx platform data.
+        unsafe {
+            let mut data = bgfx_sys::Struct_bgfx_platform_data {
+                ndt: self.display,
+                nwh: self.window,
+                context: self.context,
+                backBuffer: ptr::null_mut(),
+                backBufferDS: ptr::null_mut(),
+            };
+
+            bgfx_sys::bgfx_set_platform_data(&mut data);
+        }
+
+        // We need to assign the bgfx render thread *before* the main thread calls `init`. If not,
+        // bgfx will spawn a new thread and assign that as the render thread.
+        unsafe {
+            bgfx_sys::bgfx_render_frame();
+        }
+
+        // Many platforms require rendering to happen in the actual main thread. As such, we need
+        // to fire up a new thread to use as the application main thread.
         let main_thread = thread::spawn(move || {
-            let mut ctx = MainContext { did_init: false };
-            main(&mut ctx);
+            main(MainContext::new());
         });
 
-        render(&ctx);
-        while ctx.render_frame() != RenderFrame::NoContext {
-            thread::sleep_ms(1);
+        // Adopt the current thread as the render thread.
+        render(RenderContext::new());
+
+        // Pump the renderer until it has shut down properly.
+        unsafe {
+            while bgfx_sys::bgfx_render_frame() != bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT {
+                thread::sleep_ms(1);
+            }
         }
 
         main_thread.join().unwrap();
+
+        Ok(())
     }
 }
 
-/// Creates an `Application`. Only one instance may exist at any given point in time.
-pub fn create(display: *mut libc::c_void,
-              window: *mut libc::c_void,
-              context: *mut libc::c_void)
-              -> Application {
-    // TODO: Only allow one instance
-
-    let mut data = bgfx_sys::Struct_bgfx_platform_data {
-        ndt: display,
-        nwh: window,
-        context: context,
-        backBuffer: ptr::null_mut(),
-        backBufferDS: ptr::null_mut(),
-    };
-
-    unsafe {
-        bgfx_sys::bgfx_set_platform_data(&mut data);
-    }
-
-    Application { __: 0 }
+/// Creates a `Bgfx` object. Only one instance may exist at any given point in time.
+pub fn create() -> Bgfx {
+    Bgfx::new()
 }
 
 /// Creates a view matrix for looking at a point.

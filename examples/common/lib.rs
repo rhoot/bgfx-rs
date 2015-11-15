@@ -4,7 +4,6 @@ extern crate libc;
 
 use std::fs::File;
 use std::io::Read;
-use std::ptr;
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::mpsc;
 
@@ -140,14 +139,20 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
 ///
 /// * `glfw` - Reference to the `Glfw` object.
 /// * `window` - Reference to the GLFW window object.
-#[cfg(target_os = "linux")]
-fn create_bgfx_app(glfw: &Glfw, window: &Window) -> bgfx::Application {
-    bgfx::create(glfw.get_x11_display(), window.get_x11_window(), window.get_glx_context())
+#[cfg(linux)]
+fn create_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Bgfx {
+    let mut bgfx = bgfx::create();
+    bgfx.context(window.get_glx_context());
+    bgfx.display(glfw.get_x11_display());
+    bgfx.window(window.get_x11_window());
+    bgfx
 }
 
-#[cfg(target_os = "windows")]
-fn create_bgfx_app(_: &Glfw, window: &Window) -> bgfx::Application {
-    bgfx::create(ptr::null_mut(), window.get_win32_window(), ptr::null_mut())
+#[cfg(windows)]
+fn create_bgfx(_: &Glfw, window: &Window) -> bgfx::Bgfx {
+    let mut bgfx = bgfx::create();
+    bgfx.window(window.get_win32_window());
+    bgfx
 }
 
 /// Determines the renderer to use based on platform.
@@ -172,7 +177,7 @@ pub fn get_renderer_type() -> Option<bgfx::RendererType> {
 /// * `height` - Initial height of the window, in pixels.
 /// * `main` - Function to act as the entry point for the example.
 pub fn run_example<M>(width: u32, height: u32, main: M)
-    where M: Send + 'static + FnOnce(&mut bgfx::MainContext, &Example)
+    where M: Send + 'static + FnOnce(bgfx::MainContext, &Example)
 {
     // Initialize GLFW and create the window.
     let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
@@ -198,21 +203,21 @@ pub fn run_example<M>(width: u32, height: u32, main: M)
         event_tx: event_tx,
     };
 
-    let bgfx_app = create_bgfx_app(&data.glfw, &data.window);
+    let bgfx = create_bgfx(&data.glfw, &data.window);
 
     // Main thread implementation.
-    let main_thread = move |bgfx: &mut bgfx::MainContext| {
+    let main_thread = move |bgfx: bgfx::MainContext| {
         let example = Example { event_rx: event_rx };
         main(bgfx, &example);
     };
 
     // Render thread implementation.
-    let render_thread = |bgfx: &bgfx::RenderContext| {
+    let render_thread = |bgfx: bgfx::RenderContext| {
         while !data.process_events() {
             bgfx.render_frame();
         }
     };
 
     // Run the application
-    bgfx_app.run(main_thread, render_thread);
+    bgfx.run(main_thread, render_thread).unwrap();
 }

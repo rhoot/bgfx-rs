@@ -5,7 +5,7 @@ use std::cmp::max;
 
 const LOGO: &'static [u8] = include_bytes!("logo.bin");
 
-fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
+fn example(mut bgfx: bgfx::MainContext, example: &common::Example) {
     let mut width: u16 = 1024;
     let mut height: u16 = 720;
     let debug = bgfx::DEBUG_TEXT;
@@ -21,7 +21,7 @@ fn example(bgfx: &mut bgfx::MainContext, example: &common::Example) {
     let clear = bgfx::CLEAR_COLOR | bgfx::CLEAR_DEPTH;
     bgfx.set_view_clear(0, clear, 0x303030ff, 1.0_f32, 0);
 
-    while !example.handle_events(bgfx, &mut width, &mut height, reset) {
+    while !example.handle_events(&bgfx, &mut width, &mut height, reset) {
         // Set view 0 default viewport.
         bgfx.set_view_rect(0, 0, 0, width, height);
 
