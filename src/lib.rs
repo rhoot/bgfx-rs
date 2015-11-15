@@ -164,7 +164,7 @@ bitflags! {
 /// existing memory directly through `reference(...)`.
 pub struct Memory<'a> {
     handle: *const bgfx_sys::bgfx_memory_t,
-    _phantom: PhantomData<&'a MainContext>,
+    _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> Memory<'a> {
@@ -188,10 +188,9 @@ impl<'a> Memory<'a> {
     /// When using this constructor over the `copy` call, no copy will be created. Bgfx will read
     /// the source memory directly.
     ///
-    /// # Arguments
-    ///
-    /// * `data` - Array of data to create a reference to.
-    pub fn reference<T>(data: &'a [T]) -> Memory<'a> {
+    /// Note that this is only allowed for static memory, as it's the only way we can guarantee
+    /// that the memory will still be valid in a couple of frames.
+    pub fn reference<T>(data: &'static [T]) -> Memory<'static> {
         unsafe {
             let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const libc::c_void,
                                                  mem::size_of_val(data) as u32);
