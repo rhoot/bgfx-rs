@@ -8,7 +8,6 @@ extern crate num;
 
 use std::marker::PhantomData;
 use std::mem;
-use std::option::Option;
 use std::ptr;
 use std::thread;
 
