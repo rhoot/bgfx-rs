@@ -140,7 +140,7 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
 /// * `glfw` - Reference to the `Glfw` object.
 /// * `window` - Reference to the GLFW window object.
 #[cfg(linux)]
-fn create_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Bgfx {
+fn create_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Config {
     let mut bgfx = bgfx::create();
     bgfx.context(window.get_glx_context());
     bgfx.display(glfw.get_x11_display());
@@ -149,7 +149,7 @@ fn create_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Bgfx {
 }
 
 #[cfg(windows)]
-fn create_bgfx(_: &Glfw, window: &Window) -> bgfx::Bgfx {
+fn create_bgfx(_: &Glfw, window: &Window) -> bgfx::Config {
     let mut bgfx = bgfx::create();
     bgfx.window(window.get_win32_window());
     bgfx

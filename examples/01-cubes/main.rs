@@ -65,13 +65,13 @@ struct Cubes<'a> {
 }
 
 impl<'a> Cubes<'a> {
-    pub fn init(bgfx: &'a mut bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
+    pub fn init(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
         let width: u16 = 1280;
         let height: u16 = 720;
         let debug = bgfx::DEBUG_TEXT;
         let reset = bgfx::RESET_VSYNC;
 
-        bgfx.init(common::get_renderer_type(), None, None);
+        // init is called by the bgfx library
         bgfx.reset(width, height, reset);
 
         // Enable debug text.
@@ -187,8 +187,8 @@ impl<'a> Cubes<'a> {
     }
 }
 
-fn example(mut bgfx: bgfx::MainContext, example: &common::Example) {
-    let mut cubes = Cubes::init(&mut bgfx, example);
+fn example(bgfx: bgfx::MainContext, example: &common::Example) {
+    let mut cubes = Cubes::init(&bgfx, example);
     while cubes.update() {}
     cubes.shutdown();
 }

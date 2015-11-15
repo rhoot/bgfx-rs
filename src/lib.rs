@@ -445,48 +445,13 @@ impl VertexDeclBuilder {
 /// This will be passed to the callback provided to `Application::run(...)`. Functionality intended
 /// to be executed on the main thread is exposed through this object.
 pub struct MainContext {
-    did_init: bool,
+    __: u32, // This field is purely used to prevent API consumers from creating their own instance
 }
 
 impl MainContext {
     #[inline]
     fn new() -> Self {
-        MainContext { did_init: false }
-    }
-
-    /// Initializes bgfx.
-    ///
-    /// This must be done before any other call. May only be called once.
-    ///
-    /// # Arguments
-    ///
-    /// * `renderer` - Optional type of renderer to use. The default is the most appropriate one
-    ///                available on the system.
-    /// * `vendor_id` - Optional vendor ID of the device to use. If `None` is provided, the first
-    ///                 available device will be used.
-    /// * `device_id` - Optional device ID of the graphics card to use. If `None` is provided, the
-    ///                 first available device will be used.
-    #[inline]
-    pub fn init(&mut self,
-                renderer: Option<RendererType>,
-                vendor_id: Option<u16>,
-                device_id: Option<u16>)
-                -> bool {
-        assert!(!self.did_init);
-
-        unsafe {
-            let res = bgfx_sys::bgfx_init(
-                renderer.unwrap_or(RendererType::Default) as bgfx_sys::bgfx_renderer_type_t,
-                vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE),
-                device_id.unwrap_or(0_u16),
-                ptr::null_mut(),
-                ptr::null_mut()
-            );
-
-            self.did_init = res != 0;
-        }
-
-        self.did_init
+        MainContext { __: 0 }
     }
 
     /// Resets the graphics device to the given size.
@@ -649,7 +614,6 @@ impl MainContext {
     }
 
     pub fn get_renderer_type(&self) -> RendererType {
-        assert!(self.did_init);
         unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
     }
 
@@ -658,10 +622,8 @@ impl MainContext {
 impl Drop for MainContext {
     #[inline]
     fn drop(&mut self) {
-        if self.did_init {
-            unsafe {
-                bgfx_sys::bgfx_shutdown();
-            }
+        unsafe {
+            bgfx_sys::bgfx_shutdown();
         }
     }
 }
@@ -704,18 +666,24 @@ pub enum ConfigError {
 ///
 /// Acts as the entry point to your application. The application object is responsible for firing
 /// off the threads, and syncing up with them as they shut down.
-pub struct Bgfx {
+pub struct Config {
     context: *mut libc::c_void,
+    device_id: u16,
     display: *mut libc::c_void,
+    renderer: RendererType,
+    vendor_id: u16,
     window: *mut libc::c_void,
 }
 
-impl Bgfx {
+impl Config {
     #[inline]
     fn new() -> Self {
-        Bgfx {
+        Config {
             context: ptr::null_mut(),
+            device_id: 0,
             display: ptr::null_mut(),
+            renderer: RendererType::Default,
+            vendor_id: bgfx_sys::BGFX_PCI_ID_NONE,
             window: ptr::null_mut(),
         }
     }
@@ -727,10 +695,24 @@ impl Bgfx {
         self
     }
 
+    /// Sets the desired device to use for rendering.
+    pub fn device(&mut self, vendor_id: Option<u16>, device_id: Option<u16>) -> &mut Self {
+        self.device_id = device_id.unwrap_or(0);
+        self.vendor_id = vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE);
+        self
+    }
+
     /// Sets the X11 display to render to.
     #[inline]
     pub fn display(&mut self, display: *mut libc::c_void) -> &mut Self {
         self.display = display;
+        self
+    }
+
+    /// Sets the initial size of the render area.
+    #[inline]
+    pub fn renderer(&mut self, renderer: RendererType) -> &mut Self {
+        self.renderer = renderer;
         self
     }
 
@@ -794,7 +776,18 @@ impl Bgfx {
 
         // Many platforms require rendering to happen in the actual main thread. As such, we need
         // to fire up a new thread to use as the application main thread.
+        let renderer = self.renderer;
+        let vendor = self.vendor_id;
+        let device = self.device_id;
         let main_thread = thread::spawn(move || {
+            unsafe {
+                let success = bgfx_sys::bgfx_init(renderer as bgfx_sys::bgfx_renderer_type_t,
+                                                  vendor,
+                                                  device,
+                                                  ptr::null_mut(),
+                                                  ptr::null_mut());
+                assert!(success != 0);
+            }
             main(MainContext::new());
         });
 
@@ -815,8 +808,8 @@ impl Bgfx {
 }
 
 /// Creates a `Bgfx` object. Only one instance may exist at any given point in time.
-pub fn create() -> Bgfx {
-    Bgfx::new()
+pub fn create() -> Config {
+    Config::new()
 }
 
 /// Creates a view matrix for looking at a point.

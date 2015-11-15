@@ -5,13 +5,13 @@ use std::cmp::max;
 
 const LOGO: &'static [u8] = include_bytes!("logo.bin");
 
-fn example(mut bgfx: bgfx::MainContext, example: &common::Example) {
+fn example(bgfx: bgfx::MainContext, example: &common::Example) {
     let mut width: u16 = 1024;
     let mut height: u16 = 720;
     let debug = bgfx::DEBUG_TEXT;
     let reset = bgfx::RESET_VSYNC;
 
-    bgfx.init(common::get_renderer_type(), None, None);
+    // init is called by the bgfx library
     bgfx.reset(width, height, reset);
 
     // Enable debug text.
