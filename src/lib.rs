@@ -203,7 +203,7 @@ impl<'a> Memory<'a> {
 
 /// Represents a shader program.
 ///
-/// The program holds a vertex shader and a fragment shaders.
+/// The program holds a vertex shader and a fragment shader.
 pub struct Program<'a> {
     handle: bgfx_sys::bgfx_program_handle_t,
     _vsh: Shader<'a>,
