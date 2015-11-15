@@ -34,12 +34,14 @@ enum_from_primitive! {
     }
 }
 
-#[repr(u32)]
-#[derive(PartialEq, Eq, Debug, Copy, Clone)]
-pub enum RenderFrame {
-    NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
-    Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
-    Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+enum_from_primitive! {
+    #[repr(u32)]
+    #[derive(PartialEq, Eq, Debug, Copy, Clone)]
+    pub enum RenderFrame {
+        NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
+        Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
+        Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
+    }
 }
 
 #[repr(u32)]
@@ -644,13 +646,7 @@ impl RenderContext {
     /// Finish the frame, syncing up with the main thread.
     #[inline]
     pub fn render_frame(&self) -> RenderFrame {
-        unsafe {
-            let max = bgfx_sys::BGFX_RENDER_FRAME_COUNT;
-            let res = bgfx_sys::bgfx_render_frame();
-            assert!(res < max);
-
-            mem::transmute(res)
-        }
+        unsafe { RenderFrame::from_u32(bgfx_sys::bgfx_render_frame()).unwrap() }
     }
 }
 
