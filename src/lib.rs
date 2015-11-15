@@ -41,11 +41,17 @@ pub enum RendererType {
 
 impl RendererType {
     fn from_u32(n: u32) -> Option<RendererType> {
-        // It's `<=` as `Default` uses that as value...
-        if n <= bgfx_sys::BGFX_RENDERER_TYPE_COUNT {
-            unsafe { Some(mem::transmute(n)) }
-        } else {
-            None
+        match n {
+            bgfx_sys::BGFX_RENDERER_TYPE_NULL => Some(RendererType::Null),
+            bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9 => Some(RendererType::Direct3D9),
+            bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11 => Some(RendererType::Direct3D11),
+            bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12 => Some(RendererType::Direct3D12),
+            bgfx_sys::BGFX_RENDERER_TYPE_METAL => Some(RendererType::Metal),
+            bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES => Some(RendererType::OpenGLES),
+            bgfx_sys::BGFX_RENDERER_TYPE_OPENGL => Some(RendererType::OpenGL),
+            bgfx_sys::BGFX_RENDERER_TYPE_VULKAN => Some(RendererType::Vulkan),
+            bgfx_sys::BGFX_RENDERER_TYPE_COUNT => Some(RendererType::Default),
+            _ => None,
         }
     }
 }
@@ -64,10 +70,11 @@ pub enum RenderFrame {
 
 impl RenderFrame {
     fn from_u32(n: u32) -> Option<RenderFrame> {
-        if n < bgfx_sys::BGFX_RENDER_FRAME_COUNT {
-            unsafe { Some(mem::transmute(n)) }
-        } else {
-            None
+        match n {
+            bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT => Some(RenderFrame::NoContext),
+            bgfx_sys::BGFX_RENDER_FRAME_RENDER => Some(RenderFrame::Render),
+            bgfx_sys::BGFX_RENDER_FRAME_EXITING => Some(RenderFrame::Exiting),
+            _ => None,
         }
     }
 }
