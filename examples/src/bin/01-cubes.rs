@@ -2,9 +2,12 @@
 // License: http://opensource.org/licenses/ISC
 
 extern crate bgfx;
+extern crate cgmath;
 extern crate examples;
 extern crate time;
 
+use cgmath::{Angle, Decomposed, Deg, Matrix4, Point3, Quaternion, Rad, Rotation3, Transform,
+             Vector3};
 use time::PreciseTime;
 
 #[repr(packed)]
@@ -140,16 +143,17 @@ impl<'a> Cubes<'a> {
             self.bgfx.dbg_text_print(0, 2, 0x6f, "Description: Rendering simple static mesh.");
             self.bgfx.dbg_text_print(0, 3, 0x0f, &frame_info);
 
-            let at: [f32; 3] = [0.0, 0.0, 0.0];
-            let eye: [f32; 3] = [0.0, 0.0, -35.0];
+            let at = Point3::new(0.0, 0.0, 0.0);
+            let eye = Point3::new(0.0, 0.0, -35.0);
+            let up = Vector3::new(0.0, 1.0, 0.0);
 
             // TODO: Support for HMD rendering
 
             // Set view and projection matrix for view 0.
             let aspect = (self.width as f32) / (self.height as f32);
-            let view = bgfx::mtx_look_at(&eye, &at);
-            let proj = bgfx::mtx_proj(60.0, aspect, 0.1, 100.0);
-            self.bgfx.set_view_transform(0, &view, &proj);
+            let view = Matrix4::look_at(eye, at, up);
+            let proj = cgmath::perspective(Deg::new(60.0), aspect, 0.1, 100.0);
+            self.bgfx.set_view_transform(0, view.as_ref(), proj.as_ref());
 
             // Set view 0 default viewport.
             self.bgfx.set_view_rect(0, 0, 0, self.width, self.height);
@@ -161,13 +165,17 @@ impl<'a> Cubes<'a> {
             // Submit 11x11 cubes
             for yy in 0..11 {
                 for xx in 0..11 {
-                    let mut mtx = bgfx::mtx_rotate_xy((time / 0.21) as f32, (time / 0.37) as f32);
-                    mtx[12] = -15.0 + (xx as f32) * 3.0;
-                    mtx[13] = -15.0 + (yy as f32) * 3.0;
-                    mtx[14] = 0.0;
+                    let mut modifier = Decomposed::one();
+                    modifier.rot = Quaternion::from_euler(Rad::new((time / 0.21) as f32),
+                                                          Rad::new((time / 0.37) as f32),
+                                                          Rad::new(0.0));
+                    modifier.disp = Vector3::new(-15.0 + (xx as f32) * 3.0,
+                                                 -15.0 + (yy as f32) * 3.0,
+                                                 0.0);
+                    let mtx = Matrix4::from(modifier);
 
                     // Set model matrix for rendering.
-                    self.bgfx.set_transform(&mtx);
+                    self.bgfx.set_transform(mtx.as_ref());
 
                     // Set vertex and index buffer.
                     self.bgfx.set_vertex_buffer(self.vbh.as_ref().unwrap());

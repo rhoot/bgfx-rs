@@ -768,33 +768,3 @@ impl Config {
 pub fn create() -> Config {
     Config::new()
 }
-
-/// Creates a view matrix for looking at a point.
-#[inline]
-pub fn mtx_look_at(eye: &[f32; 3], at: &[f32; 3]) -> [f32; 16] {
-    unsafe {
-        let mut mat: [f32; 16] = mem::uninitialized();
-        bgfx_sys::bx_mtx_look_at(mat.as_mut_ptr(), eye.as_ptr(), at.as_ptr(), ptr::null());
-        mat
-    }
-}
-
-/// Creates a projection matrix.
-#[inline]
-pub fn mtx_proj(fovy: f32, aspect: f32, near: f32, far: f32) -> [f32; 16] {
-    unsafe {
-        let mut mat: [f32; 16] = mem::uninitialized();
-        bgfx_sys::bx_mtx_proj(mat.as_mut_ptr(), fovy, aspect, near, far, false);
-        mat
-    }
-}
-
-/// Creates a rotation matrix for rotating around both the X and Y axes.
-#[inline]
-pub fn mtx_rotate_xy(x: f32, y: f32) -> [f32; 16] {
-    unsafe {
-        let mut mat: [f32; 16] = mem::uninitialized();
-        bgfx_sys::bx_mtx_rotate_xy(mat.as_mut_ptr(), x, y);
-        mat
-    }
-}

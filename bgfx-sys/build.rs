@@ -15,15 +15,6 @@ fn main() {
     let bitness = if *arch == "x86_64" { 64 } else { 32 };
 
     build_bgfx(bitness, compiler, &profile);
-    build_bx_helper();
-}
-
-fn build_bx_helper() {
-    gcc::Config::new()
-        .cpp(true)
-        .include("bx/include")
-        .file("src/bx-helper.cpp")
-        .compile("libbxhelper.a");
 }
 
 #[cfg(target_os = "windows")]
