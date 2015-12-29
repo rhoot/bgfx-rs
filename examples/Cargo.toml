@@ -1,17 +1,20 @@
 [package]
-name = "01-cubes"
+name = "examples"
 version = "0.1.0"
 authors = ["Johan Sköld <johan@skold.cc>"]
 
 [[bin]]
+name = "00-helloworld"
+path = "00-helloworld/main.rs"
+
+[[bin]]
 name = "01-cubes"
-path = "main.rs"
+path = "01-cubes/main.rs"
 
 [dependencies]
+glfw = "0.2.0"
+libc = "0.2.4"
 time = "0.1.33"
 
 [dependencies.bgfx]
-path = "../../"
-
-[dependencies.common]
-path = "../common/"
+path = "../"

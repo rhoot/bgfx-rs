@@ -2,7 +2,7 @@
 // License: http://opensource.org/licenses/ISC
 
 extern crate bgfx;
-extern crate common;
+extern crate examples;
 extern crate time;
 
 use time::PreciseTime;
@@ -54,7 +54,7 @@ static CUBE_INDICES: [u16; 36] = [
 
 struct Cubes<'a> {
     bgfx: &'a bgfx::MainContext,
-    example: &'a common::Example,
+    example: &'a examples::Example,
     width: u16,
     height: u16,
     debug: bgfx::DebugFlags,
@@ -67,7 +67,7 @@ struct Cubes<'a> {
 }
 
 impl<'a> Cubes<'a> {
-    fn new(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
+    fn new(bgfx: &'a bgfx::MainContext, example: &'a examples::Example) -> Cubes<'a> {
         Cubes {
             bgfx: bgfx,
             example: example,
@@ -113,7 +113,7 @@ impl<'a> Cubes<'a> {
                                                bgfx::BUFFER_NONE));
 
         // Create program from shaders.
-        self.program = Some(common::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
+        self.program = Some(examples::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
 
         self.time = Some(PreciseTime::now());
     }
@@ -193,7 +193,7 @@ impl<'a> Cubes<'a> {
 }
 
 fn main() {
-    common::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &common::Example| {
+    examples::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &examples::Example| {
         let mut cubes = Cubes::new(&bgfx, example);
         cubes.init();
         while cubes.update() {}

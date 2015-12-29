@@ -2,13 +2,13 @@
 // License: http://opensource.org/licenses/ISC
 
 extern crate bgfx;
-extern crate common;
+extern crate examples;
 
 use std::cmp::max;
 
 const LOGO: &'static [u8] = include_bytes!("logo.bin");
 
-fn example(bgfx: bgfx::MainContext, example: &common::Example) {
+fn example(bgfx: bgfx::MainContext, example: &examples::Example) {
     let mut width: u16 = 1024;
     let mut height: u16 = 720;
     let debug = bgfx::DEBUG_TEXT;
@@ -49,5 +49,5 @@ fn example(bgfx: bgfx::MainContext, example: &common::Example) {
 }
 
 fn main() {
-    common::run_example(1024, 768, example);
+    examples::run_example(1024, 768, example);
 }

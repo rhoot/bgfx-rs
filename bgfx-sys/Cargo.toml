@@ -5,7 +5,7 @@ authors = ["Johan Sköld <johan@skold.cc>"]
 build = "build.rs"
 
 [dependencies]
-libc = "0.1.10"
+libc = "0.2.4"
 
 [build-dependencies]
 gcc = "0.3.19"
