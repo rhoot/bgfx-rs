@@ -5,7 +5,7 @@ authors = ["Johan Sköld <johan@skold.cc>"]
 
 [dependencies]
 cgmath = "0.7.0"
-glfw = "0.2.0"
+glutin = "0.4.5"
 libc = "0.2.4"
 time = "0.1.33"
 

@@ -2,7 +2,7 @@
 // License: http://opensource.org/licenses/ISC
 
 extern crate bgfx;
-extern crate glfw;
+extern crate glutin;
 extern crate libc;
 
 use std::env;
@@ -11,7 +11,7 @@ use std::io::Read;
 use std::sync::mpsc::{Receiver, Sender};
 use std::sync::mpsc;
 
-use glfw::{Context, Glfw, Window, WindowEvent};
+use glutin::{Api, GlContext, GlRequest, Window, WindowBuilder};
 
 /// Events received by the main thread, sent by the render thread.
 #[derive(PartialEq, Eq, Hash, Debug)]
@@ -68,13 +68,9 @@ impl Example {
 
 /// Example data used by the render thread.
 struct ExampleData {
-    /// The 'Glfw' object.
-    glfw: Glfw,
+    should_close: bool,
 
-    /// Receiver of window events from GLFW.
-    events: Receiver<(f64, WindowEvent)>,
-
-    /// The GLFW window object.
+    /// The glutin window object.
     window: Window,
 
     /// Sender of events to the main thread.
@@ -83,27 +79,24 @@ struct ExampleData {
 
 impl ExampleData {
 
-    /// Process GLFW events, and potentially forward them to the main thread.
+    /// Process glutin events, and potentially forward them to the main thread.
     ///
     /// Returns `true` if the example should exit.
     fn process_events(&mut self) -> bool {
-        self.glfw.poll_events();
-
-        for (_, event) in glfw::flush_messages(&self.events) {
+        for event in self.window.poll_events() {
             match event {
-                WindowEvent::Close => {
+                glutin::Event::Closed => {
+                    self.should_close = true;
                     self.event_tx.send(Event::Close).unwrap();
                 }
-                WindowEvent::Size(w, h) => {
+                glutin::Event::Resized(w, h) => {
                     self.event_tx.send(Event::Size(w as u16, h as u16)).unwrap();
                 }
-                ref e => {
-                    panic!(format!("Unhandled event: {:?}", e))
-                }
+                _ => {}
             }
         }
 
-        self.window.should_close()
+        self.should_close
     }
 
 }
@@ -144,21 +137,21 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
 ///
 /// # Arguments
 ///
-/// * `glfw` - Reference to the `Glfw` object.
-/// * `window` - Reference to the GLFW window object.
-#[cfg(linux)]
-fn create_bgfx(glfw: &Glfw, window: &Window) -> bgfx::Config {
+/// * `window` - Reference to the glutin window object.
+#[cfg(target_os = "linux")]
+fn create_bgfx(window: &Window) -> bgfx::Config {
+    use glutin::os::unix::WindowExt;
     let mut bgfx = bgfx::create();
-    bgfx.context(window.get_glx_context());
-    bgfx.display(glfw.get_x11_display());
-    bgfx.window(window.get_x11_window());
+    bgfx.display(window.get_xlib_display().unwrap());
+    bgfx.window(window.get_xlib_window().unwrap());
     bgfx
 }
 
-#[cfg(windows)]
-fn create_bgfx(_: &Glfw, window: &Window) -> bgfx::Config {
+#[cfg(target_os = "windows")]
+fn create_bgfx(window: &Window) -> bgfx::Config {
+    use glutin::os::windows::WindowExt;
     let mut bgfx = bgfx::create();
-    bgfx.window(window.get_win32_window());
+    bgfx.window(window.get_hwnd());
     bgfx
 }
 
@@ -186,31 +179,26 @@ pub fn get_renderer_type() -> Option<bgfx::RendererType> {
 pub fn run_example<M>(width: u32, height: u32, main: M)
     where M: Send + 'static + FnOnce(bgfx::MainContext, &Example)
 {
-    // Initialize GLFW and create the window.
-    let glfw = glfw::init(glfw::FAIL_ON_ERRORS).unwrap();
+    let window = WindowBuilder::new()
+        .with_dimensions(width, height)
+        .with_gl(GlRequest::Specific(Api::OpenGl, (2, 1)))
+        .with_title(String::from("BGFX"))
+        .build()
+        .expect("Failed to create window");
 
-    let (mut window, events) = glfw.create_window(width,
-                                                  height,
-                                                  "BGFX",
-                                                  glfw::WindowMode::Windowed)
-                                   .expect("Failed to create GLFW window.");
-
-    window.set_close_polling(true);
-    window.set_size_polling(true);
-    window.make_current();
+    unsafe { window.make_current().unwrap(); }
 
     // Create the channel used for communication between the main and render threads.
     let (event_tx, event_rx) = mpsc::channel::<Event>();
 
     // Initialize the example.
     let mut data = ExampleData {
-        glfw: glfw,
-        events: events,
+        should_close: false,
         window: window,
         event_tx: event_tx,
     };
 
-    let bgfx = create_bgfx(&data.glfw, &data.window);
+    let bgfx = create_bgfx(&data.window);
 
     // Main thread implementation.
     let main_thread = move |bgfx: bgfx::MainContext| {

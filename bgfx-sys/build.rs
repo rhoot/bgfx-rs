@@ -1,8 +1,6 @@
 // Copyright (c) 2015, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
-extern crate gcc;
-
 use std::env;
 use std::path::PathBuf;
 use std::process::Command;
@@ -18,9 +16,49 @@ fn main() {
 }
 
 #[cfg(target_os = "windows")]
+fn build_bgfx_msvc(bitness: u32) {
+    let vs_version = env::var("VisualStudioVersion").expect("Visual Studio version not detected");
+    let platform = if bitness == 32 { "X86" } else { "X64" };
+
+    let vs_release = match vs_version.as_ref() {
+        "12.0" => "2013",
+        "14.0" => "2015",
+        _ => panic!(format!("Unknown Visual Studio version: {:?}", vs_version)),
+    };
+
+    Command::new("make.exe")
+        .current_dir("bgfx")
+        .arg(format!(".build/projects/vs{}", vs_release))
+        .output()
+        .unwrap();
+
+    let status = Command::new("MSBuild.exe")
+        .current_dir("bgfx")
+        .arg("/p:Configuration=Release")
+        .arg(format!("/p:Platform={}", platform))
+        .arg(format!(".build/projects/vs{}/bgfx.vcxproj", vs_release))
+        .status()
+        .expect("Failed to build bgfx");
+
+    if status.code().unwrap() != 0 {
+        panic!("Failed to build bgfx");
+    }
+
+    let mut path = PathBuf::from(env::current_dir().unwrap());
+    path.push("bgfx");
+    path.push(".build");
+    path.push(format!("win{}_vs{}", bitness, vs_release));
+    path.push("bin");
+
+    println!("cargo:rustc-link-lib=static=bgfxRelease");
+    println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
+}
+
+#[cfg(target_os = "windows")]
 fn build_bgfx(bitness: u32, compiler: &str, profile: &str) {
-    if compiler != "gnu" {
-        panic!("Unsupported compiler");
+    if compiler == "msvc" {
+        build_bgfx_msvc(bitness);
+        return;
     }
 
     Command::new("make.exe")

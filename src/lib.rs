@@ -681,12 +681,6 @@ impl Config {
 
     /// Verifies that all the required options have been passed.
     fn verify_opts(&self) -> Result<(), ConfigError> {
-        if self.context == ptr::null_mut() {
-            if cfg!(any(bsd, linux, mac_os)) {
-                return Err(ConfigError::InvalidContext);
-            }
-        }
-
         if self.display == ptr::null_mut() {
             if cfg!(any(bsd, linux)) {
                 return Err(ConfigError::InvalidDisplay);
