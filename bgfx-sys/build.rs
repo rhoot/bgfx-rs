@@ -31,7 +31,6 @@ fn build_bgfx(bitness: u32, compiler: &str, profile: &str) {
 
     let status = Command::new("make.exe")
                      .current_dir("bgfx")
-                     .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
                      .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
                      .arg("-R")
                      .arg("-C")
@@ -76,7 +75,6 @@ fn build_bgfx(bitness: u32, compiler: &str, profile: &str) {
     // Build bgfx
     let status = Command::new("make")
                      .current_dir("bgfx")
-                     .env("CPPFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
                      .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
                      .arg("-R")
                      .arg("-C")
