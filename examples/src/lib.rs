@@ -5,6 +5,7 @@ extern crate bgfx;
 extern crate glfw;
 extern crate libc;
 
+use std::env;
 use std::fs::File;
 use std::io::Read;
 use std::sync::mpsc::{Receiver, Sender};
@@ -126,8 +127,11 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
                             fsh_name: &'b str)
                             -> bgfx::Program<'a> {
     let renderer = bgfx.get_renderer_type();
-    let vsh_path = format!("{:?}/{}.bin", renderer, vsh_name);
-    let fsh_path = format!("{:?}/{}.bin", renderer, fsh_name);
+    let exe_path = env::current_exe().unwrap();
+    let exe_stem = exe_path.file_stem().unwrap();
+    let assets_path = format!("assets/{}", exe_stem.to_str().unwrap());
+    let vsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, vsh_name);
+    let fsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, fsh_name);
     let vsh_mem = bgfx::Memory::copy(&load_file(&vsh_path));
     let fsh_mem = bgfx::Memory::copy(&load_file(&fsh_path));
     let vsh = bgfx::Shader::new(bgfx, vsh_mem);

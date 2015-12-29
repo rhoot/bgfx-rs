@@ -6,7 +6,7 @@ extern crate examples;
 
 use std::cmp::max;
 
-const LOGO: &'static [u8] = include_bytes!("logo.bin");
+const LOGO: &'static [u8] = include_bytes!("../../assets/00-helloworld/logo.bin");
 
 fn example(bgfx: bgfx::MainContext, example: &examples::Example) {
     let mut width: u16 = 1024;
