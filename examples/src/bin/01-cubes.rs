@@ -24,7 +24,7 @@ impl PosColorVertex {
     }
 }
 
-//#[rustfmt_skip]
+#[cfg_attr(rustfmt, rustfmt_skip)]
 static CUBE_VERTICES: [PosColorVertex; 8] = [
     PosColorVertex { _x: -1.0, _y:  1.0, _z:  1.0, _abgr: 0xff000000 },
     PosColorVertex { _x:  1.0, _y:  1.0, _z:  1.0, _abgr: 0xff0000ff },
@@ -36,7 +36,7 @@ static CUBE_VERTICES: [PosColorVertex; 8] = [
     PosColorVertex { _x:  1.0, _y: -1.0, _z: -1.0, _abgr: 0xffffffff },
 ];
 
-//#[rustfmt_skip]
+#[cfg_attr(rustfmt, rustfmt_skip)]
 static CUBE_INDICES: [u16; 36] = [
     0, 1, 2, // 0
     1, 3, 2,
