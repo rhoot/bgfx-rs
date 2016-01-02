@@ -168,7 +168,7 @@ pub fn run_example<M>(width: u32, height: u32, main: M)
 {
     let window = WindowBuilder::new()
         .with_dimensions(width, height)
-        .with_gl(GlRequest::Specific(Api::OpenGl, (2, 1)))
+        .with_gl(GlRequest::Specific(Api::OpenGl, (3, 1)))
         .with_title(String::from("BGFX"))
         .build()
         .expect("Failed to create window");
