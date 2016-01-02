@@ -102,7 +102,7 @@ impl ExampleData {
 }
 
 /// Loads the contents of a file and returns it.
-pub fn load_file(name: &str) -> Vec<u8> {
+fn load_file(name: &str) -> Vec<u8> {
     let mut data = Vec::new();
     let mut file = File::open(name).unwrap();
     file.read_to_end(&mut data).unwrap();
@@ -115,6 +115,7 @@ pub fn load_file(name: &str) -> Vec<u8> {
 /// # Arguments
 ///
 /// * ``
+#[allow(dead_code)]
 pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
                             vsh_name: &'b str,
                             fsh_name: &'b str)
@@ -122,7 +123,7 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
     let renderer = bgfx.get_renderer_type();
     let exe_path = env::current_exe().unwrap();
     let exe_stem = exe_path.file_stem().unwrap();
-    let assets_path = format!("assets/{}", exe_stem.to_str().unwrap());
+    let assets_path = format!("examples/assets/{}", exe_stem.to_str().unwrap());
     let vsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, vsh_name);
     let fsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, fsh_name);
     let vsh_mem = bgfx::Memory::copy(&load_file(&vsh_path));
@@ -153,20 +154,6 @@ fn create_bgfx(window: &Window) -> bgfx::Config {
     let mut bgfx = bgfx::create();
     bgfx.window(window.get_hwnd());
     bgfx
-}
-
-/// Determines the renderer to use based on platform.
-///
-/// The sole reason for using this instead of using `bgfx::RendererType::Default` is cause
-/// `Direct3D12` - which is the default under Windows 10 - currently (2015-10-08) crashes when
-/// compiled with MinGW. This is true with the examples in the C++ version of bgfx as well, and
-/// not exlusive to Rust.
-pub fn get_renderer_type() -> Option<bgfx::RendererType> {
-    if cfg!(windows) && cfg!(target_env = "gnu") {
-        Some(bgfx::RendererType::Direct3D11)
-    } else {
-        None
-    }
 }
 
 /// Runs an example.

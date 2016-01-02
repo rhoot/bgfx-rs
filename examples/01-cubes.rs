@@ -3,12 +3,14 @@
 
 extern crate bgfx;
 extern crate cgmath;
-extern crate examples;
+extern crate glutin;
 extern crate time;
 
 use cgmath::{Angle, Decomposed, Deg, Matrix4, Point3, Quaternion, Rad, Rotation3, Transform,
              Vector3};
 use time::PreciseTime;
+
+mod common;
 
 #[repr(packed)]
 struct PosColorVertex {
@@ -57,7 +59,7 @@ static CUBE_INDICES: [u16; 36] = [
 
 struct Cubes<'a> {
     bgfx: &'a bgfx::MainContext,
-    example: &'a examples::Example,
+    example: &'a common::Example,
     width: u16,
     height: u16,
     debug: bgfx::DebugFlags,
@@ -70,7 +72,7 @@ struct Cubes<'a> {
 }
 
 impl<'a> Cubes<'a> {
-    fn new(bgfx: &'a bgfx::MainContext, example: &'a examples::Example) -> Cubes<'a> {
+    fn new(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
         Cubes {
             bgfx: bgfx,
             example: example,
@@ -116,7 +118,7 @@ impl<'a> Cubes<'a> {
                                                bgfx::BUFFER_NONE));
 
         // Create program from shaders.
-        self.program = Some(examples::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
+        self.program = Some(common::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
 
         self.time = Some(PreciseTime::now());
     }
@@ -139,7 +141,7 @@ impl<'a> Cubes<'a> {
             // Use debug font to print information about this example.
             let frame_info = format!("Frame: {:7.3}[ms]", frame_time.num_milliseconds());
             self.bgfx.dbg_text_clear(None, None);
-            self.bgfx.dbg_text_print(0, 1, 0x4f, "bgfx/examples/01-cubes");
+            self.bgfx.dbg_text_print(0, 1, 0x4f, "examples/01-cubes.rs");
             self.bgfx.dbg_text_print(0, 2, 0x6f, "Description: Rendering simple static mesh.");
             self.bgfx.dbg_text_print(0, 3, 0x0f, &frame_info);
 
@@ -201,7 +203,7 @@ impl<'a> Cubes<'a> {
 }
 
 fn main() {
-    examples::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &examples::Example| {
+    common::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &common::Example| {
         let mut cubes = Cubes::new(&bgfx, example);
         cubes.init();
         while cubes.update() {}

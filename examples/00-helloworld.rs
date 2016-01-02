@@ -2,13 +2,15 @@
 // License: http://opensource.org/licenses/ISC
 
 extern crate bgfx;
-extern crate examples;
+extern crate glutin;
 
 use std::cmp::max;
 
-const LOGO: &'static [u8] = include_bytes!("../../assets/00-helloworld/logo.bin");
+mod common;
 
-fn example(bgfx: bgfx::MainContext, example: &examples::Example) {
+const LOGO: &'static [u8] = include_bytes!("assets/00-helloworld/logo.bin");
+
+fn example(bgfx: bgfx::MainContext, example: &common::Example) {
     let mut width: u16 = 1024;
     let mut height: u16 = 720;
     let debug = bgfx::DEBUG_TEXT;
@@ -36,7 +38,7 @@ fn example(bgfx: bgfx::MainContext, example: &examples::Example) {
         let y: u16 = max(height / 2 / 16, 6) - 6;
         bgfx.dbg_text_clear(None, None);
         bgfx.dbg_text_image(x, y, 40, 12, LOGO, 160);
-        bgfx.dbg_text_print(0, 1, 0x4f, "bgfx/examples/00-helloworld");
+        bgfx.dbg_text_print(0, 1, 0x4f, "examples/00-helloworld.rs");
         bgfx.dbg_text_print(0, 2, 0x6f, "Description: Initialization and debug text.");
 
         // Advance to next frame. Rendering thread will be kicked to
@@ -49,5 +51,5 @@ fn example(bgfx: bgfx::MainContext, example: &examples::Example) {
 }
 
 fn main() {
-    examples::run_example(1024, 768, example);
+    common::run_example(1024, 768, example);
 }

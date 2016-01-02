@@ -7,6 +7,7 @@ extern crate bitflags;
 extern crate libc;
 extern crate num;
 
+use std::ffi;
 use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
@@ -380,7 +381,7 @@ impl VertexDecl {
     /// # Example
     ///
     /// ```
-    /// let decl = VertexDecl::new(None)
+    /// let decl = bgfx::VertexDecl::new(None)
     ///          .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
     ///          .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, Some(true), None)
     ///          .end();
@@ -534,7 +535,8 @@ impl MainContext {
     /// Displays text in the debug text overlay.
     #[inline]
     pub fn dbg_text_print(&self, x: u16, y: u16, attr: u8, text: &str) {
-        unsafe { bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr() as *const i8) }
+        let text = ffi::CString::new(text).unwrap();
+        unsafe { bgfx_sys::bgfx_dbg_text_printf(x, y, attr, text.as_ptr()) }
     }
 
     /// Finish the frame, syncing up with the render thread. Returns an incrementing frame counter.

@@ -10,3 +10,8 @@ num = "0.1.27"
 
 [dependencies.bgfx-sys]
 path = "bgfx-sys/"
+
+[dev-dependencies]
+cgmath = "0.7.0"
+glutin = "0.4.5"
+time = "0.1.33"
