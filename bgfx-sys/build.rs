@@ -33,12 +33,12 @@ fn build_bgfx_msvc(bitness: u32) {
         .unwrap();
 
     let status = Command::new("MSBuild.exe")
-        .current_dir("bgfx")
-        .arg("/p:Configuration=Release")
-        .arg(format!("/p:Platform={}", platform))
-        .arg(format!(".build/projects/vs{}/bgfx.vcxproj", vs_release))
-        .status()
-        .expect("Failed to build bgfx");
+                     .current_dir("bgfx")
+                     .arg("/p:Configuration=Release")
+                     .arg(format!("/p:Platform={}", platform))
+                     .arg(format!(".build/projects/vs{}/bgfx.vcxproj", vs_release))
+                     .status()
+                     .expect("Failed to build bgfx");
 
     if status.code().unwrap() != 0 {
         panic!("Failed to build bgfx");

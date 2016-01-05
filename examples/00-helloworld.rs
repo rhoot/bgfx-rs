@@ -4,28 +4,31 @@
 extern crate bgfx;
 extern crate glutin;
 
-use std::cmp::max;
-
 mod common;
+
+use bgfx::*;
+use common::EventQueue;
+use std::cmp::max;
 
 const LOGO: &'static [u8] = include_bytes!("assets/00-helloworld/logo.bin");
 
-fn example(bgfx: bgfx::MainContext, example: &common::Example) {
+fn example(events: EventQueue) {
     let mut width: u16 = 1024;
     let mut height: u16 = 720;
-    let debug = bgfx::DEBUG_TEXT;
-    let reset = bgfx::RESET_VSYNC;
+    let debug = DEBUG_TEXT;
+    let reset = RESET_VSYNC;
 
+    let bgfx = bgfx::init(RendererType::Default, None, None).unwrap();
     bgfx.reset(width, height, reset);
 
     // Enable debug text.
     bgfx.set_debug(debug);
 
     // Set view 0 clear state.
-    let clear = bgfx::CLEAR_COLOR | bgfx::CLEAR_DEPTH;
+    let clear = CLEAR_COLOR | CLEAR_DEPTH;
     bgfx.set_view_clear(0, clear, 0x303030ff, 1.0_f32, 0);
 
-    while !example.handle_events(&bgfx, &mut width, &mut height, reset) {
+    while !events.handle_events(&bgfx, &mut width, &mut height, reset) {
         // Set view 0 default viewport.
         bgfx.set_view_rect(0, 0, 0, width, height);
 

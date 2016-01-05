@@ -6,11 +6,14 @@ extern crate cgmath;
 extern crate glutin;
 extern crate time;
 
+mod common;
+
+use bgfx::*;
 use cgmath::{Angle, Decomposed, Deg, Matrix4, Point3, Quaternion, Rad, Rotation3, Transform,
              Vector3};
+use common::EventQueue;
 use time::PreciseTime;
 
-mod common;
 
 #[repr(packed)]
 struct PosColorVertex {
@@ -21,10 +24,10 @@ struct PosColorVertex {
 }
 
 impl PosColorVertex {
-    fn build_decl() -> bgfx::VertexDecl {
-        bgfx::VertexDecl::new(None)
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float, None, None)
-            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, Some(true), None)
+    fn build_decl() -> VertexDecl {
+        VertexDecl::new(None)
+            .add(Attrib::Position, 3, AttribType::Float, None, None)
+            .add(Attrib::Color0, 4, AttribType::Uint8, Some(true), None)
             .end()
     }
 }
@@ -58,28 +61,30 @@ static CUBE_INDICES: [u16; 36] = [
 ];
 
 struct Cubes<'a> {
-    bgfx: &'a bgfx::MainContext,
-    example: &'a common::Example,
+    bgfx: &'a Bgfx,
+    events: EventQueue,
     width: u16,
     height: u16,
-    debug: bgfx::DebugFlags,
-    reset: bgfx::ResetFlags,
-    vbh: Option<bgfx::VertexBuffer<'a>>,
-    ibh: Option<bgfx::IndexBuffer<'a>>,
-    program: Option<bgfx::Program<'a>>,
-    time: Option<time::PreciseTime>,
-    last: Option<time::PreciseTime>,
+    debug: DebugFlags,
+    reset: ResetFlags,
+    vbh: Option<VertexBuffer<'a>>,
+    ibh: Option<IndexBuffer<'a>>,
+    program: Option<Program<'a>>,
+    time: Option<PreciseTime>,
+    last: Option<PreciseTime>,
 }
 
 impl<'a> Cubes<'a> {
-    fn new(bgfx: &'a bgfx::MainContext, example: &'a common::Example) -> Cubes<'a> {
+
+    #[inline]
+    fn new(bgfx: &'a Bgfx, events: EventQueue) -> Cubes<'a> {
         Cubes {
             bgfx: bgfx,
-            example: example,
+            events: events,
             width: 0,
             height: 0,
-            debug: bgfx::DEBUG_NONE,
-            reset: bgfx::RESET_NONE,
+            debug: DEBUG_NONE,
+            reset: RESET_NONE,
             vbh: None,
             ibh: None,
             program: None,
@@ -91,46 +96,46 @@ impl<'a> Cubes<'a> {
     fn init(&mut self) {
         self.width = 1280;
         self.height = 720;
-        self.debug = bgfx::DEBUG_TEXT;
-        self.reset = bgfx::RESET_VSYNC;
+        self.debug = DEBUG_TEXT;
+        self.reset = RESET_VSYNC;
 
+        // This is where the C++ example would call bgfx::init(). In rust we move that out of this
+        // object due to lifetimes: The Cubes type cannot own both the Bgfx object, and guarantee
+        // that its members are destroyed before the Bgfx object.
         self.bgfx.reset(self.width, self.height, self.reset);
 
         // Enable debug text.
         self.bgfx.set_debug(self.debug);
 
         // Set view 0 clear state.
-        let clear_flags = bgfx::CLEAR_COLOR | bgfx::CLEAR_DEPTH;
+        let clear_flags = CLEAR_COLOR | CLEAR_DEPTH;
         self.bgfx.set_view_clear(0, clear_flags, 0x303030ff, 1.0_f32, 0);
 
         // Create vertex stream declaration
         let decl = PosColorVertex::build_decl();
 
         // Create static vertex buffer.
-        self.vbh = Some(bgfx::VertexBuffer::new(self.bgfx,
-                                                bgfx::Memory::reference(&CUBE_VERTICES),
-                                                &decl,
-                                                bgfx::BUFFER_NONE));
+        self.vbh = Some(VertexBuffer::new(Memory::reference(self.bgfx, &CUBE_VERTICES),
+                                          &decl,
+                                          BUFFER_NONE));
 
         // Create static index buffer.
-        self.ibh = Some(bgfx::IndexBuffer::new(self.bgfx,
-                                               bgfx::Memory::reference(&CUBE_INDICES),
-                                               bgfx::BUFFER_NONE));
+        self.ibh = Some(IndexBuffer::new(Memory::reference(self.bgfx, &CUBE_INDICES), BUFFER_NONE));
 
         // Create program from shaders.
-        self.program = Some(common::load_program(self.bgfx, "vs_cubes", "fs_cubes"));
+        self.program = Some(common::load_program(&self.bgfx, "vs_cubes", "fs_cubes"));
 
         self.time = Some(PreciseTime::now());
     }
 
-    pub fn shutdown(&mut self) {
+    fn shutdown(&mut self) {
         // We don't really need to do anything here, the objects will clean themselves up once they
         // go out of scope. This function is really only here to keep the examples similar in
         // structure to the C++ examples.
     }
 
-    pub fn update(&mut self) -> bool {
-        if !self.example.handle_events(self.bgfx, &mut self.width, &mut self.height, self.reset) {
+    fn update(&mut self) -> bool {
+        if !self.events.handle_events(&self.bgfx, &mut self.width, &mut self.height, self.reset) {
             let now = PreciseTime::now();
             let frame_time = self.last.unwrap_or(now).to(now);
             self.last = Some(now);
@@ -184,7 +189,7 @@ impl<'a> Cubes<'a> {
                     self.bgfx.set_index_buffer(self.ibh.as_ref().unwrap());
 
                     // Set render states.
-                    self.bgfx.set_state(bgfx::State::new(), None);
+                    self.bgfx.set_state(State::new(), None);
 
                     // Submit primitive for rendering to view 0.
                     self.bgfx.submit(0, self.program.as_ref().unwrap());
@@ -202,11 +207,14 @@ impl<'a> Cubes<'a> {
     }
 }
 
+fn example(events: EventQueue) {
+    let bgfx = bgfx::init(RendererType::Default, None, None).unwrap();
+    let mut cubes = Cubes::new(&bgfx, events);
+    cubes.init();
+    while cubes.update() {}
+    cubes.shutdown();
+}
+
 fn main() {
-    common::run_example(1280, 720, |bgfx: bgfx::MainContext, example: &common::Example| {
-        let mut cubes = Cubes::new(&bgfx, example);
-        cubes.init();
-        while cubes.update() {}
-        cubes.shutdown();
-    });
+    common::run_example(1280, 720, example);
 }

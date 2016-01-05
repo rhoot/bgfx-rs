@@ -11,7 +11,6 @@ use std::ffi;
 use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
-use std::thread;
 
 use num::FromPrimitive;
 
@@ -137,6 +136,13 @@ pub enum AttribType {
     Float = bgfx_sys::BGFX_ATTRIB_TYPE_FLOAT,
 }
 
+#[derive(Debug)]
+pub enum BgfxError {
+    InvalidDisplay,
+    InvalidWindow,
+    InitFailed,
+}
+
 // Pending rust-lang/rust#24822 being resolved we're stuck with non-documented bit flags.
 
 bitflags! {
@@ -227,18 +233,18 @@ bitflags! {
 ///
 /// It can be created by either copying existing data through `copy(...)`, or by referencing
 /// existing memory directly through `reference(...)`.
-pub struct Memory<'a> {
+pub struct Memory<'b> {
     handle: *const bgfx_sys::bgfx_memory_t,
-    _phantom: PhantomData<&'a ()>,
+    _phantom: PhantomData<&'b ()>,
 }
 
-impl<'a> Memory<'a> {
+impl<'b> Memory<'b> {
     /// Copies the source data into a new bgfx-managed buffer.
     ///
     /// IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed,
     /// and will leak.
     #[inline]
-    pub fn copy<'b, T>(data: &'b [T]) -> Memory<'a> {
+    pub fn copy<'d, T>(_bgfx: &'b Bgfx, data: &'d [T]) -> Memory<'b> {
         unsafe {
             let handle = bgfx_sys::bgfx_copy(data.as_ptr() as *const libc::c_void,
                                              mem::size_of_val(data) as u32);
@@ -252,7 +258,7 @@ impl<'a> Memory<'a> {
     /// Note that this is only allowed for static memory, as it's the only way we can guarantee
     /// that the memory will still be valid until bgfx has time to read it.
     #[inline]
-    pub fn reference<T>(data: &'static [T]) -> Memory<'static> {
+    pub fn reference<T>(_bgfx: &'b Bgfx, data: &'b [T]) -> Memory<'b> {
         unsafe {
             let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const libc::c_void,
                                                  mem::size_of_val(data) as u32);
@@ -264,17 +270,17 @@ impl<'a> Memory<'a> {
 /// Represents a shader program.
 ///
 /// The program holds a vertex shader and a fragment shader.
-pub struct Program<'a> {
+pub struct Program<'s> {
     handle: bgfx_sys::bgfx_program_handle_t,
-    _vsh: Shader<'a>,
-    _fsh: Shader<'a>,
+    _vsh: Shader<'s>,
+    _fsh: Shader<'s>,
 }
 
-impl<'a> Program<'a> {
+impl<'s> Program<'s> {
     /// Creates a new program from a vertex shader and a fragment shader. Ownerships of the shaders
     /// are moved to the program.
     #[inline]
-    pub fn new(vsh: Shader<'a>, fsh: Shader<'a>) -> Program<'a> {
+    pub fn new(vsh: Shader<'s>, fsh: Shader<'s>) -> Program<'s> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, 0);
             Program { handle: handle, _vsh: vsh, _fsh: fsh }
@@ -282,7 +288,7 @@ impl<'a> Program<'a> {
     }
 }
 
-impl<'a> Drop for Program<'a> {
+impl<'s> Drop for Program<'s> {
     #[inline]
     fn drop(&mut self) {
         unsafe { bgfx_sys::bgfx_destroy_program(self.handle) }
@@ -290,15 +296,15 @@ impl<'a> Drop for Program<'a> {
 }
 
 /// Represents a shader.
-pub struct Shader<'a> {
+pub struct Shader<'m> {
     handle: bgfx_sys::bgfx_shader_handle_t,
-    _phantom: PhantomData<&'a MainContext>,
+    _phantom: PhantomData<&'m ()>,
 }
 
-impl<'a> Shader<'a> {
+impl<'m> Shader<'m> {
     /// Creates a new shader from bgfx-managed memory.
     #[inline]
-    pub fn new(_context: &'a MainContext, data: Memory<'a>) -> Shader<'a> {
+    pub fn new(data: Memory<'m>) -> Shader<'m> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_shader(data.handle);
             Shader { handle: handle, _phantom: PhantomData }
@@ -306,7 +312,7 @@ impl<'a> Shader<'a> {
     }
 }
 
-impl<'a> Drop for Shader<'a> {
+impl<'m> Drop for Shader<'m> {
     #[inline]
     fn drop(&mut self) {
         unsafe { bgfx_sys::bgfx_destroy_shader(self.handle) }
@@ -314,18 +320,15 @@ impl<'a> Drop for Shader<'a> {
 }
 
 /// A buffer holding vertex indices.
-pub struct IndexBuffer<'a> {
+pub struct IndexBuffer<'m> {
     handle: bgfx_sys::bgfx_index_buffer_handle_t,
-    _phantom: PhantomData<&'a MainContext>,
+    _phantom: PhantomData<&'m Bgfx>,
 }
 
-impl<'a> IndexBuffer<'a> {
+impl<'m> IndexBuffer<'m> {
     /// Creates a new index buffer from bgfx-managed memory.
     #[inline]
-    pub fn new(_context: &'a MainContext,
-               indices: Memory<'a>,
-               flags: BufferFlags)
-               -> IndexBuffer<'a> {
+    pub fn new(indices: Memory<'m>, flags: BufferFlags) -> IndexBuffer<'m> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_index_buffer(indices.handle, flags.bits());
             IndexBuffer { handle: handle, _phantom: PhantomData }
@@ -333,7 +336,7 @@ impl<'a> IndexBuffer<'a> {
     }
 }
 
-impl<'a> Drop for IndexBuffer<'a> {
+impl<'m> Drop for IndexBuffer<'m> {
     #[inline]
     fn drop(&mut self) {
         unsafe { bgfx_sys::bgfx_destroy_index_buffer(self.handle) }
@@ -341,19 +344,18 @@ impl<'a> Drop for IndexBuffer<'a> {
 }
 
 /// A buffer holding vertices, each representing a point in space.
-pub struct VertexBuffer<'a> {
+pub struct VertexBuffer<'m> {
     handle: bgfx_sys::bgfx_vertex_buffer_handle_t,
-    _phantom: PhantomData<&'a MainContext>,
+    _phantom: PhantomData<&'m Bgfx>,
 }
 
-impl<'a> VertexBuffer<'a> {
+impl<'m> VertexBuffer<'m> {
     /// Creates a new vertex buffer from bgfx-managed memory.
     #[inline]
-    pub fn new<'b>(_context: &'a MainContext,
-                   verts: Memory<'a>,
-                   decl: &'b VertexDecl,
+    pub fn new<'v>(verts: Memory<'m>,
+                   decl: &'v VertexDecl,
                    flags: BufferFlags)
-                   -> VertexBuffer<'a> {
+                   -> VertexBuffer<'m> {
         unsafe {
             let handle = bgfx_sys::bgfx_create_vertex_buffer(verts.handle,
                                                              &decl.decl,
@@ -363,7 +365,7 @@ impl<'a> VertexBuffer<'a> {
     }
 }
 
-impl<'a> Drop for VertexBuffer<'a> {
+impl<'m> Drop for VertexBuffer<'m> {
     #[inline]
     fn drop(&mut self) {
         unsafe { bgfx_sys::bgfx_destroy_vertex_buffer(self.handle) }
@@ -453,14 +455,15 @@ impl VertexDeclBuilder {
 ///
 /// This will be passed to the callback provided to `Config::run(...)`. Functionality intended
 /// to be executed on the main thread is exposed through this object.
-pub struct MainContext {
-    __: u32, // This field is purely used to prevent API consumers from creating their own instance
+pub struct Bgfx {
+    _dummy: u32,
 }
 
-impl MainContext {
+impl Bgfx {
+
     #[inline]
-    fn new() -> Self {
-        MainContext { __: 0 }
+    fn new() -> Bgfx {
+        Bgfx { _dummy: 0 }
     }
 
     /// Resets the graphics device to the given size.
@@ -587,180 +590,85 @@ impl MainContext {
 
 }
 
-impl Drop for MainContext {
+impl Drop for Bgfx {
     #[inline]
     fn drop(&mut self) {
         unsafe { bgfx_sys::bgfx_shutdown() }
     }
 }
 
-/// Render thread context.
-///
-/// This will be passed to the callback provided to `Config::run(...)`. Functionality intended
-/// to be executed on the render thread is exposed through this object.
-pub struct RenderContext {
-    __: u32, // This field is purely used to prevent API consumers from creating their own instance
+#[inline]
+pub fn render_frame() -> RenderFrame {
+    unsafe { RenderFrame::from_u32(bgfx_sys::bgfx_render_frame()).unwrap() }
 }
 
-impl RenderContext {
-    #[inline]
-    fn new() -> Self {
-        RenderContext { __: 0 }
-    }
-
-    /// Finish the frame, syncing up with the main thread.
-    #[inline]
-    pub fn render_frame(&self) -> RenderFrame {
-        unsafe { RenderFrame::from_u32(bgfx_sys::bgfx_render_frame()).unwrap() }
-    }
+pub struct PlatformData {
+    data: bgfx_sys::Struct_bgfx_platform_data,
 }
 
-#[derive(Debug)]
-pub enum ConfigError {
-    InvalidContext,
-    InvalidDisplay,
-    InvalidWindow,
-}
+impl PlatformData {
 
-/// Bgfx configuration.
-pub struct Config {
-    context: *mut libc::c_void,
-    device_id: u16,
-    display: *mut libc::c_void,
-    renderer: RendererType,
-    vendor_id: u16,
-    window: *mut libc::c_void,
-}
-
-impl Config {
     #[inline]
-    fn new() -> Self {
-        Config {
-            context: ptr::null_mut(),
-            device_id: 0,
-            display: ptr::null_mut(),
-            renderer: RendererType::Default,
-            vendor_id: bgfx_sys::BGFX_PCI_ID_NONE,
-            window: ptr::null_mut(),
-        }
-    }
-
-    /// Sets the OpenGL context to use for rendering.
-    #[inline]
-    pub fn context(&mut self, context: *mut libc::c_void) -> &mut Self {
-        self.context = context;
-        self
-    }
-
-    /// Sets the desired device to use for rendering.
-    #[inline]
-    pub fn device(&mut self, vendor_id: Option<u16>, device_id: Option<u16>) -> &mut Self {
-        self.device_id = device_id.unwrap_or(0);
-        self.vendor_id = vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE);
-        self
-    }
-
-    /// Sets the X11 display to render to.
-    #[inline]
-    pub fn display(&mut self, display: *mut libc::c_void) -> &mut Self {
-        self.display = display;
-        self
-    }
-
-    /// Sets the initial size of the render area.
-    #[inline]
-    pub fn renderer(&mut self, renderer: RendererType) -> &mut Self {
-        self.renderer = renderer;
-        self
-    }
-
-    /// Sets the window to render to.
-    #[inline]
-    pub fn window(&mut self, window: *mut libc::c_void) -> &mut Self {
-        self.window = window;
-        self
-    }
-
-    /// Verifies that all the required options have been passed.
-    fn verify_opts(&self) -> Result<(), ConfigError> {
-        if self.display == ptr::null_mut() {
-            if cfg!(any(bsd, linux)) {
-                return Err(ConfigError::InvalidDisplay);
-            }
-        }
-
-        if self.window == ptr::null_mut() {
-            return Err(ConfigError::InvalidWindow);
-        }
-
-        Ok(())
-    }
-
-    /// Fires off the main and render threads. The calling thread becomes the main thread, and a
-    /// new thread is spawned to use as the main thread.
-    pub fn run<M, R>(&self, main: M, render: R) -> Result<(), ConfigError>
-        where M: Send + 'static + FnOnce(MainContext),
-              R: FnOnce(RenderContext)
-    {
-        let result = self.verify_opts();
-        if result.is_err() {
-            return result;
-        }
-
-        // Set the bgfx platform data.
-        unsafe {
-            let mut data = bgfx_sys::Struct_bgfx_platform_data {
-                ndt: self.display,
-                nwh: self.window,
-                context: self.context,
+    pub fn new() -> PlatformData {
+        PlatformData {
+            data: bgfx_sys::Struct_bgfx_platform_data {
+                ndt: ptr::null_mut(),
+                nwh: ptr::null_mut(),
+                context: ptr::null_mut(),
                 backBuffer: ptr::null_mut(),
                 backBufferDS: ptr::null_mut(),
-            };
-
-            bgfx_sys::bgfx_set_platform_data(&mut data);
+            },
         }
+    }
 
-        // We need to assign the bgfx render thread *before* the main thread calls `init`. If not,
-        // bgfx will spawn a new thread and assign that as the render thread.
-        unsafe {
-            bgfx_sys::bgfx_render_frame();
-        }
+    #[inline]
+    pub fn context(&mut self, context: *mut libc::c_void) -> &mut Self {
+        self.data.context = context;
+        self
+    }
 
-        // Many platforms require rendering to happen in the actual main thread. As such, we need
-        // to fire up a new thread to use as the application main thread.
-        let renderer = self.renderer;
-        let vendor = self.vendor_id;
-        let device = self.device_id;
-        let main_thread = thread::spawn(move || {
+    #[inline]
+    pub fn display(&mut self, display: *mut libc::c_void) -> &mut Self {
+        self.data.ndt = display;
+        self
+    }
+
+    #[inline]
+    pub fn window(&mut self, window: *mut libc::c_void) -> &mut Self {
+        self.data.nwh = window;
+        self
+    }
+
+    #[inline]
+    pub fn apply(&mut self) -> Result<(), BgfxError> {
+        if self.data.ndt == ptr::null_mut() && cfg!(target_os = "linux") {
+            Err(BgfxError::InvalidDisplay)
+        } else if self.data.nwh == ptr::null_mut() {
+            Err(BgfxError::InvalidWindow)
+        } else {
             unsafe {
-                let success = bgfx_sys::bgfx_init(renderer as bgfx_sys::bgfx_renderer_type_t,
-                                                  vendor,
-                                                  device,
-                                                  ptr::null_mut(),
-                                                  ptr::null_mut());
-                assert!(success != 0);
+                bgfx_sys::bgfx_set_platform_data(&mut self.data);
             }
-            main(MainContext::new());
-        });
-
-        // Adopt the current thread as the render thread.
-        render(RenderContext::new());
-
-        // Pump the renderer until it has shut down properly.
-        unsafe {
-            while bgfx_sys::bgfx_render_frame() != bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT {
-                thread::sleep_ms(1);
-            }
+            Ok(())
         }
-
-        main_thread.join().unwrap();
-
-        Ok(())
     }
 }
 
-/// Creates a `Bgfx` object. Only one instance may exist at any given point in time.
-#[inline]
-pub fn create() -> Config {
-    Config::new()
+pub fn init(renderer: RendererType,
+            vendor_id: Option<u16>,
+            device_id: Option<u16>)
+            -> Result<Bgfx, BgfxError> {
+    let renderer = renderer as bgfx_sys::bgfx_renderer_type_t;
+    let vendor = vendor_id.unwrap_or(bgfx_sys::BGFX_PCI_ID_NONE);
+    let device = device_id.unwrap_or(0);
+
+    unsafe {
+        let success = bgfx_sys::bgfx_init(renderer,
+                                          vendor,
+                                          device,
+                                          ptr::null_mut(),
+                                          ptr::null_mut());
+
+        if success != 0 { Ok(Bgfx::new()) } else { Err(BgfxError::InitFailed) }
+    }
 }

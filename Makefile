@@ -1,6 +1,7 @@
 _PHONY: format
 
-SRCS = $(shell find . -type f -name '*.rs' ! -path './bgfx-sys/src/*')
+EXAMPLES = $(shell find examples -type f -name '*.rs')
+SRCS = $(shell find src -type f -name '*.rs')
 
-format: $(SRCS)
-	rustfmt --write-mode=overwrite $(SRCS)
+format: $(EXAMPLES) $(SRCS)
+	@rustfmt --write-mode=overwrite $(EXAMPLES) $(SRCS)

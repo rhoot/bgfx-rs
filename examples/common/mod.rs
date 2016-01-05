@@ -5,13 +5,16 @@ extern crate bgfx;
 extern crate glutin;
 extern crate libc;
 
+use bgfx::{Bgfx, PlatformData, RenderFrame};
+
+use glutin::{Api, GlContext, GlRequest, Window, WindowBuilder};
+
 use std::env;
 use std::fs::File;
 use std::io::Read;
-use std::sync::mpsc::{Receiver, Sender};
-use std::sync::mpsc;
-
-use glutin::{Api, GlContext, GlRequest, Window, WindowBuilder};
+use std::sync::mpsc::{Receiver, Sender, channel};
+use std::thread;
+use std::time::Duration;
 
 /// Events received by the main thread, sent by the render thread.
 #[derive(PartialEq, Eq, Hash, Debug)]
@@ -24,19 +27,19 @@ pub enum Event {
 }
 
 /// Example application.
-pub struct Example {
+pub struct EventQueue {
     /// Receiver for events from the render thread.
     event_rx: Receiver<Event>,
 }
 
-impl Example {
+impl EventQueue {
 
     /// Handles events received from the render thread. If there are no events to process, returns
     /// instantly.
     ///
     /// Returns `true` if the app should exit.
     pub fn handle_events(&self,
-                         bgfx: &bgfx::MainContext,
+                         bgfx: &Bgfx,
                          width: &mut u16,
                          height: &mut u16,
                          reset: bgfx::ResetFlags)
@@ -116,7 +119,7 @@ fn load_file(name: &str) -> Vec<u8> {
 ///
 /// * ``
 #[allow(dead_code)]
-pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
+pub fn load_program<'a, 'b>(bgfx: &'a Bgfx,
                             vsh_name: &'b str,
                             fsh_name: &'b str)
                             -> bgfx::Program<'a> {
@@ -126,10 +129,10 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
     let assets_path = format!("examples/assets/{}", exe_stem.to_str().unwrap());
     let vsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, vsh_name);
     let fsh_path = format!("{}/{:?}/{}.bin", assets_path, renderer, fsh_name);
-    let vsh_mem = bgfx::Memory::copy(&load_file(&vsh_path));
-    let fsh_mem = bgfx::Memory::copy(&load_file(&fsh_path));
-    let vsh = bgfx::Shader::new(bgfx, vsh_mem);
-    let fsh = bgfx::Shader::new(bgfx, fsh_mem);
+    let vsh_mem = bgfx::Memory::copy(bgfx, &load_file(&vsh_path));
+    let fsh_mem = bgfx::Memory::copy(bgfx, &load_file(&fsh_path));
+    let vsh = bgfx::Shader::new(vsh_mem);
+    let fsh = bgfx::Shader::new(fsh_mem);
 
     bgfx::Program::new(vsh, fsh)
 }
@@ -140,66 +143,63 @@ pub fn load_program<'a, 'b>(bgfx: &'a bgfx::MainContext,
 ///
 /// * `window` - Reference to the glutin window object.
 #[cfg(target_os = "linux")]
-fn create_bgfx(window: &Window) -> bgfx::Config {
+fn init_bgfx_platform(window: &Window) {
     use glutin::os::unix::WindowExt;
-    let mut bgfx = bgfx::create();
-    bgfx.display(window.get_xlib_display().unwrap());
-    bgfx.window(window.get_xlib_window().unwrap());
-    bgfx
+
+    PlatformData::new()
+        .display(window.get_xlib_display().unwrap())
+        .window(window.get_xlib_window().unwrap())
+        .apply()
+        .unwrap();
 }
 
 #[cfg(target_os = "windows")]
-fn create_bgfx(window: &Window) -> bgfx::Config {
+fn init_bgfx_platform(window: &Window) {
     use glutin::os::windows::WindowExt;
-    let mut bgfx = bgfx::create();
-    bgfx.window(window.get_hwnd());
-    bgfx
+
+    PlatformData::new()
+        .window(window.get_hwnd())
+        .apply()
+        .unwrap();
 }
 
-/// Runs an example.
-///
-/// # Arguments
-///
-/// * `width` - Initial width of the window, in pixels.
-/// * `height` - Initial height of the window, in pixels.
-/// * `main` - Function to act as the entry point for the example.
-pub fn run_example<M>(width: u32, height: u32, main: M)
-    where M: Send + 'static + FnOnce(bgfx::MainContext, &Example)
+pub fn run_example<M>(width: u16, height: u16, main: M)
+    where M: Send + 'static + FnOnce(EventQueue)
 {
     let window = WindowBuilder::new()
-        .with_dimensions(width, height)
-        .with_gl(GlRequest::Specific(Api::OpenGl, (3, 1)))
-        .with_title(String::from("BGFX"))
-        .build()
-        .expect("Failed to create window");
+                     .with_dimensions(width as u32, height as u32)
+                     .with_gl(GlRequest::Specific(Api::OpenGl, (3, 1)))
+                     .with_title(String::from("BGFX"))
+                     .build()
+                     .expect("Failed to create window");
 
-    unsafe { window.make_current().unwrap(); }
+    unsafe {
+        window.make_current().unwrap();
+    }
 
     // Create the channel used for communication between the main and render threads.
-    let (event_tx, event_rx) = mpsc::channel::<Event>();
+    let (event_tx, event_rx) = channel::<Event>();
 
-    // Initialize the example.
+    // Initialize the example data.
     let mut data = ExampleData {
         should_close: false,
         window: window,
         event_tx: event_tx,
     };
 
-    let bgfx = create_bgfx(&data.window);
+    init_bgfx_platform(&data.window);
 
-    // Main thread implementation.
-    let main_thread = move |bgfx: bgfx::MainContext| {
-        let example = Example { event_rx: event_rx };
-        main(bgfx, &example);
-    };
+    bgfx::render_frame();
 
-    // Render thread implementation.
-    let render_thread = |bgfx: bgfx::RenderContext| {
-        while !data.process_events() {
-            bgfx.render_frame();
-        }
-    };
+    thread::spawn(move || {
+        main(EventQueue { event_rx: event_rx });
+    });
 
-    // Run the application
-    bgfx.run(main_thread, render_thread).unwrap();
+    while !data.process_events() {
+        bgfx::render_frame();
+    }
+
+    while bgfx::render_frame() != RenderFrame::NoContext {
+        thread::sleep(Duration::from_millis(1));
+    }
 }
