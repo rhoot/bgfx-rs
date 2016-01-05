@@ -89,34 +89,35 @@ pub const BGFX_TEXTURE_FORMAT_RG16S: ::libc::c_uint = 40;
 pub const BGFX_TEXTURE_FORMAT_RG32I: ::libc::c_uint = 41;
 pub const BGFX_TEXTURE_FORMAT_RG32U: ::libc::c_uint = 42;
 pub const BGFX_TEXTURE_FORMAT_RG32F: ::libc::c_uint = 43;
-pub const BGFX_TEXTURE_FORMAT_BGRA8: ::libc::c_uint = 44;
-pub const BGFX_TEXTURE_FORMAT_RGBA8: ::libc::c_uint = 45;
-pub const BGFX_TEXTURE_FORMAT_RGBA8I: ::libc::c_uint = 46;
-pub const BGFX_TEXTURE_FORMAT_RGBA8U: ::libc::c_uint = 47;
-pub const BGFX_TEXTURE_FORMAT_RGBA8S: ::libc::c_uint = 48;
-pub const BGFX_TEXTURE_FORMAT_RGBA16: ::libc::c_uint = 49;
-pub const BGFX_TEXTURE_FORMAT_RGBA16I: ::libc::c_uint = 50;
-pub const BGFX_TEXTURE_FORMAT_RGBA16U: ::libc::c_uint = 51;
-pub const BGFX_TEXTURE_FORMAT_RGBA16F: ::libc::c_uint = 52;
-pub const BGFX_TEXTURE_FORMAT_RGBA16S: ::libc::c_uint = 53;
-pub const BGFX_TEXTURE_FORMAT_RGBA32I: ::libc::c_uint = 54;
-pub const BGFX_TEXTURE_FORMAT_RGBA32U: ::libc::c_uint = 55;
-pub const BGFX_TEXTURE_FORMAT_RGBA32F: ::libc::c_uint = 56;
-pub const BGFX_TEXTURE_FORMAT_R5G6B5: ::libc::c_uint = 57;
-pub const BGFX_TEXTURE_FORMAT_RGBA4: ::libc::c_uint = 58;
-pub const BGFX_TEXTURE_FORMAT_RGB5A1: ::libc::c_uint = 59;
-pub const BGFX_TEXTURE_FORMAT_RGB10A2: ::libc::c_uint = 60;
-pub const BGFX_TEXTURE_FORMAT_R11G11B10F: ::libc::c_uint = 61;
-pub const BGFX_TEXTURE_FORMAT_UNKNOWN_DEPTH: ::libc::c_uint = 62;
-pub const BGFX_TEXTURE_FORMAT_D16: ::libc::c_uint = 63;
-pub const BGFX_TEXTURE_FORMAT_D24: ::libc::c_uint = 64;
-pub const BGFX_TEXTURE_FORMAT_D24S8: ::libc::c_uint = 65;
-pub const BGFX_TEXTURE_FORMAT_D32: ::libc::c_uint = 66;
-pub const BGFX_TEXTURE_FORMAT_D16F: ::libc::c_uint = 67;
-pub const BGFX_TEXTURE_FORMAT_D24F: ::libc::c_uint = 68;
-pub const BGFX_TEXTURE_FORMAT_D32F: ::libc::c_uint = 69;
-pub const BGFX_TEXTURE_FORMAT_D0S8: ::libc::c_uint = 70;
-pub const BGFX_TEXTURE_FORMAT_COUNT: ::libc::c_uint = 71;
+pub const BGFX_TEXTURE_FORMAT_RGB9E5F: ::libc::c_uint = 44;
+pub const BGFX_TEXTURE_FORMAT_BGRA8: ::libc::c_uint = 45;
+pub const BGFX_TEXTURE_FORMAT_RGBA8: ::libc::c_uint = 46;
+pub const BGFX_TEXTURE_FORMAT_RGBA8I: ::libc::c_uint = 47;
+pub const BGFX_TEXTURE_FORMAT_RGBA8U: ::libc::c_uint = 48;
+pub const BGFX_TEXTURE_FORMAT_RGBA8S: ::libc::c_uint = 49;
+pub const BGFX_TEXTURE_FORMAT_RGBA16: ::libc::c_uint = 50;
+pub const BGFX_TEXTURE_FORMAT_RGBA16I: ::libc::c_uint = 51;
+pub const BGFX_TEXTURE_FORMAT_RGBA16U: ::libc::c_uint = 52;
+pub const BGFX_TEXTURE_FORMAT_RGBA16F: ::libc::c_uint = 53;
+pub const BGFX_TEXTURE_FORMAT_RGBA16S: ::libc::c_uint = 54;
+pub const BGFX_TEXTURE_FORMAT_RGBA32I: ::libc::c_uint = 55;
+pub const BGFX_TEXTURE_FORMAT_RGBA32U: ::libc::c_uint = 56;
+pub const BGFX_TEXTURE_FORMAT_RGBA32F: ::libc::c_uint = 57;
+pub const BGFX_TEXTURE_FORMAT_R5G6B5: ::libc::c_uint = 58;
+pub const BGFX_TEXTURE_FORMAT_RGBA4: ::libc::c_uint = 59;
+pub const BGFX_TEXTURE_FORMAT_RGB5A1: ::libc::c_uint = 60;
+pub const BGFX_TEXTURE_FORMAT_RGB10A2: ::libc::c_uint = 61;
+pub const BGFX_TEXTURE_FORMAT_R11G11B10F: ::libc::c_uint = 62;
+pub const BGFX_TEXTURE_FORMAT_UNKNOWN_DEPTH: ::libc::c_uint = 63;
+pub const BGFX_TEXTURE_FORMAT_D16: ::libc::c_uint = 64;
+pub const BGFX_TEXTURE_FORMAT_D24: ::libc::c_uint = 65;
+pub const BGFX_TEXTURE_FORMAT_D24S8: ::libc::c_uint = 66;
+pub const BGFX_TEXTURE_FORMAT_D32: ::libc::c_uint = 67;
+pub const BGFX_TEXTURE_FORMAT_D16F: ::libc::c_uint = 68;
+pub const BGFX_TEXTURE_FORMAT_D24F: ::libc::c_uint = 69;
+pub const BGFX_TEXTURE_FORMAT_D32F: ::libc::c_uint = 70;
+pub const BGFX_TEXTURE_FORMAT_D0S8: ::libc::c_uint = 71;
+pub const BGFX_TEXTURE_FORMAT_COUNT: ::libc::c_uint = 72;
 pub type bgfx_texture_format_t = Enum_bgfx_texture_format;
 pub type Enum_bgfx_uniform_type = ::libc::c_uint;
 pub const BGFX_UNIFORM_TYPE_INT1: ::libc::c_uint = 0;
@@ -135,6 +136,12 @@ pub const BGFX_BACKBUFFER_RATIO_SIXTEENTH: ::libc::c_uint = 4;
 pub const BGFX_BACKBUFFER_RATIO_DOUBLE: ::libc::c_uint = 5;
 pub const BGFX_BACKBUFFER_RATIO_COUNT: ::libc::c_uint = 6;
 pub type bgfx_backbuffer_ratio_t = Enum_bgfx_backbuffer_ratio;
+pub type Enum_bgfx_occlusion_query_result = ::libc::c_uint;
+pub const BGFX_OCCLUSION_QUERY_RESULT_INVISIBLE: ::libc::c_uint = 0;
+pub const BGFX_OCCLUSION_QUERY_RESULT_VISIBLE: ::libc::c_uint = 1;
+pub const BGFX_OCCLUSION_QUERY_RESULT_NORESULT: ::libc::c_uint = 2;
+pub const BGFX_OCCLUSION_QUERY_RESULT_COUNT: ::libc::c_uint = 3;
+pub type bgfx_occlusion_query_result_t = Enum_bgfx_occlusion_query_result;
 #[repr(C)]
 #[derive(Copy)]
 pub struct Struct_bgfx_indirect_buffer_handle {
@@ -197,6 +204,18 @@ impl ::std::default::Default for Struct_bgfx_index_buffer_handle {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type bgfx_index_buffer_handle_t = Struct_bgfx_index_buffer_handle;
+#[repr(C)]
+#[derive(Copy)]
+pub struct Struct_bgfx_occlusion_query_handle {
+    pub idx: uint16_t,
+}
+impl ::std::clone::Clone for Struct_bgfx_occlusion_query_handle {
+    fn clone(&self) -> Self { *self }
+}
+impl ::std::default::Default for Struct_bgfx_occlusion_query_handle {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+pub type bgfx_occlusion_query_handle_t = Struct_bgfx_occlusion_query_handle;
 #[repr(C)]
 #[derive(Copy)]
 pub struct Struct_bgfx_program_handle {
@@ -270,8 +289,8 @@ impl ::std::default::Default for Struct_bgfx_vertex_decl_handle {
 }
 pub type bgfx_vertex_decl_handle_t = Struct_bgfx_vertex_decl_handle;
 pub type bgfx_release_fn_t =
-    ::std::option::Option<extern "C" fn(_ptr: *mut ::libc::c_void,
-                                        _userData: *mut ::libc::c_void)
+    ::std::option::Option<unsafe extern "C" fn(_ptr: *mut ::libc::c_void,
+                                               _userData: *mut ::libc::c_void)
                               -> ()>;
 #[repr(C)]
 #[derive(Copy)]
@@ -456,7 +475,7 @@ pub struct Struct_bgfx_caps {
     pub vendorId: uint16_t,
     pub deviceId: uint16_t,
     pub gpu: [bgfx_caps_gpu_t; 4usize],
-    pub formats: [uint8_t; 71usize],
+    pub formats: [uint16_t; 72usize],
 }
 impl ::std::clone::Clone for Struct_bgfx_caps {
     fn clone(&self) -> Self { *self }
@@ -489,66 +508,81 @@ pub type bgfx_callback_interface_t = Struct_bgfx_callback_interface;
 #[repr(C)]
 #[derive(Copy)]
 pub struct Struct_bgfx_callback_vtbl {
-    pub fatal: ::std::option::Option<extern "C" fn(_this:
-                                                       *mut bgfx_callback_interface_t,
-                                                   _code: bgfx_fatal_t,
-                                                   _str:
-                                                       *const ::libc::c_char)
+    pub fatal: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                              *mut bgfx_callback_interface_t,
+                                                          _code: bgfx_fatal_t,
+                                                          _str:
+                                                              *const ::libc::c_char)
                                          -> ()>,
-    pub trace_vargs: ::std::option::Option<extern "C" fn(_this:
-                                                             *mut bgfx_callback_interface_t,
-                                                         _filePath:
-                                                             *const ::libc::c_char,
-                                                         _line: uint16_t,
-                                                         _format:
-                                                             *const ::libc::c_char,
-                                                         _argList: va_list)
+    pub trace_vargs: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                    *mut bgfx_callback_interface_t,
+                                                                _filePath:
+                                                                    *const ::libc::c_char,
+                                                                _line:
+                                                                    uint16_t,
+                                                                _format:
+                                                                    *const ::libc::c_char,
+                                                                _argList:
+                                                                    va_list)
                                                -> ()>,
-    pub cache_read_size: ::std::option::Option<extern "C" fn(_this:
-                                                                 *mut bgfx_callback_interface_t,
-                                                             _id: uint64_t)
+    pub cache_read_size: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                        *mut bgfx_callback_interface_t,
+                                                                    _id:
+                                                                        uint64_t)
                                                    -> uint32_t>,
-    pub cache_read: ::std::option::Option<extern "C" fn(_this:
-                                                            *mut bgfx_callback_interface_t,
-                                                        _id: uint64_t,
-                                                        _data:
-                                                            *mut ::libc::c_void,
-                                                        _size: uint32_t)
+    pub cache_read: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                   *mut bgfx_callback_interface_t,
+                                                               _id: uint64_t,
+                                                               _data:
+                                                                   *mut ::libc::c_void,
+                                                               _size:
+                                                                   uint32_t)
                                               -> u8>,
-    pub cache_write: ::std::option::Option<extern "C" fn(_this:
-                                                             *mut bgfx_callback_interface_t,
-                                                         _id: uint64_t,
-                                                         _data:
-                                                             *const ::libc::c_void,
-                                                         _size: uint32_t)
+    pub cache_write: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                    *mut bgfx_callback_interface_t,
+                                                                _id: uint64_t,
+                                                                _data:
+                                                                    *const ::libc::c_void,
+                                                                _size:
+                                                                    uint32_t)
                                                -> ()>,
-    pub screen_shot: ::std::option::Option<extern "C" fn(_this:
-                                                             *mut bgfx_callback_interface_t,
-                                                         _filePath:
-                                                             *const ::libc::c_char,
-                                                         _width: uint32_t,
-                                                         _height: uint32_t,
-                                                         _pitch: uint32_t,
-                                                         _data:
-                                                             *const ::libc::c_void,
-                                                         _size: uint32_t,
-                                                         _yflip: u8) -> ()>,
-    pub capture_begin: ::std::option::Option<extern "C" fn(_this:
-                                                               *mut bgfx_callback_interface_t,
-                                                           _width: uint32_t,
-                                                           _height: uint32_t,
-                                                           _pitch: uint32_t,
-                                                           _format:
-                                                               bgfx_texture_format_t,
-                                                           _yflip: u8) -> ()>,
-    pub capture_end: ::std::option::Option<extern "C" fn(_this:
-                                                             *mut bgfx_callback_interface_t)
+    pub screen_shot: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                    *mut bgfx_callback_interface_t,
+                                                                _filePath:
+                                                                    *const ::libc::c_char,
+                                                                _width:
+                                                                    uint32_t,
+                                                                _height:
+                                                                    uint32_t,
+                                                                _pitch:
+                                                                    uint32_t,
+                                                                _data:
+                                                                    *const ::libc::c_void,
+                                                                _size:
+                                                                    uint32_t,
+                                                                _yflip: u8)
                                                -> ()>,
-    pub capture_frame: ::std::option::Option<extern "C" fn(_this:
-                                                               *mut bgfx_callback_interface_t,
-                                                           _data:
-                                                               *const ::libc::c_void,
-                                                           _size: uint32_t)
+    pub capture_begin: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                      *mut bgfx_callback_interface_t,
+                                                                  _width:
+                                                                      uint32_t,
+                                                                  _height:
+                                                                      uint32_t,
+                                                                  _pitch:
+                                                                      uint32_t,
+                                                                  _format:
+                                                                      bgfx_texture_format_t,
+                                                                  _yflip: u8)
+                                                 -> ()>,
+    pub capture_end: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                    *mut bgfx_callback_interface_t)
+                                               -> ()>,
+    pub capture_frame: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                      *mut bgfx_callback_interface_t,
+                                                                  _data:
+                                                                      *const ::libc::c_void,
+                                                                  _size:
+                                                                      uint32_t)
                                                  -> ()>,
 }
 impl ::std::clone::Clone for Struct_bgfx_callback_vtbl {
@@ -560,52 +594,891 @@ impl ::std::default::Default for Struct_bgfx_callback_vtbl {
 pub type bgfx_callback_vtbl_t = Struct_bgfx_callback_vtbl;
 #[repr(C)]
 #[derive(Copy)]
-pub struct Struct_bgfx_reallocator_interface {
-    pub vtbl: *const Struct_bgfx_reallocator_vtbl,
+pub struct Struct_bgfx_allocator_interface {
+    pub vtbl: *const Struct_bgfx_allocator_vtbl,
 }
-impl ::std::clone::Clone for Struct_bgfx_reallocator_interface {
+impl ::std::clone::Clone for Struct_bgfx_allocator_interface {
     fn clone(&self) -> Self { *self }
 }
-impl ::std::default::Default for Struct_bgfx_reallocator_interface {
+impl ::std::default::Default for Struct_bgfx_allocator_interface {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-pub type bgfx_reallocator_interface_t = Struct_bgfx_reallocator_interface;
+pub type bgfx_allocator_interface_t = Struct_bgfx_allocator_interface;
 #[repr(C)]
 #[derive(Copy)]
-pub struct Struct_bgfx_reallocator_vtbl {
-    pub alloc: ::std::option::Option<extern "C" fn(_this:
-                                                       *mut bgfx_reallocator_interface_t,
-                                                   _size: size_t,
-                                                   _align: size_t,
-                                                   _file:
-                                                       *const ::libc::c_char,
-                                                   _line: uint32_t)
-                                         -> *mut ::libc::c_void>,
-    pub free: ::std::option::Option<extern "C" fn(_this:
-                                                      *mut bgfx_reallocator_interface_t,
-                                                  _ptr: *mut ::libc::c_void,
-                                                  _align: size_t,
-                                                  _file:
-                                                      *const ::libc::c_char,
-                                                  _line: uint32_t) -> ()>,
-    pub realloc: ::std::option::Option<extern "C" fn(_this:
-                                                         *mut bgfx_reallocator_interface_t,
-                                                     _ptr:
-                                                         *mut ::libc::c_void,
-                                                     _size: size_t,
-                                                     _align: size_t,
-                                                     _file:
-                                                         *const ::libc::c_char,
-                                                     _line: uint32_t)
+pub struct Struct_bgfx_allocator_vtbl {
+    pub realloc: ::std::option::Option<unsafe extern "C" fn(_this:
+                                                                *mut bgfx_allocator_interface_t,
+                                                            _ptr:
+                                                                *mut ::libc::c_void,
+                                                            _size: size_t,
+                                                            _align: size_t,
+                                                            _file:
+                                                                *const ::libc::c_char,
+                                                            _line: uint32_t)
                                            -> *mut ::libc::c_void>,
 }
-impl ::std::clone::Clone for Struct_bgfx_reallocator_vtbl {
+impl ::std::clone::Clone for Struct_bgfx_allocator_vtbl {
     fn clone(&self) -> Self { *self }
 }
-impl ::std::default::Default for Struct_bgfx_reallocator_vtbl {
+impl ::std::default::Default for Struct_bgfx_allocator_vtbl {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-pub type bgfx_reallocator_vtbl_t = Struct_bgfx_reallocator_vtbl;
+pub type bgfx_allocator_vtbl_t = Struct_bgfx_allocator_vtbl;
+#[repr(C)]
+#[derive(Copy)]
+pub struct Struct_bgfx_interface_vtbl {
+    pub render_frame: ::std::option::Option<extern "C" fn()
+                                                -> bgfx_render_frame_t>,
+    pub set_platform_data: ::std::option::Option<unsafe extern "C" fn(_pd:
+                                                                          *mut bgfx_platform_data_t)
+                                                     -> ()>,
+    pub vertex_decl_begin: ::std::option::Option<unsafe extern "C" fn(_decl:
+                                                                          *mut bgfx_vertex_decl_t,
+                                                                      _renderer:
+                                                                          bgfx_renderer_type_t)
+                                                     -> ()>,
+    pub vertex_decl_add: ::std::option::Option<unsafe extern "C" fn(_decl:
+                                                                        *mut bgfx_vertex_decl_t,
+                                                                    _attrib:
+                                                                        bgfx_attrib_t,
+                                                                    _num:
+                                                                        uint8_t,
+                                                                    _type:
+                                                                        bgfx_attrib_type_t,
+                                                                    _normalized:
+                                                                        u8,
+                                                                    _asInt:
+                                                                        u8)
+                                                   -> ()>,
+    pub vertex_decl_skip: ::std::option::Option<unsafe extern "C" fn(_decl:
+                                                                         *mut bgfx_vertex_decl_t,
+                                                                     _num:
+                                                                         uint8_t)
+                                                    -> ()>,
+    pub vertex_decl_end: ::std::option::Option<unsafe extern "C" fn(_decl:
+                                                                        *mut bgfx_vertex_decl_t)
+                                                   -> ()>,
+    pub vertex_pack: ::std::option::Option<unsafe extern "C" fn(_input:
+                                                                    *mut ::libc::c_float,
+                                                                _inputNormalized:
+                                                                    u8,
+                                                                _attr:
+                                                                    bgfx_attrib_t,
+                                                                _decl:
+                                                                    *const bgfx_vertex_decl_t,
+                                                                _data:
+                                                                    *mut ::libc::c_void,
+                                                                _index:
+                                                                    uint32_t)
+                                               -> ()>,
+    pub vertex_unpack: ::std::option::Option<unsafe extern "C" fn(_output:
+                                                                      *mut ::libc::c_float,
+                                                                  _attr:
+                                                                      bgfx_attrib_t,
+                                                                  _decl:
+                                                                      *const bgfx_vertex_decl_t,
+                                                                  _data:
+                                                                      *const ::libc::c_void,
+                                                                  _index:
+                                                                      uint32_t)
+                                                 -> ()>,
+    pub vertex_convert: ::std::option::Option<unsafe extern "C" fn(_destDecl:
+                                                                       *const bgfx_vertex_decl_t,
+                                                                   _destData:
+                                                                       *mut ::libc::c_void,
+                                                                   _srcDecl:
+                                                                       *const bgfx_vertex_decl_t,
+                                                                   _srcData:
+                                                                       *const ::libc::c_void,
+                                                                   _num:
+                                                                       uint32_t)
+                                                  -> ()>,
+    pub weld_vertices: ::std::option::Option<unsafe extern "C" fn(_output:
+                                                                      *mut uint16_t,
+                                                                  _decl:
+                                                                      *const bgfx_vertex_decl_t,
+                                                                  _data:
+                                                                      *const ::libc::c_void,
+                                                                  _num:
+                                                                      uint16_t,
+                                                                  _epsilon:
+                                                                      ::libc::c_float)
+                                                 -> uint16_t>,
+    pub image_swizzle_bgra8: ::std::option::Option<unsafe extern "C" fn(_width:
+                                                                            uint32_t,
+                                                                        _height:
+                                                                            uint32_t,
+                                                                        _pitch:
+                                                                            uint32_t,
+                                                                        _src:
+                                                                            *const ::libc::c_void,
+                                                                        _dst:
+                                                                            *mut ::libc::c_void)
+                                                       -> ()>,
+    pub image_rgba8_downsample_2x2: ::std::option::Option<unsafe extern "C" fn(_width:
+                                                                                   uint32_t,
+                                                                               _height:
+                                                                                   uint32_t,
+                                                                               _pitch:
+                                                                                   uint32_t,
+                                                                               _src:
+                                                                                   *const ::libc::c_void,
+                                                                               _dst:
+                                                                                   *mut ::libc::c_void)
+                                                              -> ()>,
+    pub get_supported_renderers: ::std::option::Option<extern "C" fn(_enum:
+                                                                         *mut bgfx_renderer_type_t)
+                                                           -> uint8_t>,
+    pub get_renderer_name: ::std::option::Option<extern "C" fn(_type:
+                                                                   bgfx_renderer_type_t)
+                                                     ->
+                                                         *const ::libc::c_char>,
+    pub init: ::std::option::Option<unsafe extern "C" fn(_type:
+                                                             bgfx_renderer_type_t,
+                                                         _vendorId: uint16_t,
+                                                         _deviceId: uint16_t,
+                                                         _callback:
+                                                             *mut bgfx_callback_interface_t,
+                                                         _allocator:
+                                                             *mut bgfx_allocator_interface_t)
+                                        -> u8>,
+    pub shutdown: ::std::option::Option<extern "C" fn() -> ()>,
+    pub reset: ::std::option::Option<extern "C" fn(_width: uint32_t,
+                                                   _height: uint32_t,
+                                                   _flags: uint32_t) -> ()>,
+    pub frame: ::std::option::Option<extern "C" fn() -> uint32_t>,
+    pub get_renderer_type: ::std::option::Option<extern "C" fn()
+                                                     -> bgfx_renderer_type_t>,
+    pub get_caps: ::std::option::Option<extern "C" fn()
+                                            -> *const bgfx_caps_t>,
+    pub get_hmd: ::std::option::Option<extern "C" fn() -> *const bgfx_hmd_t>,
+    pub get_stats: ::std::option::Option<extern "C" fn()
+                                             -> *const bgfx_stats_t>,
+    pub alloc: ::std::option::Option<extern "C" fn(_size: uint32_t)
+                                         -> *const bgfx_memory_t>,
+    pub copy: ::std::option::Option<unsafe extern "C" fn(_data:
+                                                             *const ::libc::c_void,
+                                                         _size: uint32_t)
+                                        -> *const bgfx_memory_t>,
+    pub make_ref: ::std::option::Option<unsafe extern "C" fn(_data:
+                                                                 *const ::libc::c_void,
+                                                             _size: uint32_t)
+                                            -> *const bgfx_memory_t>,
+    pub make_ref_release: ::std::option::Option<unsafe extern "C" fn(_data:
+                                                                         *const ::libc::c_void,
+                                                                     _size:
+                                                                         uint32_t,
+                                                                     _releaseFn:
+                                                                         bgfx_release_fn_t,
+                                                                     _userData:
+                                                                         *mut ::libc::c_void)
+                                                    -> *const bgfx_memory_t>,
+    pub set_debug: ::std::option::Option<extern "C" fn(_debug: uint32_t)
+                                             -> ()>,
+    pub dbg_text_clear: ::std::option::Option<extern "C" fn(_attr: uint8_t,
+                                                            _small: u8)
+                                                  -> ()>,
+    pub dbg_text_printf: ::std::option::Option<unsafe extern "C" fn(_x:
+                                                                        uint16_t,
+                                                                    _y:
+                                                                        uint16_t,
+                                                                    _attr:
+                                                                        uint8_t,
+                                                                    _format:
+                                                                        *const ::libc::c_char, ...)
+                                                   -> ()>,
+    pub dbg_text_image: ::std::option::Option<unsafe extern "C" fn(_x:
+                                                                       uint16_t,
+                                                                   _y:
+                                                                       uint16_t,
+                                                                   _width:
+                                                                       uint16_t,
+                                                                   _height:
+                                                                       uint16_t,
+                                                                   _data:
+                                                                       *const ::libc::c_void,
+                                                                   _pitch:
+                                                                       uint16_t)
+                                                  -> ()>,
+    pub create_index_buffer: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                            *const bgfx_memory_t,
+                                                                        _flags:
+                                                                            uint16_t)
+                                                       ->
+                                                           bgfx_index_buffer_handle_t>,
+    pub destroy_index_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                      bgfx_index_buffer_handle_t)
+                                                        -> ()>,
+    pub create_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                             *const bgfx_memory_t,
+                                                                         _decl:
+                                                                             *const bgfx_vertex_decl_t,
+                                                                         _flags:
+                                                                             uint16_t)
+                                                        ->
+                                                            bgfx_vertex_buffer_handle_t>,
+    pub destroy_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                       bgfx_vertex_buffer_handle_t)
+                                                         -> ()>,
+    pub create_dynamic_index_buffer: ::std::option::Option<extern "C" fn(_num:
+                                                                             uint32_t,
+                                                                         _flags:
+                                                                             uint16_t)
+                                                               ->
+                                                                   bgfx_dynamic_index_buffer_handle_t>,
+    pub create_dynamic_index_buffer_mem: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                                        *const bgfx_memory_t,
+                                                                                    _flags:
+                                                                                        uint16_t)
+                                                                   ->
+                                                                       bgfx_dynamic_index_buffer_handle_t>,
+    pub update_dynamic_index_buffer: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                                    bgfx_dynamic_index_buffer_handle_t,
+                                                                                _startIndex:
+                                                                                    uint32_t,
+                                                                                _mem:
+                                                                                    *const bgfx_memory_t)
+                                                               -> ()>,
+    pub destroy_dynamic_index_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                              bgfx_dynamic_index_buffer_handle_t)
+                                                                -> ()>,
+    pub create_dynamic_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_num:
+                                                                                     uint32_t,
+                                                                                 _decl:
+                                                                                     *const bgfx_vertex_decl_t,
+                                                                                 _flags:
+                                                                                     uint16_t)
+                                                                ->
+                                                                    bgfx_dynamic_vertex_buffer_handle_t>,
+    pub create_dynamic_vertex_buffer_mem: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                                         *const bgfx_memory_t,
+                                                                                     _decl:
+                                                                                         *const bgfx_vertex_decl_t,
+                                                                                     _flags:
+                                                                                         uint16_t)
+                                                                    ->
+                                                                        bgfx_dynamic_vertex_buffer_handle_t>,
+    pub update_dynamic_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                                     bgfx_dynamic_vertex_buffer_handle_t,
+                                                                                 _startVertex:
+                                                                                     uint32_t,
+                                                                                 _mem:
+                                                                                     *const bgfx_memory_t)
+                                                                -> ()>,
+    pub destroy_dynamic_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                               bgfx_dynamic_vertex_buffer_handle_t)
+                                                                 -> ()>,
+    pub check_avail_transient_index_buffer: ::std::option::Option<extern "C" fn(_num:
+                                                                                    uint32_t)
+                                                                      -> u8>,
+    pub check_avail_transient_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_num:
+                                                                                            uint32_t,
+                                                                                        _decl:
+                                                                                            *const bgfx_vertex_decl_t)
+                                                                       -> u8>,
+    pub check_avail_instance_data_buffer: ::std::option::Option<extern "C" fn(_num:
+                                                                                  uint32_t,
+                                                                              _stride:
+                                                                                  uint16_t)
+                                                                    -> u8>,
+    pub check_avail_transient_buffers: ::std::option::Option<unsafe extern "C" fn(_numVertices:
+                                                                                      uint32_t,
+                                                                                  _decl:
+                                                                                      *const bgfx_vertex_decl_t,
+                                                                                  _numIndices:
+                                                                                      uint32_t)
+                                                                 -> u8>,
+    pub alloc_transient_index_buffer: ::std::option::Option<unsafe extern "C" fn(_tib:
+                                                                                     *mut bgfx_transient_index_buffer_t,
+                                                                                 _num:
+                                                                                     uint32_t)
+                                                                -> ()>,
+    pub alloc_transient_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_tvb:
+                                                                                      *mut bgfx_transient_vertex_buffer_t,
+                                                                                  _num:
+                                                                                      uint32_t,
+                                                                                  _decl:
+                                                                                      *const bgfx_vertex_decl_t)
+                                                                 -> ()>,
+    pub alloc_transient_buffers: ::std::option::Option<unsafe extern "C" fn(_tvb:
+                                                                                *mut bgfx_transient_vertex_buffer_t,
+                                                                            _decl:
+                                                                                *const bgfx_vertex_decl_t,
+                                                                            _numVertices:
+                                                                                uint32_t,
+                                                                            _tib:
+                                                                                *mut bgfx_transient_index_buffer_t,
+                                                                            _numIndices:
+                                                                                uint32_t)
+                                                           -> u8>,
+    pub alloc_instance_data_buffer: ::std::option::Option<extern "C" fn(_num:
+                                                                            uint32_t,
+                                                                        _stride:
+                                                                            uint16_t)
+                                                              ->
+                                                                  *const bgfx_instance_data_buffer_t>,
+    pub create_indirect_buffer: ::std::option::Option<extern "C" fn(_num:
+                                                                        uint32_t)
+                                                          ->
+                                                              bgfx_indirect_buffer_handle_t>,
+    pub destroy_indirect_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                         bgfx_indirect_buffer_handle_t)
+                                                           -> ()>,
+    pub create_shader: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                      *const bgfx_memory_t)
+                                                 -> bgfx_shader_handle_t>,
+    pub get_shader_uniforms: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                            bgfx_shader_handle_t,
+                                                                        _uniforms:
+                                                                            *mut bgfx_uniform_handle_t,
+                                                                        _max:
+                                                                            uint16_t)
+                                                       -> uint16_t>,
+    pub destroy_shader: ::std::option::Option<extern "C" fn(_handle:
+                                                                bgfx_shader_handle_t)
+                                                  -> ()>,
+    pub create_program: ::std::option::Option<extern "C" fn(_vsh:
+                                                                bgfx_shader_handle_t,
+                                                            _fsh:
+                                                                bgfx_shader_handle_t,
+                                                            _destroyShaders:
+                                                                u8)
+                                                  -> bgfx_program_handle_t>,
+    pub create_compute_program: ::std::option::Option<extern "C" fn(_csh:
+                                                                        bgfx_shader_handle_t,
+                                                                    _destroyShaders:
+                                                                        u8)
+                                                          ->
+                                                              bgfx_program_handle_t>,
+    pub destroy_program: ::std::option::Option<extern "C" fn(_handle:
+                                                                 bgfx_program_handle_t)
+                                                   -> ()>,
+    pub calc_texture_size: ::std::option::Option<unsafe extern "C" fn(_info:
+                                                                          *mut bgfx_texture_info_t,
+                                                                      _width:
+                                                                          uint16_t,
+                                                                      _height:
+                                                                          uint16_t,
+                                                                      _depth:
+                                                                          uint16_t,
+                                                                      _cubeMap:
+                                                                          u8,
+                                                                      _numMips:
+                                                                          uint8_t,
+                                                                      _format:
+                                                                          bgfx_texture_format_t)
+                                                     -> ()>,
+    pub create_texture: ::std::option::Option<unsafe extern "C" fn(_mem:
+                                                                       *const bgfx_memory_t,
+                                                                   _flags:
+                                                                       uint32_t,
+                                                                   _skip:
+                                                                       uint8_t,
+                                                                   _info:
+                                                                       *mut bgfx_texture_info_t)
+                                                  -> bgfx_texture_handle_t>,
+    pub create_texture_2d: ::std::option::Option<unsafe extern "C" fn(_width:
+                                                                          uint16_t,
+                                                                      _height:
+                                                                          uint16_t,
+                                                                      _numMips:
+                                                                          uint8_t,
+                                                                      _format:
+                                                                          bgfx_texture_format_t,
+                                                                      _flags:
+                                                                          uint32_t,
+                                                                      _mem:
+                                                                          *const bgfx_memory_t)
+                                                     ->
+                                                         bgfx_texture_handle_t>,
+    pub create_texture_2d_scaled: ::std::option::Option<extern "C" fn(_ratio:
+                                                                          bgfx_backbuffer_ratio_t,
+                                                                      _numMips:
+                                                                          uint8_t,
+                                                                      _format:
+                                                                          bgfx_texture_format_t,
+                                                                      _flags:
+                                                                          uint32_t)
+                                                            ->
+                                                                bgfx_texture_handle_t>,
+    pub create_texture_3d: ::std::option::Option<unsafe extern "C" fn(_width:
+                                                                          uint16_t,
+                                                                      _height:
+                                                                          uint16_t,
+                                                                      _depth:
+                                                                          uint16_t,
+                                                                      _numMips:
+                                                                          uint8_t,
+                                                                      _format:
+                                                                          bgfx_texture_format_t,
+                                                                      _flags:
+                                                                          uint32_t,
+                                                                      _mem:
+                                                                          *const bgfx_memory_t)
+                                                     ->
+                                                         bgfx_texture_handle_t>,
+    pub create_texture_cube: ::std::option::Option<unsafe extern "C" fn(_size:
+                                                                            uint16_t,
+                                                                        _numMips:
+                                                                            uint8_t,
+                                                                        _format:
+                                                                            bgfx_texture_format_t,
+                                                                        _flags:
+                                                                            uint32_t,
+                                                                        _mem:
+                                                                            *const bgfx_memory_t)
+                                                       ->
+                                                           bgfx_texture_handle_t>,
+    pub update_texture_2d: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                          bgfx_texture_handle_t,
+                                                                      _mip:
+                                                                          uint8_t,
+                                                                      _x:
+                                                                          uint16_t,
+                                                                      _y:
+                                                                          uint16_t,
+                                                                      _width:
+                                                                          uint16_t,
+                                                                      _height:
+                                                                          uint16_t,
+                                                                      _mem:
+                                                                          *const bgfx_memory_t,
+                                                                      _pitch:
+                                                                          uint16_t)
+                                                     -> ()>,
+    pub update_texture_3d: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                          bgfx_texture_handle_t,
+                                                                      _mip:
+                                                                          uint8_t,
+                                                                      _x:
+                                                                          uint16_t,
+                                                                      _y:
+                                                                          uint16_t,
+                                                                      _z:
+                                                                          uint16_t,
+                                                                      _width:
+                                                                          uint16_t,
+                                                                      _height:
+                                                                          uint16_t,
+                                                                      _depth:
+                                                                          uint16_t,
+                                                                      _mem:
+                                                                          *const bgfx_memory_t)
+                                                     -> ()>,
+    pub update_texture_cube: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                            bgfx_texture_handle_t,
+                                                                        _side:
+                                                                            uint8_t,
+                                                                        _mip:
+                                                                            uint8_t,
+                                                                        _x:
+                                                                            uint16_t,
+                                                                        _y:
+                                                                            uint16_t,
+                                                                        _width:
+                                                                            uint16_t,
+                                                                        _height:
+                                                                            uint16_t,
+                                                                        _mem:
+                                                                            *const bgfx_memory_t,
+                                                                        _pitch:
+                                                                            uint16_t)
+                                                       -> ()>,
+    pub destroy_texture: ::std::option::Option<extern "C" fn(_handle:
+                                                                 bgfx_texture_handle_t)
+                                                   -> ()>,
+    pub create_frame_buffer: ::std::option::Option<extern "C" fn(_width:
+                                                                     uint16_t,
+                                                                 _height:
+                                                                     uint16_t,
+                                                                 _format:
+                                                                     bgfx_texture_format_t,
+                                                                 _textureFlags:
+                                                                     uint32_t)
+                                                       ->
+                                                           bgfx_frame_buffer_handle_t>,
+    pub create_frame_buffer_scaled: ::std::option::Option<extern "C" fn(_ratio:
+                                                                            bgfx_backbuffer_ratio_t,
+                                                                        _format:
+                                                                            bgfx_texture_format_t,
+                                                                        _textureFlags:
+                                                                            uint32_t)
+                                                              ->
+                                                                  bgfx_frame_buffer_handle_t>,
+    pub create_frame_buffer_from_handles: ::std::option::Option<unsafe extern "C" fn(_num:
+                                                                                         uint8_t,
+                                                                                     _handles:
+                                                                                         *const bgfx_texture_handle_t,
+                                                                                     _destroyTextures:
+                                                                                         u8)
+                                                                    ->
+                                                                        bgfx_frame_buffer_handle_t>,
+    pub create_frame_buffer_from_nwh: ::std::option::Option<unsafe extern "C" fn(_nwh:
+                                                                                     *mut ::libc::c_void,
+                                                                                 _width:
+                                                                                     uint16_t,
+                                                                                 _height:
+                                                                                     uint16_t,
+                                                                                 _depthFormat:
+                                                                                     bgfx_texture_format_t)
+                                                                ->
+                                                                    bgfx_frame_buffer_handle_t>,
+    pub destroy_frame_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                      bgfx_frame_buffer_handle_t)
+                                                        -> ()>,
+    pub create_uniform: ::std::option::Option<unsafe extern "C" fn(_name:
+                                                                       *const ::libc::c_char,
+                                                                   _type:
+                                                                       bgfx_uniform_type_t,
+                                                                   _num:
+                                                                       uint16_t)
+                                                  -> bgfx_uniform_handle_t>,
+    pub destroy_uniform: ::std::option::Option<extern "C" fn(_handle:
+                                                                 bgfx_uniform_handle_t)
+                                                   -> ()>,
+    pub create_occlusion_query: ::std::option::Option<extern "C" fn()
+                                                          ->
+                                                              bgfx_occlusion_query_handle_t>,
+    pub get_result: ::std::option::Option<extern "C" fn(_handle:
+                                                            bgfx_occlusion_query_handle_t)
+                                              ->
+                                                  bgfx_occlusion_query_result_t>,
+    pub destroy_occlusion_query: ::std::option::Option<extern "C" fn(_handle:
+                                                                         bgfx_occlusion_query_handle_t)
+                                                           -> ()>,
+    pub set_palette_color: ::std::option::Option<extern "C" fn(_index:
+                                                                   uint8_t,
+                                                               _rgba:
+                                                                   *mut ::libc::c_float)
+                                                     -> ()>,
+    pub set_view_name: ::std::option::Option<unsafe extern "C" fn(_id:
+                                                                      uint8_t,
+                                                                  _name:
+                                                                      *const ::libc::c_char)
+                                                 -> ()>,
+    pub set_view_rect: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                           _x: uint16_t,
+                                                           _y: uint16_t,
+                                                           _width: uint16_t,
+                                                           _height: uint16_t)
+                                                 -> ()>,
+    pub set_view_scissor: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                              _x: uint16_t,
+                                                              _y: uint16_t,
+                                                              _width:
+                                                                  uint16_t,
+                                                              _height:
+                                                                  uint16_t)
+                                                    -> ()>,
+    pub set_view_clear: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                            _flags: uint16_t,
+                                                            _rgba: uint32_t,
+                                                            _depth:
+                                                                ::libc::c_float,
+                                                            _stencil: uint8_t)
+                                                  -> ()>,
+    pub set_view_clear_mrt: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                                _flags:
+                                                                    uint16_t,
+                                                                _depth:
+                                                                    ::libc::c_float,
+                                                                _stencil:
+                                                                    uint8_t,
+                                                                _0: uint8_t,
+                                                                _1: uint8_t,
+                                                                _2: uint8_t,
+                                                                _3: uint8_t,
+                                                                _4: uint8_t,
+                                                                _5: uint8_t,
+                                                                _6: uint8_t,
+                                                                _7: uint8_t)
+                                                      -> ()>,
+    pub set_view_seq: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                          _enabled: u8)
+                                                -> ()>,
+    pub set_view_frame_buffer: ::std::option::Option<extern "C" fn(_id:
+                                                                       uint8_t,
+                                                                   _handle:
+                                                                       bgfx_frame_buffer_handle_t)
+                                                         -> ()>,
+    pub set_view_transform: ::std::option::Option<unsafe extern "C" fn(_id:
+                                                                           uint8_t,
+                                                                       _view:
+                                                                           *const ::libc::c_void,
+                                                                       _proj:
+                                                                           *const ::libc::c_void)
+                                                      -> ()>,
+    pub set_view_transform_stereo: ::std::option::Option<unsafe extern "C" fn(_id:
+                                                                                  uint8_t,
+                                                                              _view:
+                                                                                  *const ::libc::c_void,
+                                                                              _projL:
+                                                                                  *const ::libc::c_void,
+                                                                              _flags:
+                                                                                  uint8_t,
+                                                                              _projR:
+                                                                                  *const ::libc::c_void)
+                                                             -> ()>,
+    pub set_view_remap: ::std::option::Option<unsafe extern "C" fn(_id:
+                                                                       uint8_t,
+                                                                   _num:
+                                                                       uint8_t,
+                                                                   _remap:
+                                                                       *const ::libc::c_void)
+                                                  -> ()>,
+    pub set_marker: ::std::option::Option<unsafe extern "C" fn(_marker:
+                                                                   *const ::libc::c_char)
+                                              -> ()>,
+    pub set_state: ::std::option::Option<extern "C" fn(_state: uint64_t,
+                                                       _rgba: uint32_t)
+                                             -> ()>,
+    pub set_condition: ::std::option::Option<extern "C" fn(_handle:
+                                                               bgfx_occlusion_query_handle_t,
+                                                           _visible: u8)
+                                                 -> ()>,
+    pub set_stencil: ::std::option::Option<extern "C" fn(_fstencil: uint32_t,
+                                                         _bstencil: uint32_t)
+                                               -> ()>,
+    pub set_scissor: ::std::option::Option<extern "C" fn(_x: uint16_t,
+                                                         _y: uint16_t,
+                                                         _width: uint16_t,
+                                                         _height: uint16_t)
+                                               -> uint16_t>,
+    pub set_scissor_cached: ::std::option::Option<extern "C" fn(_cache:
+                                                                    uint16_t)
+                                                      -> ()>,
+    pub set_transform: ::std::option::Option<unsafe extern "C" fn(_mtx:
+                                                                      *const ::libc::c_void,
+                                                                  _num:
+                                                                      uint16_t)
+                                                 -> uint32_t>,
+    pub alloc_transform: ::std::option::Option<unsafe extern "C" fn(_transform:
+                                                                        *mut bgfx_transform_t,
+                                                                    _num:
+                                                                        uint16_t)
+                                                   -> uint32_t>,
+    pub set_transform_cached: ::std::option::Option<extern "C" fn(_cache:
+                                                                      uint32_t,
+                                                                  _num:
+                                                                      uint16_t)
+                                                        -> ()>,
+    pub set_uniform: ::std::option::Option<unsafe extern "C" fn(_handle:
+                                                                    bgfx_uniform_handle_t,
+                                                                _value:
+                                                                    *const ::libc::c_void,
+                                                                _num:
+                                                                    uint16_t)
+                                               -> ()>,
+    pub set_index_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                  bgfx_index_buffer_handle_t,
+                                                              _firstIndex:
+                                                                  uint32_t,
+                                                              _numIndices:
+                                                                  uint32_t)
+                                                    -> ()>,
+    pub set_dynamic_index_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                          bgfx_dynamic_index_buffer_handle_t,
+                                                                      _firstIndex:
+                                                                          uint32_t,
+                                                                      _numIndices:
+                                                                          uint32_t)
+                                                            -> ()>,
+    pub set_transient_index_buffer: ::std::option::Option<unsafe extern "C" fn(_tib:
+                                                                                   *const bgfx_transient_index_buffer_t,
+                                                                               _firstIndex:
+                                                                                   uint32_t,
+                                                                               _numIndices:
+                                                                                   uint32_t)
+                                                              -> ()>,
+    pub set_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                   bgfx_vertex_buffer_handle_t,
+                                                               _startVertex:
+                                                                   uint32_t,
+                                                               _numVertices:
+                                                                   uint32_t)
+                                                     -> ()>,
+    pub set_dynamic_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                           bgfx_dynamic_vertex_buffer_handle_t,
+                                                                       _numVertices:
+                                                                           uint32_t)
+                                                             -> ()>,
+    pub set_transient_vertex_buffer: ::std::option::Option<unsafe extern "C" fn(_tvb:
+                                                                                    *const bgfx_transient_vertex_buffer_t,
+                                                                                _startVertex:
+                                                                                    uint32_t,
+                                                                                _numVertices:
+                                                                                    uint32_t)
+                                                               -> ()>,
+    pub set_instance_data_buffer: ::std::option::Option<unsafe extern "C" fn(_idb:
+                                                                                 *const bgfx_instance_data_buffer_t,
+                                                                             _num:
+                                                                                 uint32_t)
+                                                            -> ()>,
+    pub set_instance_data_from_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                                      bgfx_vertex_buffer_handle_t,
+                                                                                  _startVertex:
+                                                                                      uint32_t,
+                                                                                  _num:
+                                                                                      uint32_t)
+                                                                        ->
+                                                                            ()>,
+    pub set_instance_data_from_dynamic_vertex_buffer: ::std::option::Option<extern "C" fn(_handle:
+                                                                                              bgfx_dynamic_vertex_buffer_handle_t,
+                                                                                          _startVertex:
+                                                                                              uint32_t,
+                                                                                          _num:
+                                                                                              uint32_t)
+                                                                                ->
+                                                                                    ()>,
+    pub set_texture: ::std::option::Option<extern "C" fn(_stage: uint8_t,
+                                                         _sampler:
+                                                             bgfx_uniform_handle_t,
+                                                         _handle:
+                                                             bgfx_texture_handle_t,
+                                                         _flags: uint32_t)
+                                               -> ()>,
+    pub set_texture_from_frame_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                               uint8_t,
+                                                                           _sampler:
+                                                                               bgfx_uniform_handle_t,
+                                                                           _handle:
+                                                                               bgfx_frame_buffer_handle_t,
+                                                                           _attachment:
+                                                                               uint8_t,
+                                                                           _flags:
+                                                                               uint32_t)
+                                                                 -> ()>,
+    pub touch: ::std::option::Option<extern "C" fn(_id: uint8_t) -> uint32_t>,
+    pub submit: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                    _handle:
+                                                        bgfx_program_handle_t,
+                                                    _depth: int32_t)
+                                          -> uint32_t>,
+    pub submit_occlusion_query: ::std::option::Option<extern "C" fn(_id:
+                                                                        uint8_t,
+                                                                    _program:
+                                                                        bgfx_program_handle_t,
+                                                                    _occlusionQuery:
+                                                                        bgfx_occlusion_query_handle_t,
+                                                                    _depth:
+                                                                        int32_t)
+                                                          -> uint32_t>,
+    pub submit_indirect: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                             _handle:
+                                                                 bgfx_program_handle_t,
+                                                             _indirectHandle:
+                                                                 bgfx_indirect_buffer_handle_t,
+                                                             _start: uint16_t,
+                                                             _num: uint16_t,
+                                                             _depth: int32_t)
+                                                   -> uint32_t>,
+    pub set_image: ::std::option::Option<extern "C" fn(_stage: uint8_t,
+                                                       _sampler:
+                                                           bgfx_uniform_handle_t,
+                                                       _handle:
+                                                           bgfx_texture_handle_t,
+                                                       _mip: uint8_t,
+                                                       _access: bgfx_access_t,
+                                                       _format:
+                                                           bgfx_texture_format_t)
+                                             -> ()>,
+    pub set_image_from_frame_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                             uint8_t,
+                                                                         _sampler:
+                                                                             bgfx_uniform_handle_t,
+                                                                         _handle:
+                                                                             bgfx_frame_buffer_handle_t,
+                                                                         _attachment:
+                                                                             uint8_t,
+                                                                         _access:
+                                                                             bgfx_access_t,
+                                                                         _format:
+                                                                             bgfx_texture_format_t)
+                                                               -> ()>,
+    pub set_compute_index_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                          uint8_t,
+                                                                      _handle:
+                                                                          bgfx_index_buffer_handle_t,
+                                                                      _access:
+                                                                          bgfx_access_t)
+                                                            -> ()>,
+    pub set_compute_vertex_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                           uint8_t,
+                                                                       _handle:
+                                                                           bgfx_vertex_buffer_handle_t,
+                                                                       _access:
+                                                                           bgfx_access_t)
+                                                             -> ()>,
+    pub set_compute_dynamic_index_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                                  uint8_t,
+                                                                              _handle:
+                                                                                  bgfx_dynamic_index_buffer_handle_t,
+                                                                              _access:
+                                                                                  bgfx_access_t)
+                                                                    -> ()>,
+    pub set_compute_dynamic_vertex_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                                   uint8_t,
+                                                                               _handle:
+                                                                                   bgfx_dynamic_vertex_buffer_handle_t,
+                                                                               _access:
+                                                                                   bgfx_access_t)
+                                                                     -> ()>,
+    pub set_compute_indirect_buffer: ::std::option::Option<extern "C" fn(_stage:
+                                                                             uint8_t,
+                                                                         _handle:
+                                                                             bgfx_indirect_buffer_handle_t,
+                                                                         _access:
+                                                                             bgfx_access_t)
+                                                               -> ()>,
+    pub dispatch: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                      _handle:
+                                                          bgfx_program_handle_t,
+                                                      _numX: uint16_t,
+                                                      _numY: uint16_t,
+                                                      _numZ: uint16_t,
+                                                      _flags: uint8_t)
+                                            -> uint32_t>,
+    pub dispatch_indirect: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                               _handle:
+                                                                   bgfx_program_handle_t,
+                                                               _indirectHandle:
+                                                                   bgfx_indirect_buffer_handle_t,
+                                                               _start:
+                                                                   uint16_t,
+                                                               _num: uint16_t,
+                                                               _flags:
+                                                                   uint8_t)
+                                                     -> uint32_t>,
+    pub discard: ::std::option::Option<extern "C" fn() -> ()>,
+    pub blit: ::std::option::Option<extern "C" fn(_id: uint8_t,
+                                                  _dst: bgfx_texture_handle_t,
+                                                  _dstMip: uint8_t,
+                                                  _dstX: uint16_t,
+                                                  _dstY: uint16_t,
+                                                  _dstZ: uint16_t,
+                                                  _src: bgfx_texture_handle_t,
+                                                  _srcMip: uint8_t,
+                                                  _srcX: uint16_t,
+                                                  _srcY: uint16_t,
+                                                  _srcZ: uint16_t,
+                                                  _width: uint16_t,
+                                                  _height: uint16_t,
+                                                  _depth: uint16_t) -> ()>,
+    pub save_screen_shot: ::std::option::Option<unsafe extern "C" fn(_filePath:
+                                                                         *const ::libc::c_char)
+                                                    -> ()>,
+}
+impl ::std::clone::Clone for Struct_bgfx_interface_vtbl {
+    fn clone(&self) -> Self { *self }
+}
+impl ::std::default::Default for Struct_bgfx_interface_vtbl {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+pub type bgfx_interface_vtbl_t = Struct_bgfx_interface_vtbl;
+pub type PFN_BGFX_GET_INTERFACE =
+    ::std::option::Option<extern "C" fn(_version: uint32_t)
+                              -> *mut bgfx_interface_vtbl_t>;
 extern "C" {
     pub fn bgfx_vertex_decl_begin(_decl: *mut bgfx_vertex_decl_t,
                                   _renderer: bgfx_renderer_type_t) -> ();
@@ -651,7 +1524,7 @@ extern "C" {
     pub fn bgfx_init(_type: bgfx_renderer_type_t, _vendorId: uint16_t,
                      _deviceId: uint16_t,
                      _callback: *mut bgfx_callback_interface_t,
-                     _allocator: *mut bgfx_reallocator_interface_t) -> u8;
+                     _allocator: *mut bgfx_allocator_interface_t) -> u8;
     pub fn bgfx_shutdown() -> ();
     pub fn bgfx_reset(_width: uint32_t, _height: uint32_t, _flags: uint32_t)
      -> ();
@@ -812,6 +1685,11 @@ extern "C" {
                                     _width: uint16_t, _height: uint16_t,
                                     _mem: *const bgfx_memory_t,
                                     _pitch: uint16_t) -> ();
+    pub fn bgfx_read_texture(_handle: bgfx_texture_handle_t,
+                             _data: *mut ::libc::c_void) -> ();
+    pub fn bgfx_read_frame_buffer(_handle: bgfx_frame_buffer_handle_t,
+                                  _attachment: uint8_t,
+                                  _data: *mut ::libc::c_void) -> ();
     pub fn bgfx_destroy_texture(_handle: bgfx_texture_handle_t) -> ();
     pub fn bgfx_create_frame_buffer(_width: uint16_t, _height: uint16_t,
                                     _format: bgfx_texture_format_t,
@@ -823,7 +1701,7 @@ extern "C" {
      -> bgfx_frame_buffer_handle_t;
     pub fn bgfx_create_frame_buffer_from_handles(_num: uint8_t,
                                                  _handles:
-                                                     *mut bgfx_texture_handle_t,
+                                                     *const bgfx_texture_handle_t,
                                                  _destroyTextures: u8)
      -> bgfx_frame_buffer_handle_t;
     pub fn bgfx_create_frame_buffer_from_nwh(_nwh: *mut ::libc::c_void,
@@ -838,12 +1716,20 @@ extern "C" {
                                _type: bgfx_uniform_type_t, _num: uint16_t)
      -> bgfx_uniform_handle_t;
     pub fn bgfx_destroy_uniform(_handle: bgfx_uniform_handle_t) -> ();
+    pub fn bgfx_create_occlusion_query() -> bgfx_occlusion_query_handle_t;
+    pub fn bgfx_get_result(_handle: bgfx_occlusion_query_handle_t)
+     -> bgfx_occlusion_query_result_t;
+    pub fn bgfx_destroy_occlusion_query(_handle:
+                                            bgfx_occlusion_query_handle_t)
+     -> ();
     pub fn bgfx_set_palette_color(_index: uint8_t,
                                   _rgba: *mut ::libc::c_float) -> ();
     pub fn bgfx_set_view_name(_id: uint8_t, _name: *const ::libc::c_char)
      -> ();
     pub fn bgfx_set_view_rect(_id: uint8_t, _x: uint16_t, _y: uint16_t,
                               _width: uint16_t, _height: uint16_t) -> ();
+    pub fn bgfx_set_view_rect_auto(_id: uint8_t, _x: uint16_t, _y: uint16_t,
+                                   _ratio: bgfx_backbuffer_ratio_t) -> ();
     pub fn bgfx_set_view_scissor(_id: uint8_t, _x: uint16_t, _y: uint16_t,
                                  _width: uint16_t, _height: uint16_t) -> ();
     pub fn bgfx_set_view_clear(_id: uint8_t, _flags: uint16_t,
@@ -868,8 +1754,11 @@ extern "C" {
      -> ();
     pub fn bgfx_set_view_remap(_id: uint8_t, _num: uint8_t,
                                _remap: *const ::libc::c_void) -> ();
+    pub fn bgfx_reset_view(_id: uint8_t) -> ();
     pub fn bgfx_set_marker(_marker: *const ::libc::c_char) -> ();
     pub fn bgfx_set_state(_state: uint64_t, _rgba: uint32_t) -> ();
+    pub fn bgfx_set_condition(_handle: bgfx_occlusion_query_handle_t,
+                              _visible: u8) -> ();
     pub fn bgfx_set_stencil(_fstencil: uint32_t, _bstencil: uint32_t) -> ();
     pub fn bgfx_set_scissor(_x: uint16_t, _y: uint16_t, _width: uint16_t,
                             _height: uint16_t) -> uint16_t;
@@ -928,6 +1817,11 @@ extern "C" {
     pub fn bgfx_touch(_id: uint8_t) -> uint32_t;
     pub fn bgfx_submit(_id: uint8_t, _handle: bgfx_program_handle_t,
                        _depth: int32_t) -> uint32_t;
+    pub fn bgfx_submit_occlusion_query(_id: uint8_t,
+                                       _program: bgfx_program_handle_t,
+                                       _occlusionQuery:
+                                           bgfx_occlusion_query_handle_t,
+                                       _depth: int32_t) -> uint32_t;
     pub fn bgfx_submit_indirect(_id: uint8_t, _handle: bgfx_program_handle_t,
                                 _indirectHandle:
                                     bgfx_indirect_buffer_handle_t,
@@ -976,5 +1870,19 @@ extern "C" {
                                   _start: uint16_t, _num: uint16_t,
                                   _flags: uint8_t) -> uint32_t;
     pub fn bgfx_discard() -> ();
+    pub fn bgfx_blit(_id: uint8_t, _dst: bgfx_texture_handle_t,
+                     _dstMip: uint8_t, _dstX: uint16_t, _dstY: uint16_t,
+                     _dstZ: uint16_t, _src: bgfx_texture_handle_t,
+                     _srcMip: uint8_t, _srcX: uint16_t, _srcY: uint16_t,
+                     _srcZ: uint16_t, _width: uint16_t, _height: uint16_t,
+                     _depth: uint16_t) -> ();
+    pub fn bgfx_blit_frame_buffer(_id: uint8_t, _dst: bgfx_texture_handle_t,
+                                  _dstMip: uint8_t, _dstX: uint16_t,
+                                  _dstY: uint16_t, _dstZ: uint16_t,
+                                  _src: bgfx_frame_buffer_handle_t,
+                                  _attachment: uint8_t, _srcMip: uint8_t,
+                                  _srcX: uint16_t, _srcY: uint16_t,
+                                  _srcZ: uint16_t, _width: uint16_t,
+                                  _height: uint16_t, _depth: uint16_t) -> ();
     pub fn bgfx_save_screen_shot(_filePath: *const ::libc::c_char) -> ();
 }
