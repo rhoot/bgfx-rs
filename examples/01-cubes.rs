@@ -189,7 +189,7 @@ impl<'a> Cubes<'a> {
                     self.bgfx.set_index_buffer(self.ibh.as_ref().unwrap());
 
                     // Set render states.
-                    self.bgfx.set_state(State::new(), None);
+                    self.bgfx.set_state(STATE_DEFAULT, None);
 
                     // Submit primitive for rendering to view 0.
                     self.bgfx.submit(0, self.program.as_ref().unwrap());

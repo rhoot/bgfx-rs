@@ -1,6 +1,7 @@
 // Copyright (c) 2015, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
+#[macro_use]
 extern crate bgfx_sys;
 #[macro_use]
 extern crate bitflags;
@@ -14,9 +15,9 @@ use std::ptr;
 
 use num::FromPrimitive;
 
-mod state;
+mod flags;
 
-pub use state::State;
+pub use flags::*;
 
 /// Renderer type.
 #[repr(u32)]
@@ -141,92 +142,6 @@ pub enum BgfxError {
     InvalidDisplay,
     InvalidWindow,
     InitFailed,
-}
-
-// Pending rust-lang/rust#24822 being resolved we're stuck with non-documented bit flags.
-
-bitflags! {
-    flags BufferFlags: u16 {
-        const BUFFER_NONE = bgfx_sys::BGFX_BUFFER_NONE,
-        const BUFFER_COMPUTE_FORMAT_8X1 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8X1,
-        const BUFFER_COMPUTE_FORMAT_8X2 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8X2,
-        const BUFFER_COMPUTE_FORMAT_8X4 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_8X4,
-        const BUFFER_COMPUTE_FORMAT_16X1 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16X1,
-        const BUFFER_COMPUTE_FORMAT_16X2 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16X2,
-        const BUFFER_COMPUTE_FORMAT_16X4 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_16X4,
-        const BUFFER_COMPUTE_FORMAT_32X1 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32X1,
-        const BUFFER_COMPUTE_FORMAT_32X2 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32X2,
-        const BUFFER_COMPUTE_FORMAT_32X4 = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_32X4,
-        const BUFFER_COMPUTE_FORMAT_SHIFT = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_SHIFT,
-        const BUFFER_COMPUTE_FORMAT_MASK = bgfx_sys::BGFX_BUFFER_COMPUTE_FORMAT_MASK,
-        const BUFFER_COMPUTE_TYPE_UINT = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_UINT,
-        const BUFFER_COMPUTE_TYPE_INT = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_INT,
-        const BUFFER_COMPUTE_TYPE_FLOAT = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_FLOAT,
-        const BUFFER_COMPUTE_TYPE_SHIFT = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_SHIFT,
-        const BUFFER_COMPUTE_TYPE_MASK = bgfx_sys::BGFX_BUFFER_COMPUTE_TYPE_MASK,
-        const BUFFER_COMPUTE_READ = bgfx_sys::BGFX_BUFFER_COMPUTE_READ,
-        const BUFFER_COMPUTE_WRITE = bgfx_sys::BGFX_BUFFER_COMPUTE_WRITE,
-        const BUFFER_DRAW_INDIRECT = bgfx_sys::BGFX_BUFFER_DRAW_INDIRECT,
-        const BUFFER_ALLOW_RESIZE = bgfx_sys::BGFX_BUFFER_ALLOW_RESIZE,
-        const BUFFER_INDEX32 = bgfx_sys::BGFX_BUFFER_INDEX32,
-        const BUFFER_COMPUTE_READ_WRITE = bgfx_sys::BGFX_BUFFER_COMPUTE_READ_WRITE,
-    }
-}
-
-bitflags! {
-    flags ClearFlags: u16 {
-        const CLEAR_NONE = bgfx_sys::BGFX_CLEAR_NONE,
-        const CLEAR_COLOR = bgfx_sys::BGFX_CLEAR_COLOR,
-        const CLEAR_DEPTH = bgfx_sys::BGFX_CLEAR_DEPTH,
-        const CLEAR_STENCIL = bgfx_sys::BGFX_CLEAR_STENCIL,
-        const CLEAR_DISCARD_COLOR_0 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_0,
-        const CLEAR_DISCARD_COLOR_1 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_1,
-        const CLEAR_DISCARD_COLOR_2 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_2,
-        const CLEAR_DISCARD_COLOR_3 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_3,
-        const CLEAR_DISCARD_COLOR_4 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_4,
-        const CLEAR_DISCARD_COLOR_5 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_5,
-        const CLEAR_DISCARD_COLOR_6 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_6,
-        const CLEAR_DISCARD_COLOR_7 = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_7,
-        const CLEAR_DISCARD_DEPTH = bgfx_sys::BGFX_CLEAR_DISCARD_DEPTH,
-        const CLEAR_DISCARD_STENCIL = bgfx_sys::BGFX_CLEAR_DISCARD_STENCIL,
-        const CLEAR_DISCARD_COLOR_MASK = bgfx_sys::BGFX_CLEAR_DISCARD_COLOR_MASK,
-        const CLEAR_DISCARD_MASK = bgfx_sys::BGFX_CLEAR_DISCARD_MASK,
-    }
-}
-
-bitflags! {
-    flags DebugFlags: u32 {
-        const DEBUG_NONE = bgfx_sys::BGFX_DEBUG_NONE,
-        const DEBUG_WIREFRAME = bgfx_sys::BGFX_DEBUG_WIREFRAME,
-        const DEBUG_IFH = bgfx_sys::BGFX_DEBUG_IFH,
-        const DEBUG_STATS = bgfx_sys::BGFX_DEBUG_STATS,
-        const DEBUG_TEXT = bgfx_sys::BGFX_DEBUG_TEXT,
-    }
-}
-
-bitflags! {
-    flags ResetFlags: u32 {
-        const RESET_NONE = bgfx_sys::BGFX_RESET_NONE,
-        const RESET_FULLSCREEN = bgfx_sys::BGFX_RESET_FULLSCREEN,
-        const RESET_FULLSCREEN_SHIFT = bgfx_sys::BGFX_RESET_FULLSCREEN_SHIFT,
-        const RESET_FULLSCREEN_MASK = bgfx_sys::BGFX_RESET_FULLSCREEN_MASK,
-        const RESET_MSAA_X2 = bgfx_sys::BGFX_RESET_MSAA_X2,
-        const RESET_MSAA_X4 = bgfx_sys::BGFX_RESET_MSAA_X4,
-        const RESET_MSAA_X8 = bgfx_sys::BGFX_RESET_MSAA_X8,
-        const RESET_MSAA_X16 = bgfx_sys::BGFX_RESET_MSAA_X16,
-        const RESET_MSAA_SHIFT = bgfx_sys::BGFX_RESET_MSAA_SHIFT,
-        const RESET_MSAA_MASK = bgfx_sys::BGFX_RESET_MSAA_MASK,
-        const RESET_VSYNC = bgfx_sys::BGFX_RESET_VSYNC,
-        const RESET_MAXANISOTROPY = bgfx_sys::BGFX_RESET_MAXANISOTROPY,
-        const RESET_CAPTURE = bgfx_sys::BGFX_RESET_CAPTURE,
-        const RESET_HMD = bgfx_sys::BGFX_RESET_HMD,
-        const RESET_HMD_DEBUG = bgfx_sys::BGFX_RESET_HMD_DEBUG,
-        const RESET_HMD_RECENTER = bgfx_sys::BGFX_RESET_HMD_RECENTER,
-        const RESET_FLUSH_AFTER_RENDER = bgfx_sys::BGFX_RESET_FLUSH_AFTER_RENDER,
-        const RESET_FLIP_AFTER_RENDER = bgfx_sys::BGFX_RESET_FLIP_AFTER_RENDER,
-        const RESET_SRGB_BACKBUFFER = bgfx_sys::BGFX_RESET_SRGB_BACKBUFFER,
-        const RESET_HIDPI = bgfx_sys::BGFX_RESET_HIDPI,
-    }
 }
 
 /// A bgfx-managed buffer of memory.
@@ -572,8 +487,8 @@ impl Bgfx {
 
     /// Sets the render state.
     #[inline]
-    pub fn set_state(&self, state: State, rgba: Option<u32>) {
-        unsafe { bgfx_sys::bgfx_set_state(state.to_bits(), rgba.unwrap_or(0)) }
+    pub fn set_state(&self, state: StateFlags, rgba: Option<u32>) {
+        unsafe { bgfx_sys::bgfx_set_state(state.bits(), rgba.unwrap_or(0)) }
     }
 
     #[inline]

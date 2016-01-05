@@ -184,30 +184,36 @@ pub const BGFX_STATE_DEFAULT:               u64 =
         BGFX_STATE_MSAA
 	);
 
+#[macro_export]
 macro_rules! BGFX_STATE_ALPHA_REF {
-    ($aref:expr) => ((($aref as u64) << BGFX_STATE_ALPHA_REF_SHIFT) & BGFX_STATE_ALPHA_REF_MASK);
+    ($aref:expr) => ((($aref as u64) << bgfx_sys::BGFX_STATE_ALPHA_REF_SHIFT) & bgfx_sys::BGFX_STATE_ALPHA_REF_MASK)
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_POINT_SIZE {
-    ($size:expr) => ((($size as u64) << BGFX_STATE_POINT_SIZE_SHIFT) & BGFX_STATE_POINT_SIZE_MASK);
+    ($size:expr) => ((($size as u64) << bgfx_sys::BGFX_STATE_POINT_SIZE_SHIFT) & bgfx_sys::BGFX_STATE_POINT_SIZE_MASK)
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_SEPARATE {
     ($srcrgb:expr, $dstrgb:expr, $srca:expr, $dsta:expr) => (
         ($srcrgb as u64) | (($dstrgb as u64) << 4) | (($srca as u64) << 8) | (($dsta as u64) << 12)
     );
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_EQUATION_SEPARATE {
-    ($rgb:expr, $a:expr) => (($rgb as u64) | (($a as u64) << 3));
+    ($rgb:expr, $a:expr) => (($rgb as u64) | (($a as u64) << 3))
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC {
-    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_SEPARATE!($src, $dst, $src, $dst));
+    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_SEPARATE!($src, $dst, $src, $dst))
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_EQUATION {
-    ($equation:expr) => (BGFX_STATE_BLEND_EQUATION_SEPARATE!($equation, $equation));
+    ($equation:expr) => (BGFX_STATE_BLEND_EQUATION_SEPARATE!($equation, $equation))
 }
 
 pub const BGFX_STATE_BLEND_ADD:             u64 = (BGFX_STATE_BLEND_FUNC!(BGFX_STATE_BLEND_ONE,       BGFX_STATE_BLEND_ONE          ) );
@@ -219,38 +225,46 @@ pub const BGFX_STATE_BLEND_NORMAL:          u64 = (BGFX_STATE_BLEND_FUNC!(BGFX_S
 pub const BGFX_STATE_BLEND_SCREEN:          u64 = (BGFX_STATE_BLEND_FUNC!(BGFX_STATE_BLEND_ONE,       BGFX_STATE_BLEND_INV_SRC_COLOR) );
 pub const BGFX_STATE_BLEND_LINEAR_BURN:     u64 = (BGFX_STATE_BLEND_FUNC!(BGFX_STATE_BLEND_DST_COLOR, BGFX_STATE_BLEND_INV_DST_COLOR) | BGFX_STATE_BLEND_EQUATION!(BGFX_STATE_BLEND_EQUATION_SUB) );
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_x {
     ($src:expr, $dst:expr) => (
-        (($src >> BGFX_STATE_BLEND_SHIFT) as u32) | ((($dst >> BGFX_STATE_BLEND_SHIFT) as u32) << 4)
+        (($src >> bgfx_sys::BGFX_STATE_BLEND_SHIFT) as u32) | ((($dst >> bgfx_sys::BGFX_STATE_BLEND_SHIFT) as u32) << 4)
     );
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_xE {
     ($src:expr, $dst:expr, $equation:expr) => (
-        BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) | ((($equation >> BGFX_STATE_BLEND_EQUATION_SHIFT) as u32) << 8)
+        BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) | ((($equation >> bgfx_sys::BGFX_STATE_BLEND_EQUATION_SHIFT) as u32) << 8)
     );
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_1 {
-    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst));
+    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst))
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_2 {
-    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) << 11);
+    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) << 11)
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_3 {
-    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) << 22);
+    ($src:expr, $dst:expr) => (BGFX_STATE_BLEND_FUNC_RT_x!($src, $dst) << 22)
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_1E {
-    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation));
+    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation))
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_2E {
-    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation) << 11);
+    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation) << 11)
 }
 
+#[macro_export]
 macro_rules! BGFX_STATE_BLEND_FUNC_RT_3E {
-    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation) << 22);
+    ($src:expr, $dst:expr, $equation:expr) => (BGFX_STATE_BLEND_FUNC_RT_xE!($src, $dst, $equation) << 22)
 }
