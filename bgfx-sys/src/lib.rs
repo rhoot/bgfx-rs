@@ -17,7 +17,11 @@ pub type uint64_t = u64;
 include!("ffi_bgfx.rs");
 include!("ffi_bgfxplatform.rs");
 
-pub const BGFX_PCI_ID_NONE:                 u16 = 0;
+pub const BGFX_PCI_ID_NONE:                 u16 = 0x0000;
+pub const BGFX_PCI_ID_SOFTWARE_RASTERIZER:  u16 = 0x0001;
+pub const BGFX_PCI_ID_AMD:                  u16 = 0x1002;
+pub const BGFX_PCI_ID_INTEL:                u16 = 0x8086;
+pub const BGFX_PCI_ID_NVIDIA:               u16 = 0x10de;
 
 // Clear flags
 

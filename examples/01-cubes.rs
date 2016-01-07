@@ -26,8 +26,8 @@ struct PosColorVertex {
 impl PosColorVertex {
     fn build_decl() -> VertexDecl {
         VertexDecl::new(None)
-            .add(Attrib::Position, 3, AttribType::Float, None, None)
-            .add(Attrib::Color0, 4, AttribType::Uint8, Some(true), None)
+            .add(Attrib::Position, 3, AttribType::Float)
+            .add(Attrib::Color0, 4, AttribType::Uint8(true))
             .end()
     }
 }

@@ -26,9 +26,8 @@ pub enum Event {
     Size(u16, u16),
 }
 
-/// Example application.
+/// Event queue for communicating with the render thread.
 pub struct EventQueue {
-    /// Receiver for events from the render thread.
     event_rx: Receiver<Event>,
 }
 
@@ -44,17 +43,11 @@ impl EventQueue {
                          height: &mut u16,
                          reset: bgfx::ResetFlags)
                          -> bool {
-        let mut close = false;
+        let mut should_close = false;
 
-        loop {
-            let result = self.event_rx.try_recv();
-
-            if !result.is_ok() {
-                break;
-            }
-
-            match result.ok().unwrap() {
-                Event::Close => close = true,
+        while let Ok(result) = self.event_rx.try_recv() {
+            match result {
+                Event::Close => should_close = true,
                 Event::Size(w, h) => {
                     *width = w;
                     *height = h;
@@ -63,45 +56,29 @@ impl EventQueue {
             }
         }
 
-
-        close
+        should_close
     }
 
 }
 
-/// Example data used by the render thread.
-struct ExampleData {
-    should_close: bool,
+/// Process window events on the render thread.
+fn process_events(window: &Window, event_tx: &Sender<Event>) -> bool {
+    let mut should_close = false;
 
-    /// The glutin window object.
-    window: Window,
-
-    /// Sender of events to the main thread.
-    event_tx: Sender<Event>,
-}
-
-impl ExampleData {
-
-    /// Process glutin events, and potentially forward them to the main thread.
-    ///
-    /// Returns `true` if the example should exit.
-    fn process_events(&mut self) -> bool {
-        for event in self.window.poll_events() {
-            match event {
-                glutin::Event::Closed => {
-                    self.should_close = true;
-                    self.event_tx.send(Event::Close).unwrap();
-                }
-                glutin::Event::Resized(w, h) => {
-                    self.event_tx.send(Event::Size(w as u16, h as u16)).unwrap();
-                }
-                _ => {}
+    for event in window.poll_events() {
+        match event {
+            glutin::Event::Closed => {
+                should_close = true;
+                event_tx.send(Event::Close).unwrap();
             }
+            glutin::Event::Resized(w, h) => {
+                event_tx.send(Event::Size(w as u16, h as u16)).unwrap();
+            }
+            _ => {}
         }
-
-        self.should_close
     }
 
+    should_close
 }
 
 /// Loads the contents of a file and returns it.
@@ -112,12 +89,7 @@ fn load_file(name: &str) -> Vec<u8> {
     data
 }
 
-/// Loads the two given shaders from disk, and creates a program using the new
-/// shaders.
-///
-/// # Arguments
-///
-/// * ``
+/// Loads the two given shaders from disk, and creates a program containing the loaded shaders.
 #[allow(dead_code)]
 pub fn load_program<'a, 'b>(bgfx: &'a Bgfx,
                             vsh_name: &'b str,
@@ -137,12 +109,8 @@ pub fn load_program<'a, 'b>(bgfx: &'a Bgfx,
     bgfx::Program::new(vsh, fsh)
 }
 
-/// Returns a new `bgfx::Application`.
-///
-/// # Arguments
-///
-/// * `window` - Reference to the glutin window object.
-#[cfg(target_os = "linux")]
+/// Set the platform data to be used by BGFX.
+#[cfg(unix)]
 fn init_bgfx_platform(window: &Window) {
     use glutin::os::unix::WindowExt;
 
@@ -153,7 +121,8 @@ fn init_bgfx_platform(window: &Window) {
         .unwrap();
 }
 
-#[cfg(target_os = "windows")]
+/// Set the platform data to be used by BGFX.
+#[cfg(windows)]
 fn init_bgfx_platform(window: &Window) {
     use glutin::os::windows::WindowExt;
 
@@ -180,26 +149,26 @@ pub fn run_example<M>(width: u16, height: u16, main: M)
     // Create the channel used for communication between the main and render threads.
     let (event_tx, event_rx) = channel::<Event>();
 
-    // Initialize the example data.
-    let mut data = ExampleData {
-        should_close: false,
-        window: window,
-        event_tx: event_tx,
-    };
+    // Set the platform data for BGFX to use.
+    init_bgfx_platform(&window);
 
-    init_bgfx_platform(&data.window);
-
+    // Initialize this thread as the render thread by pumping it once *before* calling bgfx::init.
     bgfx::render_frame();
 
-    thread::spawn(move || {
+    // Spawn a new thread to use as the main thread.
+    let main_thread = thread::spawn(move || {
         main(EventQueue { event_rx: event_rx });
     });
 
-    while !data.process_events() {
+    // Pump window events until the window is closed.
+    while !process_events(&window, &event_tx) {
         bgfx::render_frame();
     }
 
+    // Pump the render thread until the main thread has shut down.
     while bgfx::render_frame() != RenderFrame::NoContext {
         thread::sleep(Duration::from_millis(1));
     }
+
+    main_thread.join().unwrap();
 }
