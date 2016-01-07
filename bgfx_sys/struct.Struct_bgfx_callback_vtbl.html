@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Struct_bgfx_callback_vtbl` struct in crate `bgfx_sys`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Struct_bgfx_callback_vtbl">
+
+    <title>bgfx_sys::Struct_bgfx_callback_vtbl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>bgfx_sys</a></p><script>window.sidebarCurrent = {name: 'Struct_bgfx_callback_vtbl', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>bgfx_sys</a>::<wbr><a class='struct' href=''>Struct_bgfx_callback_vtbl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-439' class='srclink' href='../src/bgfx_sys/ffi_bgfx.rs.html#510-587' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Struct_bgfx_callback_vtbl {
+    pub fatal: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _code: <a class='type' href='../bgfx_sys/type.bgfx_fatal_t.html' title='bgfx_sys::bgfx_fatal_t'>bgfx_fatal_t</a>, _str: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../libc/windows/type.c_char.html' title='libc::windows::c_char'>c_char</a></a>)&gt;,
+    pub trace_vargs: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _filePath: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../libc/windows/type.c_char.html' title='libc::windows::c_char'>c_char</a></a>, _line: <a class='type' href='../bgfx_sys/type.uint16_t.html' title='bgfx_sys::uint16_t'>uint16_t</a>, _format: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../libc/windows/type.c_char.html' title='libc::windows::c_char'>c_char</a></a>, _argList: <a class='type' href='../bgfx_sys/type.va_list.html' title='bgfx_sys::va_list'>va_list</a>)&gt;,
+    pub cache_read_size: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _id: <a class='type' href='../bgfx_sys/type.uint64_t.html' title='bgfx_sys::uint64_t'>uint64_t</a>) -&gt; <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>&gt;,
+    pub cache_read: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _id: <a class='type' href='../bgfx_sys/type.uint64_t.html' title='bgfx_sys::uint64_t'>uint64_t</a>, _data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>, _size: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;,
+    pub cache_write: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _id: <a class='type' href='../bgfx_sys/type.uint64_t.html' title='bgfx_sys::uint64_t'>uint64_t</a>, _data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>, _size: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>)&gt;,
+    pub screen_shot: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _filePath: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../libc/windows/type.c_char.html' title='libc::windows::c_char'>c_char</a></a>, _width: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _height: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _pitch: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>, _size: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _yflip: <a href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>)&gt;,
+    pub capture_begin: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _width: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _height: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _pitch: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>, _format: <a class='type' href='../bgfx_sys/type.bgfx_texture_format_t.html' title='bgfx_sys::bgfx_texture_format_t'>bgfx_texture_format_t</a>, _yflip: <a href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>)&gt;,
+    pub capture_end: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>)&gt;,
+    pub capture_frame: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;unsafe  extern "C" fn(_this: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../bgfx_sys/type.bgfx_callback_interface_t.html' title='bgfx_sys::bgfx_callback_interface_t'>bgfx_callback_interface_t</a></a>, _data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>, _size: <a class='type' href='../bgfx_sys/type.uint32_t.html' title='bgfx_sys::uint32_t'>uint32_t</a>)&gt;,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.fatal'><code>fatal</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.trace_vargs'><code>trace_vargs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.cache_read_size'><code>cache_read_size</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.cache_read'><code>cache_read</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.cache_write'><code>cache_write</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.screen_shot'><code>screen_shot</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.capture_begin'><code>capture_begin</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.capture_end'><code>capture_end</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.capture_frame'><code>capture_frame</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../bgfx_sys/struct.Struct_bgfx_callback_vtbl.html' title='bgfx_sys::Struct_bgfx_callback_vtbl'>Struct_bgfx_callback_vtbl</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../bgfx_sys/struct.Struct_bgfx_callback_vtbl.html' title='bgfx_sys::Struct_bgfx_callback_vtbl'>Struct_bgfx_callback_vtbl</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; Self</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../bgfx_sys/struct.Struct_bgfx_callback_vtbl.html' title='bgfx_sys::Struct_bgfx_callback_vtbl'>Struct_bgfx_callback_vtbl</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "bgfx_sys";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
