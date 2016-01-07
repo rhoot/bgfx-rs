@@ -13,7 +13,7 @@ use std::cmp::max;
 const LOGO: &'static [u8] = include_bytes!("assets/00-helloworld/logo.bin");
 
 fn example(events: EventQueue) {
-    let mut width: u16 = 1024;
+    let mut width: u16 = 1280;
     let mut height: u16 = 720;
     let debug = DEBUG_TEXT;
     let reset = RESET_VSYNC;
@@ -54,5 +54,5 @@ fn example(events: EventQueue) {
 }
 
 fn main() {
-    common::run_example(1024, 768, example);
+    common::run_example(1280, 720, example);
 }
