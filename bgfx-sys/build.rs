@@ -64,13 +64,13 @@ fn build_msvc(bitness: u32) {
 
 fn build_gnu(bitness: u32, profile: &str, platform: &str) {
     let project_name = match platform {
-        "windows" => "gmake-mingw-gcc",
+        "pc-windows" => "gmake-mingw-gcc",
         "unknown-linux" => "gmake-linux",
         _ => unreachable!(),
     };
 
     let output_name = match platform {
-        "windows" => format!("win{}_mingw-gcc", bitness),
+        "pc-windows" => format!("win{}_mingw-gcc", bitness),
         "unknown-linux" => format!("linux{}_gcc", bitness),
         _ => unreachable!(),
     };
@@ -111,7 +111,7 @@ fn build_gnu(bitness: u32, profile: &str, platform: &str) {
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 
     match platform {
-        "windows" => {
+        "pc-windows" => {
             println!("cargo:rustc-link-lib=gdi32");
             println!("cargo:rustc-link-lib=opengl32");
             println!("cargo:rustc-link-lib=psapi");
