@@ -1,4 +1,4 @@
-// Copyright (c) 2015, Johan Sköld.
+// Copyright (c) 2015-2016, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
 use std::env;
