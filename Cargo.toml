@@ -6,7 +6,6 @@ authors = ["Johan Sköld <johan@skold.cc>"]
 [dependencies]
 bitflags = "0.3.2"
 libc = "0.2.4"
-num = "0.1.27"
 
 [dependencies.bgfx-sys]
 path = "bgfx-sys/"

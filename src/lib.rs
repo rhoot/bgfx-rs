@@ -6,14 +6,11 @@ extern crate bgfx_sys;
 #[macro_use]
 extern crate bitflags;
 extern crate libc;
-extern crate num;
 
 use std::ffi;
 use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
-
-use num::FromPrimitive;
 
 mod flags;
 
