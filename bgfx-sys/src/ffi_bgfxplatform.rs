@@ -22,7 +22,20 @@ impl ::std::default::Default for Struct_bgfx_platform_data {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type bgfx_platform_data_t = Struct_bgfx_platform_data;
+#[repr(C)]
+#[derive(Copy)]
+pub struct Struct_bgfx_internal_data {
+    pub context: *mut ::libc::c_void,
+}
+impl ::std::clone::Clone for Struct_bgfx_internal_data {
+    fn clone(&self) -> Self { *self }
+}
+impl ::std::default::Default for Struct_bgfx_internal_data {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+pub type bgfx_internal_data_t = Struct_bgfx_internal_data;
 extern "C" {
     pub fn bgfx_render_frame() -> bgfx_render_frame_t;
-    pub fn bgfx_set_platform_data(_pd: *mut bgfx_platform_data_t) -> ();
+    pub fn bgfx_set_platform_data(_data: *const bgfx_platform_data_t) -> ();
+    pub fn bgfx_get_internal_data() -> *const bgfx_internal_data_t;
 }

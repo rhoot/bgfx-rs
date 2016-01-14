@@ -630,9 +630,12 @@ pub type bgfx_allocator_vtbl_t = Struct_bgfx_allocator_vtbl;
 pub struct Struct_bgfx_interface_vtbl {
     pub render_frame: ::std::option::Option<extern "C" fn()
                                                 -> bgfx_render_frame_t>,
-    pub set_platform_data: ::std::option::Option<unsafe extern "C" fn(_pd:
-                                                                          *mut bgfx_platform_data_t)
+    pub set_platform_data: ::std::option::Option<unsafe extern "C" fn(_data:
+                                                                          *const bgfx_platform_data_t)
                                                      -> ()>,
+    pub get_platform_data: ::std::option::Option<extern "C" fn()
+                                                     ->
+                                                         *const bgfx_internal_data_t>,
     pub vertex_decl_begin: ::std::option::Option<unsafe extern "C" fn(_decl:
                                                                           *mut bgfx_vertex_decl_t,
                                                                       _renderer:
