@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -766,9 +766,144 @@
 <span id="724">724</span>
 <span id="725">725</span>
 <span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright (c) 2015-2016, Johan Sköld.</span>
 <span class='comment'>// License: http://opensource.org/licenses/ISC</span>
+
+<span class='doccomment'>//! Rust wrapper around [bgfx].</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Before using this crate, ensure that you fullfill the build requirements for bgfx, as outlined</span>
+<span class='doccomment'>//! in its [documentation][bgfx building]. If you are compiling for an `msvc` target, make sure to</span>
+<span class='doccomment'>//! build this crate in a developer command prompt.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ## Limitations</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! - So far, only Windows and Linux are supported.</span>
+<span class='doccomment'>//! - Far from all bgfx functionality is exposed. As more examples get ported, more functionality</span>
+<span class='doccomment'>//!   will be as well.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! *This API is still unstable, and very likely to change.*</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ## Basic Usage</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Before this crate can be used, some platform data must be initialized. See [`PlatformData`].</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```should_panic</span>
+<span class='doccomment'>//! bgfx::PlatformData::new()</span>
+<span class='doccomment'>//!     .context(std::ptr::null_mut())</span>
+<span class='doccomment'>//!     .display(std::ptr::null_mut())</span>
+<span class='doccomment'>//!     .window(std::ptr::null_mut())</span>
+<span class='doccomment'>//!     .apply()</span>
+<span class='doccomment'>//!     .expect(&quot;Could not set platform data&quot;);</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Once the platform data has been initialized, a new thread should be spawned to act as the main</span>
+<span class='doccomment'>//! thread. This thread should call [`bgfx::init`] to initialize bgfx. The object returned by that</span>
+<span class='doccomment'>//! function should be used to access bgfx API calls.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! std::thread::spawn(|| {</span>
+<span class='doccomment'>//!     let bgfx = bgfx::init(bgfx::RendererType::Default, None, None)</span>
+<span class='doccomment'>//!         .expect(&quot;Failed to initialize bgfx&quot;);</span>
+<span class='doccomment'>//!     // ...</span>
+<span class='doccomment'>//! });</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Finally, the real main thread should act as the render thread, and repeatedly be calling</span>
+<span class='doccomment'>//! [`bgfx::render_frame`].</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! loop {</span>
+<span class='doccomment'>//!     // This is probably also where you will want to pump the window event queue.</span>
+<span class='doccomment'>//!     bgfx::render_frame();</span>
+<span class='doccomment'>//! }</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! See the examples for more in-depth usage.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! [bgfx]: https://github.com/bkaradzic/bgfx</span>
+<span class='doccomment'>//! [bgfx building]: https://bkaradzic.github.io/bgfx/build.html</span>
+<span class='doccomment'>//! [`bgfx::init`]: fn.init.html</span>
+<span class='doccomment'>//! [`bgfx::render_frame`]: fn.render_frame.html</span>
+<span class='doccomment'>//! [`PlatformData`]: struct.PlatformData.html</span>
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>bgfx_sys</span>;
@@ -781,7 +916,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
 
-<span class='kw'>mod</span> <span class='ident'>flags</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>flags</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>flags</span>::<span class='op'>*</span>;
 
@@ -963,7 +1098,7 @@
     <span class='ident'>Float</span>,
 }
 
-<span class='doccomment'>/// BGFX error.</span>
+<span class='doccomment'>/// bgfx error.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>BgfxError</span> {
     <span class='doccomment'>/// An invalid display was provided in the platform data.</span>
@@ -976,10 +1111,13 @@
     <span class='ident'>InitFailed</span>,
 }
 
-<span class='doccomment'>/// A BGFX-managed buffer of memory.</span>
+<span class='doccomment'>/// bgfx-managed buffer of memory.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// It can be created by either copying existing data through `copy(...)`, or by referencing</span>
-<span class='doccomment'>/// existing memory directly through `reference(...)`.</span>
+<span class='doccomment'>/// It can be created by either copying existing data through [`copy(...)`], or by referencing</span>
+<span class='doccomment'>/// existing memory directly through [`reference(...)`].</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [`copy(...)`]: #method.copy</span>
+<span class='doccomment'>/// [`reference(...)`]: #method.reference</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span> {
     <span class='ident'>handle</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_memory_t</span>,
     <span class='ident'>_phantom</span>: <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> ()<span class='op'>&gt;</span>,
@@ -987,10 +1125,10 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span> <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span> {
 
-    <span class='doccomment'>/// Copies the source data into a new BGFX-managed buffer.</span>
+    <span class='doccomment'>/// Copies the source data into a new bgfx-managed buffer.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed,</span>
-    <span class='doccomment'>/// and will leak.</span>
+    <span class='doccomment'>/// **IMPORTANT:** If this buffer is never passed into a bgfx call, the memory will never be</span>
+    <span class='doccomment'>/// freed, and will leak.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>copy</span><span class='op'>&lt;</span><span class='lifetime'>&#39;d</span>, <span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>_bgfx</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Bgfx</span>, <span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;d</span> [<span class='ident'>T</span>]) <span class='op'>-&gt;</span> <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span> {
         <span class='kw'>unsafe</span> {
@@ -1000,12 +1138,12 @@
         }
     }
 
-    <span class='doccomment'>/// Creates a reference to the source data for passing into BGFX. When using this constructor</span>
-    <span class='doccomment'>/// over the `copy` call, no copy will be created. BGFX will read the source memory directly.</span>
+    <span class='doccomment'>/// Creates a reference to the source data for passing into bgfx. When using this constructor</span>
+    <span class='doccomment'>/// over the `copy` call, no copy will be created. bgfx will read the source memory directly.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Note that this is only valid for memory that will live for longer than the BGFX object,</span>
-    <span class='doccomment'>/// as it&#39;s the only way we can guarantee that the memory will still be valid until BGFX has</span>
-    <span class='doccomment'>/// finished using it.</span>
+    <span class='doccomment'>/// *Note that this is only valid for memory that will live for longer than the bgfx object,</span>
+    <span class='doccomment'>/// as it&#39;s the only way we can guarantee that the memory will still be valid until bgfx has</span>
+    <span class='doccomment'>/// finished using it.*</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reference</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>_bgfx</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> <span class='ident'>Bgfx</span>, <span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>T</span>]) <span class='op'>-&gt;</span> <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span><span class='op'>&gt;</span> {
         <span class='comment'>// TODO: The lifetime setup probably isn&#39;t 100% complete. Need to figure out how we can</span>
@@ -1059,7 +1197,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> <span class='ident'>Shader</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> {
 
-    <span class='doccomment'>/// Creates a new shader from BGFX-managed memory.</span>
+    <span class='doccomment'>/// Creates a new shader from bgfx-managed memory.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Shader</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> {
         <span class='kw'>unsafe</span> {
@@ -1087,7 +1225,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> <span class='ident'>IndexBuffer</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> {
 
-    <span class='doccomment'>/// Creates a new index buffer from BGFX-managed memory.</span>
+    <span class='doccomment'>/// Creates a new index buffer from bgfx-managed memory.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>indices</span>: <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span>, <span class='ident'>flags</span>: <span class='ident'>BufferFlags</span>) <span class='op'>-&gt;</span> <span class='ident'>IndexBuffer</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> {
         <span class='kw'>unsafe</span> {
@@ -1115,7 +1253,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> <span class='ident'>VertexBuffer</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span> {
 
-    <span class='doccomment'>/// Creates a new vertex buffer from BGFX-managed memory.</span>
+    <span class='doccomment'>/// Creates a new vertex buffer from bgfx-managed memory.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='lifetime'>&#39;v</span><span class='op'>&gt;</span>(<span class='ident'>verts</span>: <span class='ident'>Memory</span><span class='op'>&lt;</span><span class='lifetime'>&#39;m</span><span class='op'>&gt;</span>,
                    <span class='ident'>decl</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;v</span> <span class='ident'>VertexDecl</span>,
@@ -1147,7 +1285,7 @@
 
 <span class='kw'>impl</span> <span class='ident'>VertexDecl</span> {
 
-    <span class='doccomment'>/// Creates a new vertex declaration using a `VertexDeclBuilder`.</span>
+    <span class='doccomment'>/// Creates a new vertex declaration using a [`VertexDeclBuilder`].</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Example</span>
     <span class='doccomment'>///</span>
@@ -1157,6 +1295,8 @@
     <span class='doccomment'>///                .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8(true))</span>
     <span class='doccomment'>///                .end();</span>
     <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// [`VertexDeclBuilder`]: struct.VertexDeclBuilder.html</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>renderer</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>RendererType</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VertexDeclBuilder</span> {
         <span class='kw'>let</span> <span class='ident'>renderer</span> <span class='op'>=</span> <span class='ident'>renderer</span>.<span class='ident'>unwrap_or</span>(<span class='ident'>RendererType</span>::<span class='ident'>Null</span>) <span class='kw'>as</span> <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_renderer_type_t</span>;
@@ -1177,8 +1317,9 @@
 
 <span class='kw'>impl</span> <span class='ident'>VertexDeclBuilder</span> {
 
-    <span class='doccomment'>/// Adds a field to the structure descriptor. See `VertexDecl::new()` for an example.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='doccomment'>/// Adds a field to the structure descriptor. See [`VertexDecl::new`] for an example.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// [`VertexDecl::new`]: struct.VertexDecl.html#method.new</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>attrib</span>: <span class='ident'>Attrib</span>, <span class='ident'>count</span>: <span class='ident'>u8</span>, <span class='ident'>kind</span>: <span class='ident'>AttribType</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>normalized</span> <span class='op'>=</span> <span class='boolval'>false</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>as_int</span> <span class='op'>=</span> <span class='boolval'>false</span>;
@@ -1227,6 +1368,18 @@
         <span class='self'>self</span>
     }
 
+    <span class='doccomment'>/// Finalizes the construction of the [`VertexDecl`].</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// [`VertexDecl`]: struct.VertexDecl.html</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>end</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VertexDecl</span> {
+        <span class='kw'>unsafe</span> {
+            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_vertex_decl_end</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>decl</span>);
+        }
+
+        <span class='ident'>VertexDecl</span> { <span class='ident'>decl</span>: <span class='self'>self</span>.<span class='ident'>decl</span> }
+    }
+
     <span class='doccomment'>/// Indicates a gap in the vertex structure.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>skip</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>bytes</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw'>Self</span> {
@@ -1237,22 +1390,14 @@
         <span class='self'>self</span>
     }
 
-    <span class='doccomment'>/// Finalizes the construction of the `VertexDecl`.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>end</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VertexDecl</span> {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_vertex_decl_end</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>decl</span>);
-        }
-
-        <span class='ident'>VertexDecl</span> { <span class='ident'>decl</span>: <span class='self'>self</span>.<span class='ident'>decl</span> }
-    }
-
 }
 
-<span class='doccomment'>/// BGFX object.</span>
+<span class='doccomment'>/// Acts as the library wrapper for bgfx. Any calls intended to be run on the main thread are</span>
+<span class='doccomment'>/// exposed as functions on this object.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Contains all the calls intended to be run on the main thread. It is created through a call to</span>
-<span class='doccomment'>/// `bgfx::init(...)`, and will shut down BGFX when it is dropped.</span>
+<span class='doccomment'>/// It is created through a call to [`bgfx::init`], and will shut down bgfx when dropped.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [`bgfx::init`]: fn.init.html</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Bgfx</span> {
     <span class='comment'>// This dummy field only exists so this type can&#39;t be publicly instantiated.</span>
     <span class='ident'>_dummy</span>: <span class='ident'>u32</span>,
@@ -1265,48 +1410,7 @@
         <span class='ident'>Bgfx</span> { <span class='ident'>_dummy</span>: <span class='number'>0</span> }
     }
 
-    <span class='doccomment'>/// Resets the graphics device to the given size.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>width</span>: <span class='ident'>u16</span>, <span class='ident'>height</span>: <span class='ident'>u16</span>, <span class='ident'>reset</span>: <span class='ident'>ResetFlags</span>) {
-        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_reset</span>(<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>u32</span>, <span class='ident'>height</span> <span class='kw'>as</span> <span class='ident'>u32</span>, <span class='ident'>reset</span>.<span class='ident'>bits</span>()) }
-    }
-
-    <span class='doccomment'>/// Sets the debug flags in use.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_debug</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>debug</span>: <span class='ident'>DebugFlags</span>) {
-        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_debug</span>(<span class='ident'>debug</span>.<span class='ident'>bits</span>()) }
-    }
-
-    <span class='doccomment'>/// Sets the options to use when clearing the given view.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_clear</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>flags</span>: <span class='ident'>ClearFlags</span>, <span class='ident'>rgba</span>: <span class='ident'>u32</span>, <span class='ident'>depth</span>: <span class='ident'>f32</span>, <span class='ident'>stencil</span>: <span class='ident'>u8</span>) {
-        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_clear</span>(<span class='ident'>id</span>, <span class='ident'>flags</span>.<span class='ident'>bits</span>(), <span class='ident'>rgba</span>, <span class='ident'>depth</span>, <span class='ident'>stencil</span>) }
-    }
-
-    <span class='doccomment'>/// Sets the rectangle to display the given view in.</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_rect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>x</span>: <span class='ident'>u16</span>, <span class='ident'>y</span>: <span class='ident'>u16</span>, <span class='ident'>width</span>: <span class='ident'>u16</span>, <span class='ident'>height</span>: <span class='ident'>u16</span>) {
-        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_rect</span>(<span class='ident'>id</span>, <span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>width</span>, <span class='ident'>height</span>) }
-    }
-
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_transform</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>view</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>], <span class='ident'>proj</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>]) {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_transform</span>(<span class='ident'>id</span>,
-                                              <span class='ident'>view</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>,
-                                              <span class='ident'>proj</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>)
-        }
-    }
-
-    <span class='doccomment'>/// Touch a view. ( ͡° ͜ʖ ͡°)</span>
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>touch</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>) {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_touch</span>(<span class='ident'>id</span>);
-        }
-    }
-
-    <span class='doccomment'>/// Clears debug text.</span>
+    <span class='doccomment'>/// Clears the debug text overlay.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dbg_text_clear</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>attr</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>, <span class='ident'>small</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>) {
         <span class='kw'>let</span> <span class='ident'>small</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>small</span>.<span class='ident'>unwrap_or</span>(<span class='boolval'>false</span>) { <span class='number'>1_u8</span> } <span class='kw'>else</span> { <span class='number'>0_u8</span> };
@@ -1347,22 +1451,25 @@
         <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_frame</span>() }
     }
 
-    <span class='doccomment'>/// Sets the transform for rendering.</span>
+    <span class='doccomment'>/// Gets the type of the renderer in use.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_transform</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mtx</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>]) {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_transform</span>(<span class='ident'>mtx</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>, <span class='number'>1</span>);
-        }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_renderer_type</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RendererType</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>RendererType</span>::<span class='ident'>from_u32</span>(<span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_get_renderer_type</span>()).<span class='ident'>unwrap</span>() }
     }
 
-    <span class='doccomment'>/// Sets the vertex buffer for rendering.</span>
+    <span class='doccomment'>/// Resets the graphics device to the given size, with the given flags.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_vertex_buffer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>vbh</span>: <span class='kw-2'>&amp;</span><span class='ident'>VertexBuffer</span>) {
-        <span class='comment'>// TODO: How to solve lifetimes...</span>
-        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_vertex_buffer</span>(<span class='ident'>vbh</span>.<span class='ident'>handle</span>, <span class='number'>0</span>, <span class='ident'>std</span>::<span class='ident'>u32</span>::<span class='ident'>MAX</span>) }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>width</span>: <span class='ident'>u16</span>, <span class='ident'>height</span>: <span class='ident'>u16</span>, <span class='ident'>reset</span>: <span class='ident'>ResetFlags</span>) {
+        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_reset</span>(<span class='ident'>width</span> <span class='kw'>as</span> <span class='ident'>u32</span>, <span class='ident'>height</span> <span class='kw'>as</span> <span class='ident'>u32</span>, <span class='ident'>reset</span>.<span class='ident'>bits</span>()) }
     }
 
-    <span class='doccomment'>/// Sets the index buffer for rendering.</span>
+    <span class='doccomment'>/// Sets the debug flags to use.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_debug</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>debug</span>: <span class='ident'>DebugFlags</span>) {
+        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_debug</span>(<span class='ident'>debug</span>.<span class='ident'>bits</span>()) }
+    }
+
+    <span class='doccomment'>/// Sets the index buffer to use for rendering.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_index_buffer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ibh</span>: <span class='kw-2'>&amp;</span><span class='ident'>IndexBuffer</span>) {
         <span class='comment'>// TODO: How to solve lifetimes...</span>
@@ -1375,16 +1482,56 @@
         <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_state</span>(<span class='ident'>state</span>.<span class='ident'>bits</span>(), <span class='ident'>rgba</span>.<span class='ident'>unwrap_or</span>(<span class='number'>0</span>)) }
     }
 
-    <span class='doccomment'>/// Submit a primitive for rendering. Returns the number of draw calls.</span>
+    <span class='doccomment'>/// Sets the model transform for rendering. If not called before submitting a draw, an identity</span>
+    <span class='doccomment'>/// matrix will be used.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_transform</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mtx</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>]) {
+        <span class='kw'>unsafe</span> {
+            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_transform</span>(<span class='ident'>mtx</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>, <span class='number'>1</span>);
+        }
+    }
+
+    <span class='doccomment'>/// Sets the vertex buffer to use for rendering.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_vertex_buffer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>vbh</span>: <span class='kw-2'>&amp;</span><span class='ident'>VertexBuffer</span>) {
+        <span class='comment'>// TODO: How to solve lifetimes...</span>
+        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_vertex_buffer</span>(<span class='ident'>vbh</span>.<span class='ident'>handle</span>, <span class='number'>0</span>, <span class='ident'>std</span>::<span class='ident'>u32</span>::<span class='ident'>MAX</span>) }
+    }
+
+    <span class='doccomment'>/// Sets the options to use when clearing the given view.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_clear</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>flags</span>: <span class='ident'>ClearFlags</span>, <span class='ident'>rgba</span>: <span class='ident'>u32</span>, <span class='ident'>depth</span>: <span class='ident'>f32</span>, <span class='ident'>stencil</span>: <span class='ident'>u8</span>) {
+        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_clear</span>(<span class='ident'>id</span>, <span class='ident'>flags</span>.<span class='ident'>bits</span>(), <span class='ident'>rgba</span>, <span class='ident'>depth</span>, <span class='ident'>stencil</span>) }
+    }
+
+    <span class='doccomment'>/// Sets the rectangle to display the given view in.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_rect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>x</span>: <span class='ident'>u16</span>, <span class='ident'>y</span>: <span class='ident'>u16</span>, <span class='ident'>width</span>: <span class='ident'>u16</span>, <span class='ident'>height</span>: <span class='ident'>u16</span>) {
+        <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_rect</span>(<span class='ident'>id</span>, <span class='ident'>x</span>, <span class='ident'>y</span>, <span class='ident'>width</span>, <span class='ident'>height</span>) }
+    }
+
+    <span class='doccomment'>/// Sets the view and projection matrices for the given view.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_view_transform</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>, <span class='ident'>view</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>], <span class='ident'>proj</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>f32</span>; <span class='number'>16</span>]) {
+        <span class='kw'>unsafe</span> {
+            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_view_transform</span>(<span class='ident'>id</span>,
+                                              <span class='ident'>view</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>,
+                                              <span class='ident'>proj</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>libc</span>::<span class='ident'>c_void</span>)
+        }
+    }
+
+    <span class='doccomment'>/// Submit a primitive for rendering. Returns the number of draw calls used.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>submit</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>view</span>: <span class='ident'>u8</span>, <span class='ident'>program</span>: <span class='kw-2'>&amp;</span><span class='ident'>Program</span>) <span class='op'>-&gt;</span> <span class='ident'>u32</span> {
         <span class='kw'>unsafe</span> { <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_submit</span>(<span class='ident'>view</span>, <span class='ident'>program</span>.<span class='ident'>handle</span>, <span class='number'>0</span>) }
     }
 
-    <span class='doccomment'>/// Gets the type of the renderer in use.</span>
+    <span class='doccomment'>/// Touches a view. ( ͡° ͜ʖ ͡°)</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_renderer_type</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RendererType</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>RendererType</span>::<span class='ident'>from_u32</span>(<span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_get_renderer_type</span>()).<span class='ident'>unwrap</span>() }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>touch</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>u8</span>) {
+        <span class='kw'>unsafe</span> {
+            <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_touch</span>(<span class='ident'>id</span>);
+        }
     }
 
 }
@@ -1399,20 +1546,26 @@
 }
 
 <span class='doccomment'>/// Pump the render thread.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This should be called repeatedly on the render thread.</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>render_frame</span>() <span class='op'>-&gt;</span> <span class='ident'>RenderFrame</span> {
     <span class='kw'>unsafe</span> { <span class='ident'>RenderFrame</span>::<span class='ident'>from_u32</span>(<span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_render_frame</span>()).<span class='ident'>unwrap</span>() }
 }
 
-<span class='doccomment'>/// Platform data.</span>
+<span class='doccomment'>/// Platform data initializer.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This should be applied *only once*, before bgfx is used.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Example</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ```no_run</span>
+<span class='doccomment'>/// ```should_panic</span>
+<span class='doccomment'>/// // Note: The default value for all of these options is null. If that is what you want, you may</span>
+<span class='doccomment'>/// // choose not to call said setter.</span>
 <span class='doccomment'>/// bgfx::PlatformData::new()</span>
 <span class='doccomment'>///     .context(std::ptr::null_mut())</span>
-<span class='doccomment'>///     .display(std::ptr::null_mut())</span>
-<span class='doccomment'>///     .window(std::ptr::null_mut())</span>
+<span class='doccomment'>///     .display(std::ptr::null_mut()) // Must be non-null on unix platforms</span>
+<span class='doccomment'>///     .window(std::ptr::null_mut()) // Must be non-null</span>
 <span class='doccomment'>///     .apply()</span>
 <span class='doccomment'>///     .expect(&quot;Could not set platform data&quot;);</span>
 <span class='doccomment'>/// ```</span>
@@ -1433,6 +1586,20 @@
                 <span class='ident'>backBuffer</span>: <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>(),
                 <span class='ident'>backBufferDS</span>: <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>(),
             },
+        }
+    }
+
+    <span class='doccomment'>/// Apply the platform configuration.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>BgfxError</span><span class='op'>&gt;</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>ndt</span> <span class='op'>==</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() <span class='op'>&amp;&amp;</span> <span class='macro'>cfg</span><span class='macro'>!</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>) {
+            <span class='prelude-val'>Err</span>(<span class='ident'>BgfxError</span>::<span class='ident'>InvalidDisplay</span>)
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>nwh</span> <span class='op'>==</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() {
+            <span class='prelude-val'>Err</span>(<span class='ident'>BgfxError</span>::<span class='ident'>InvalidWindow</span>)
+        } <span class='kw'>else</span> {
+            <span class='kw'>unsafe</span> {
+                <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_platform_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>);
+            }
+            <span class='prelude-val'>Ok</span>(())
         }
     }
 
@@ -1457,24 +1624,13 @@
         <span class='self'>self</span>
     }
 
-    <span class='doccomment'>/// Apply the platform configuration.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>BgfxError</span><span class='op'>&gt;</span> {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>ndt</span> <span class='op'>==</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() <span class='op'>&amp;&amp;</span> <span class='macro'>cfg</span><span class='macro'>!</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;linux&quot;</span>) {
-            <span class='prelude-val'>Err</span>(<span class='ident'>BgfxError</span>::<span class='ident'>InvalidDisplay</span>)
-        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>nwh</span> <span class='op'>==</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() {
-            <span class='prelude-val'>Err</span>(<span class='ident'>BgfxError</span>::<span class='ident'>InvalidWindow</span>)
-        } <span class='kw'>else</span> {
-            <span class='kw'>unsafe</span> {
-                <span class='ident'>bgfx_sys</span>::<span class='ident'>bgfx_set_platform_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>);
-            }
-            <span class='prelude-val'>Ok</span>(())
-        }
-    }
 }
 
-<span class='doccomment'>/// Initializes BGFX.</span>
+<span class='doccomment'>/// Initializes bgfx.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// This must be called on the main thread after setting the platform data. See `PlatformData`.</span>
+<span class='doccomment'>/// This must be called on the main thread after setting the platform data. See [`PlatformData`].</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [`PlatformData`]: struct.PlatformData.html</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>init</span>(<span class='ident'>renderer</span>: <span class='ident'>RendererType</span>,
             <span class='ident'>vendor_id</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u16</span><span class='op'>&gt;</span>,
             <span class='ident'>device_id</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u16</span><span class='op'>&gt;</span>)

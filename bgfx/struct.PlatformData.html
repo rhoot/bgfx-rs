@@ -45,28 +45,32 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-2023' class='srclink' href='../src/bgfx/lib.rs.html#650-652' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-2023' class='srclink' href='../src/bgfx/lib.rs.html#725-727' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct PlatformData {
     // some fields omitted
-}</pre><div class='docblock'><p>Platform data.</p>
+}</pre><div class='docblock'><p>Platform data initializer.</p>
+
+<p>This should be applied <em>only once</em>, before bgfx is used.</p>
 
 <h1 id='example' class='section-header'><a href='#example'>Example</a></h1><pre class='rust rust-example-rendered'>
+<span class='comment'>// Note: The default value for all of these options is null. If that is what you want, you may</span>
+<span class='comment'>// choose not to call said setter.</span>
 <span class='ident'>bgfx</span>::<span class='ident'>PlatformData</span>::<span class='ident'>new</span>()
     .<span class='ident'>context</span>(<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())
-    .<span class='ident'>display</span>(<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())
-    .<span class='ident'>window</span>(<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())
+    .<span class='ident'>display</span>(<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>()) <span class='comment'>// Must be non-null on unix platforms</span>
+    .<span class='ident'>window</span>(<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>()) <span class='comment'>// Must be non-null</span>
     .<span class='ident'>apply</span>()
     .<span class='ident'>expect</span>(<span class='string'>&quot;Could not set platform data&quot;</span>);</pre>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../bgfx/struct.PlatformData.html' title='bgfx::PlatformData'>PlatformData</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../bgfx/struct.PlatformData.html' title='bgfx::PlatformData'>PlatformData</a></code></h4>
 <div class='docblock'><p>Creates an empty PlatformData instance.</p>
+</div><h4 id='method.apply' class='method'><code>fn <a href='#method.apply' class='fnname'>apply</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../bgfx/enum.BgfxError.html' title='bgfx::BgfxError'>BgfxError</a>&gt;</code></h4>
+<div class='docblock'><p>Apply the platform configuration.</p>
 </div><h4 id='method.context' class='method'><code>fn <a href='#method.context' class='fnname'>context</a>(&amp;mut self, context: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Sets the GL context to use.</p>
 </div><h4 id='method.display' class='method'><code>fn <a href='#method.display' class='fnname'>display</a>(&amp;mut self, display: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Sets the X11 display to use on unix systems.</p>
 </div><h4 id='method.window' class='method'><code>fn <a href='#method.window' class='fnname'>window</a>(&amp;mut self, window: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a></a>) -&gt; &amp;mut Self</code></h4>
 <div class='docblock'><p>Sets the handle to the window to use.</p>
-</div><h4 id='method.apply' class='method'><code>fn <a href='#method.apply' class='fnname'>apply</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../bgfx/enum.BgfxError.html' title='bgfx::BgfxError'>BgfxError</a>&gt;</code></h4>
-<div class='docblock'><p>Apply the platform configuration.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 

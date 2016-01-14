@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src\flags.rs`.">
+    <meta name="description" content="Source to the Rust file `src/flags.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>flags.rs.html -- source</title>
@@ -301,13 +301,9 @@
 <span id="259">259</span>
 <span id="260">260</span>
 <span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright (c) 2015-2016, Johan Sköld.</span>
 <span class='comment'>// License: http://opensource.org/licenses/ISC</span>
-
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>bgfx_sys</span>;
 
@@ -387,72 +383,72 @@
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_ALPHA_REF</span>(<span class='ident'>aref</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_alpha_ref</span>(<span class='ident'>aref</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_ALPHA_REF</span><span class='macro'>!</span>(<span class='ident'>aref</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_POINT_SIZE</span>(<span class='ident'>size</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_point_size</span>(<span class='ident'>size</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_POINT_SIZE</span><span class='macro'>!</span>(<span class='ident'>size</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_SEPARATE</span>(<span class='ident'>srcrgb</span>: <span class='ident'>u32</span>, <span class='ident'>dstrgb</span>: <span class='ident'>u32</span>, <span class='ident'>srca</span>: <span class='ident'>u8</span>, <span class='ident'>dsta</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_separate</span>(<span class='ident'>srcrgb</span>: <span class='ident'>u32</span>, <span class='ident'>dstrgb</span>: <span class='ident'>u32</span>, <span class='ident'>srca</span>: <span class='ident'>u8</span>, <span class='ident'>dsta</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_SEPARATE</span><span class='macro'>!</span>(<span class='ident'>srcrgb</span>, <span class='ident'>dstrgb</span>, <span class='ident'>srca</span>, <span class='ident'>dsta</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_EQUATION_SEPARATE</span>(<span class='ident'>rgb</span>: <span class='ident'>u32</span>, <span class='ident'>a</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_equation_separate</span>(<span class='ident'>rgb</span>: <span class='ident'>u32</span>, <span class='ident'>a</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_EQUATION_SEPARATE</span><span class='macro'>!</span>(<span class='ident'>rgb</span>, <span class='ident'>a</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_SEPARATE</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>, <span class='ident'>src</span>, <span class='ident'>dst</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_EQUATION</span>(<span class='ident'>equation</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_equation</span>(<span class='ident'>equation</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_EQUATION_SEPARATE</span><span class='macro'>!</span>(<span class='ident'>equation</span>, <span class='ident'>equation</span>)).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_x</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_x</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_x</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_xE</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_xe</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_xE</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>, <span class='ident'>equation</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_1</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_1</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_1</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_2</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_2</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_2</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_3</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_3</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_3</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_1E</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_1e</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_1E</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>, <span class='ident'>equation</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_2E</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_2e</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_2E</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>, <span class='ident'>equation</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>STATE_BLEND_FUNC_RT_3E</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>state_blend_func_rt_3e</span>(<span class='ident'>src</span>: <span class='ident'>u32</span>, <span class='ident'>dst</span>: <span class='ident'>u32</span>, <span class='ident'>equation</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>StateFlags</span> {
     <span class='ident'>StateFlags</span>::<span class='ident'>from_bits</span>(<span class='macro'>BGFX_STATE_BLEND_FUNC_RT_3E</span><span class='macro'>!</span>(<span class='ident'>src</span>, <span class='ident'>dst</span>, <span class='ident'>equation</span>) <span class='kw'>as</span> <span class='ident'>u64</span>).<span class='ident'>unwrap</span>()
 }
 

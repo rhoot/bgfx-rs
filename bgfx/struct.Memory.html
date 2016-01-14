@@ -45,25 +45,25 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-1839' class='srclink' href='../src/bgfx/lib.rs.html#214-217' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-1839' class='srclink' href='../src/bgfx/lib.rs.html#274-277' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Memory&lt;'b&gt; {
     // some fields omitted
-}</pre><div class='docblock'><p>A BGFX-managed buffer of memory.</p>
+}</pre><div class='docblock'><p>bgfx-managed buffer of memory.</p>
 
-<p>It can be created by either copying existing data through <code>copy(...)</code>, or by referencing
-existing memory directly through <code>reference(...)</code>.</p>
+<p>It can be created by either copying existing data through <a href="#method.copy"><code>copy(...)</code></a>, or by referencing
+existing memory directly through <a href="#method.reference"><code>reference(...)</code></a>.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'b&gt; <a class='struct' href='../bgfx/struct.Memory.html' title='bgfx::Memory'>Memory</a>&lt;'b&gt;</code></h3><div class='impl-items'><h4 id='method.copy' class='method'><code>fn <a href='#method.copy' class='fnname'>copy</a>&lt;'d, T&gt;(_bgfx: &amp;'b <a class='struct' href='../bgfx/struct.Bgfx.html' title='bgfx::Bgfx'>Bgfx</a>, data: <a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'d [</a>T<a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../bgfx/struct.Memory.html' title='bgfx::Memory'>Memory</a>&lt;'b&gt;</code></h4>
-<div class='docblock'><p>Copies the source data into a new BGFX-managed buffer.</p>
+<div class='docblock'><p>Copies the source data into a new bgfx-managed buffer.</p>
 
-<p>IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed,
-and will leak.</p>
+<p><strong>IMPORTANT:</strong> If this buffer is never passed into a bgfx call, the memory will never be
+freed, and will leak.</p>
 </div><h4 id='method.reference' class='method'><code>fn <a href='#method.reference' class='fnname'>reference</a>&lt;T&gt;(_bgfx: &amp;'b <a class='struct' href='../bgfx/struct.Bgfx.html' title='bgfx::Bgfx'>Bgfx</a>, data: <a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'b [</a>T<a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../bgfx/struct.Memory.html' title='bgfx::Memory'>Memory</a>&lt;'b&gt;</code></h4>
-<div class='docblock'><p>Creates a reference to the source data for passing into BGFX. When using this constructor
-over the <code>copy</code> call, no copy will be created. BGFX will read the source memory directly.</p>
+<div class='docblock'><p>Creates a reference to the source data for passing into bgfx. When using this constructor
+over the <code>copy</code> call, no copy will be created. bgfx will read the source memory directly.</p>
 
-<p>Note that this is only valid for memory that will live for longer than the BGFX object,
-as it&#39;s the only way we can guarantee that the memory will still be valid until BGFX has
-finished using it.</p>
+<p><em>Note that this is only valid for memory that will live for longer than the bgfx object,
+as it&#39;s the only way we can guarantee that the memory will still be valid until bgfx has
+finished using it.</em></p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
