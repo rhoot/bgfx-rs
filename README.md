@@ -1,8 +1,10 @@
 bgfx-rs
 =======
 
-Rust wrapper around [bgfx][bgfx], providing a clean safe API for rust
-applications.
+Rust wrapper around [bgfx], providing a clean, safe API for rust applications.
+
+*Please read the [crate documentation][docs] for build requirements and crate
+limitations before using.*
 
 Documentation
 -------------

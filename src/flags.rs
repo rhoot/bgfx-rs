@@ -1,8 +1,6 @@
 // Copyright (c) 2015-2016, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
-#![allow(non_snake_case)]
-
 extern crate bgfx_sys;
 
 bitflags! {
@@ -81,72 +79,72 @@ impl Default for StateFlags {
 }
 
 #[inline]
-pub fn STATE_ALPHA_REF(aref: u8) -> StateFlags {
+pub fn state_alpha_ref(aref: u8) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_ALPHA_REF!(aref)).unwrap()
 }
 
 #[inline]
-pub fn STATE_POINT_SIZE(size: u8) -> StateFlags {
+pub fn state_point_size(size: u8) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_POINT_SIZE!(size)).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_SEPARATE(srcrgb: u32, dstrgb: u32, srca: u8, dsta: u8) -> StateFlags {
+pub fn state_blend_func_separate(srcrgb: u32, dstrgb: u32, srca: u8, dsta: u8) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_SEPARATE!(srcrgb, dstrgb, srca, dsta)).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_EQUATION_SEPARATE(rgb: u32, a: u8) -> StateFlags {
+pub fn state_blend_equation_separate(rgb: u32, a: u8) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_EQUATION_SEPARATE!(rgb, a)).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC(src: u32, dst: u32) -> StateFlags {
+pub fn state_blend_func(src: u32, dst: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_SEPARATE!(src, dst, src, dst)).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_EQUATION(equation: u32) -> StateFlags {
+pub fn state_blend_equation(equation: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_EQUATION_SEPARATE!(equation, equation)).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_x(src: u32, dst: u32) -> StateFlags {
+pub fn state_blend_func_rt_x(src: u32, dst: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_x!(src, dst) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_xE(src: u32, dst: u32, equation: u64) -> StateFlags {
+pub fn state_blend_func_rt_xe(src: u32, dst: u32, equation: u64) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_xE!(src, dst, equation) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_1(src: u32, dst: u32) -> StateFlags {
+pub fn state_blend_func_rt_1(src: u32, dst: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_1!(src, dst) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_2(src: u32, dst: u32) -> StateFlags {
+pub fn state_blend_func_rt_2(src: u32, dst: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_2!(src, dst) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_3(src: u32, dst: u32) -> StateFlags {
+pub fn state_blend_func_rt_3(src: u32, dst: u32) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_3!(src, dst) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_1E(src: u32, dst: u32, equation: u64) -> StateFlags {
+pub fn state_blend_func_rt_1e(src: u32, dst: u32, equation: u64) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_1E!(src, dst, equation) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_2E(src: u32, dst: u32, equation: u64) -> StateFlags {
+pub fn state_blend_func_rt_2e(src: u32, dst: u32, equation: u64) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_2E!(src, dst, equation) as u64).unwrap()
 }
 
 #[inline]
-pub fn STATE_BLEND_FUNC_RT_3E(src: u32, dst: u32, equation: u64) -> StateFlags {
+pub fn state_blend_func_rt_3e(src: u32, dst: u32, equation: u64) -> StateFlags {
     StateFlags::from_bits(BGFX_STATE_BLEND_FUNC_RT_3E!(src, dst, equation) as u64).unwrap()
 }
 

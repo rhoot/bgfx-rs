@@ -1,6 +1,63 @@
 // Copyright (c) 2015-2016, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
+//! Rust wrapper around [bgfx].
+//!
+//! Before using this crate, ensure that you fullfill the build requirements for bgfx, as outlined
+//! in its [documentation][bgfx building]. If you are compiling for an `msvc` target, make sure to
+//! build this crate in a developer command prompt.
+//!
+//! ## Limitations
+//!
+//! - So far, only Windows and Linux are supported.
+//! - Far from all bgfx functionality is exposed. As more examples get ported, more functionality
+//!   will be as well.
+//!
+//! *This API is still unstable, and very likely to change.*
+//!
+//! ## Basic Usage
+//!
+//! Before this crate can be used, some platform data must be initialized. See [`PlatformData`].
+//!
+//! ```should_panic
+//! bgfx::PlatformData::new()
+//!     .context(std::ptr::null_mut())
+//!     .display(std::ptr::null_mut())
+//!     .window(std::ptr::null_mut())
+//!     .apply()
+//!     .expect("Could not set platform data");
+//! ```
+//!
+//! Once the platform data has been initialized, a new thread should be spawned to act as the main
+//! thread. This thread should call [`bgfx::init`] to initialize bgfx. The object returned by that
+//! function should be used to access bgfx API calls.
+//!
+//! ```no_run
+//! std::thread::spawn(|| {
+//!     let bgfx = bgfx::init(bgfx::RendererType::Default, None, None)
+//!         .expect("Failed to initialize bgfx");
+//!     // ...
+//! });
+//! ```
+//!
+//! Finally, the real main thread should act as the render thread, and repeatedly be calling
+//! [`bgfx::render_frame`].
+//!
+//! ```no_run
+//! loop {
+//!     // This is probably also where you will want to pump the window event queue.
+//!     bgfx::render_frame();
+//! }
+//! ```
+//!
+//! See the examples for more in-depth usage.
+//!
+//! [bgfx]: https://github.com/bkaradzic/bgfx
+//! [bgfx building]: https://bkaradzic.github.io/bgfx/build.html
+//! [`bgfx::init`]: fn.init.html
+//! [`bgfx::render_frame`]: fn.render_frame.html
+//! [`PlatformData`]: struct.PlatformData.html
+
 #[macro_use]
 extern crate bgfx_sys;
 #[macro_use]
@@ -12,7 +69,7 @@ use std::marker::PhantomData;
 use std::mem;
 use std::ptr;
 
-mod flags;
+pub mod flags;
 
 pub use flags::*;
 
@@ -194,7 +251,7 @@ pub enum AttribType {
     Float,
 }
 
-/// BGFX error.
+/// bgfx error.
 #[derive(Debug)]
 pub enum BgfxError {
     /// An invalid display was provided in the platform data.
@@ -207,10 +264,13 @@ pub enum BgfxError {
     InitFailed,
 }
 
-/// A BGFX-managed buffer of memory.
+/// bgfx-managed buffer of memory.
 ///
-/// It can be created by either copying existing data through `copy(...)`, or by referencing
-/// existing memory directly through `reference(...)`.
+/// It can be created by either copying existing data through [`copy(...)`], or by referencing
+/// existing memory directly through [`reference(...)`].
+///
+/// [`copy(...)`]: #method.copy
+/// [`reference(...)`]: #method.reference
 pub struct Memory<'b> {
     handle: *const bgfx_sys::bgfx_memory_t,
     _phantom: PhantomData<&'b ()>,
@@ -218,10 +278,10 @@ pub struct Memory<'b> {
 
 impl<'b> Memory<'b> {
 
-    /// Copies the source data into a new BGFX-managed buffer.
+    /// Copies the source data into a new bgfx-managed buffer.
     ///
-    /// IMPORTANT: If this buffer is never passed into a bgfx call, the memory will never be freed,
-    /// and will leak.
+    /// **IMPORTANT:** If this buffer is never passed into a bgfx call, the memory will never be
+    /// freed, and will leak.
     #[inline]
     pub fn copy<'d, T>(_bgfx: &'b Bgfx, data: &'d [T]) -> Memory<'b> {
         unsafe {
@@ -231,12 +291,12 @@ impl<'b> Memory<'b> {
         }
     }
 
-    /// Creates a reference to the source data for passing into BGFX. When using this constructor
-    /// over the `copy` call, no copy will be created. BGFX will read the source memory directly.
+    /// Creates a reference to the source data for passing into bgfx. When using this constructor
+    /// over the `copy` call, no copy will be created. bgfx will read the source memory directly.
     ///
-    /// Note that this is only valid for memory that will live for longer than the BGFX object,
-    /// as it's the only way we can guarantee that the memory will still be valid until BGFX has
-    /// finished using it.
+    /// *Note that this is only valid for memory that will live for longer than the bgfx object,
+    /// as it's the only way we can guarantee that the memory will still be valid until bgfx has
+    /// finished using it.*
     #[inline]
     pub fn reference<T>(_bgfx: &'b Bgfx, data: &'b [T]) -> Memory<'b> {
         // TODO: The lifetime setup probably isn't 100% complete. Need to figure out how we can
@@ -290,7 +350,7 @@ pub struct Shader<'m> {
 
 impl<'m> Shader<'m> {
 
-    /// Creates a new shader from BGFX-managed memory.
+    /// Creates a new shader from bgfx-managed memory.
     #[inline]
     pub fn new(data: Memory<'m>) -> Shader<'m> {
         unsafe {
@@ -318,7 +378,7 @@ pub struct IndexBuffer<'m> {
 
 impl<'m> IndexBuffer<'m> {
 
-    /// Creates a new index buffer from BGFX-managed memory.
+    /// Creates a new index buffer from bgfx-managed memory.
     #[inline]
     pub fn new(indices: Memory<'m>, flags: BufferFlags) -> IndexBuffer<'m> {
         unsafe {
@@ -346,7 +406,7 @@ pub struct VertexBuffer<'m> {
 
 impl<'m> VertexBuffer<'m> {
 
-    /// Creates a new vertex buffer from BGFX-managed memory.
+    /// Creates a new vertex buffer from bgfx-managed memory.
     #[inline]
     pub fn new<'v>(verts: Memory<'m>,
                    decl: &'v VertexDecl,
@@ -378,7 +438,7 @@ pub struct VertexDecl {
 
 impl VertexDecl {
 
-    /// Creates a new vertex declaration using a `VertexDeclBuilder`.
+    /// Creates a new vertex declaration using a [`VertexDeclBuilder`].
     ///
     /// # Example
     ///
@@ -388,6 +448,8 @@ impl VertexDecl {
     ///                .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8(true))
     ///                .end();
     /// ```
+    ///
+    /// [`VertexDeclBuilder`]: struct.VertexDeclBuilder.html
     #[inline]
     pub fn new(renderer: Option<RendererType>) -> VertexDeclBuilder {
         let renderer = renderer.unwrap_or(RendererType::Null) as bgfx_sys::bgfx_renderer_type_t;
@@ -408,8 +470,9 @@ pub struct VertexDeclBuilder {
 
 impl VertexDeclBuilder {
 
-    /// Adds a field to the structure descriptor. See `VertexDecl::new()` for an example.
-    #[inline]
+    /// Adds a field to the structure descriptor. See [`VertexDecl::new`] for an example.
+    ///
+    /// [`VertexDecl::new`]: struct.VertexDecl.html#method.new
     pub fn add(&mut self, attrib: Attrib, count: u8, kind: AttribType) -> &mut Self {
         let mut normalized = false;
         let mut as_int = false;
@@ -458,6 +521,18 @@ impl VertexDeclBuilder {
         self
     }
 
+    /// Finalizes the construction of the [`VertexDecl`].
+    ///
+    /// [`VertexDecl`]: struct.VertexDecl.html
+    #[inline]
+    pub fn end(&mut self) -> VertexDecl {
+        unsafe {
+            bgfx_sys::bgfx_vertex_decl_end(&mut self.decl);
+        }
+
+        VertexDecl { decl: self.decl }
+    }
+
     /// Indicates a gap in the vertex structure.
     #[inline]
     pub fn skip(&mut self, bytes: u8) -> &mut Self {
@@ -468,22 +543,14 @@ impl VertexDeclBuilder {
         self
     }
 
-    /// Finalizes the construction of the `VertexDecl`.
-    #[inline]
-    pub fn end(&mut self) -> VertexDecl {
-        unsafe {
-            bgfx_sys::bgfx_vertex_decl_end(&mut self.decl);
-        }
-
-        VertexDecl { decl: self.decl }
-    }
-
 }
 
-/// BGFX object.
+/// Acts as the library wrapper for bgfx. Any calls intended to be run on the main thread are
+/// exposed as functions on this object.
 ///
-/// Contains all the calls intended to be run on the main thread. It is created through a call to
-/// `bgfx::init(...)`, and will shut down BGFX when it is dropped.
+/// It is created through a call to [`bgfx::init`], and will shut down bgfx when dropped.
+///
+/// [`bgfx::init`]: fn.init.html
 pub struct Bgfx {
     // This dummy field only exists so this type can't be publicly instantiated.
     _dummy: u32,
@@ -496,48 +563,7 @@ impl Bgfx {
         Bgfx { _dummy: 0 }
     }
 
-    /// Resets the graphics device to the given size.
-    #[inline]
-    pub fn reset(&self, width: u16, height: u16, reset: ResetFlags) {
-        unsafe { bgfx_sys::bgfx_reset(width as u32, height as u32, reset.bits()) }
-    }
-
-    /// Sets the debug flags in use.
-    #[inline]
-    pub fn set_debug(&self, debug: DebugFlags) {
-        unsafe { bgfx_sys::bgfx_set_debug(debug.bits()) }
-    }
-
-    /// Sets the options to use when clearing the given view.
-    #[inline]
-    pub fn set_view_clear(&self, id: u8, flags: ClearFlags, rgba: u32, depth: f32, stencil: u8) {
-        unsafe { bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil) }
-    }
-
-    /// Sets the rectangle to display the given view in.
-    #[inline]
-    pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u16, height: u16) {
-        unsafe { bgfx_sys::bgfx_set_view_rect(id, x, y, width, height) }
-    }
-
-    #[inline]
-    pub fn set_view_transform(&self, id: u8, view: &[f32; 16], proj: &[f32; 16]) {
-        unsafe {
-            bgfx_sys::bgfx_set_view_transform(id,
-                                              view.as_ptr() as *const libc::c_void,
-                                              proj.as_ptr() as *const libc::c_void)
-        }
-    }
-
-    /// Touch a view. ( ͡° ͜ʖ ͡°)
-    #[inline]
-    pub fn touch(&self, id: u8) {
-        unsafe {
-            bgfx_sys::bgfx_touch(id);
-        }
-    }
-
-    /// Clears debug text.
+    /// Clears the debug text overlay.
     #[inline]
     pub fn dbg_text_clear(&self, attr: Option<u8>, small: Option<bool>) {
         let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
@@ -578,22 +604,25 @@ impl Bgfx {
         unsafe { bgfx_sys::bgfx_frame() }
     }
 
-    /// Sets the transform for rendering.
+    /// Gets the type of the renderer in use.
     #[inline]
-    pub fn set_transform(&self, mtx: &[f32; 16]) {
-        unsafe {
-            bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const libc::c_void, 1);
-        }
+    pub fn get_renderer_type(&self) -> RendererType {
+        unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
     }
 
-    /// Sets the vertex buffer for rendering.
+    /// Resets the graphics device to the given size, with the given flags.
     #[inline]
-    pub fn set_vertex_buffer(&self, vbh: &VertexBuffer) {
-        // TODO: How to solve lifetimes...
-        unsafe { bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX) }
+    pub fn reset(&self, width: u16, height: u16, reset: ResetFlags) {
+        unsafe { bgfx_sys::bgfx_reset(width as u32, height as u32, reset.bits()) }
     }
 
-    /// Sets the index buffer for rendering.
+    /// Sets the debug flags to use.
+    #[inline]
+    pub fn set_debug(&self, debug: DebugFlags) {
+        unsafe { bgfx_sys::bgfx_set_debug(debug.bits()) }
+    }
+
+    /// Sets the index buffer to use for rendering.
     #[inline]
     pub fn set_index_buffer(&self, ibh: &IndexBuffer) {
         // TODO: How to solve lifetimes...
@@ -606,16 +635,56 @@ impl Bgfx {
         unsafe { bgfx_sys::bgfx_set_state(state.bits(), rgba.unwrap_or(0)) }
     }
 
-    /// Submit a primitive for rendering. Returns the number of draw calls.
+    /// Sets the model transform for rendering. If not called before submitting a draw, an identity
+    /// matrix will be used.
+    #[inline]
+    pub fn set_transform(&self, mtx: &[f32; 16]) {
+        unsafe {
+            bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const libc::c_void, 1);
+        }
+    }
+
+    /// Sets the vertex buffer to use for rendering.
+    #[inline]
+    pub fn set_vertex_buffer(&self, vbh: &VertexBuffer) {
+        // TODO: How to solve lifetimes...
+        unsafe { bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX) }
+    }
+
+    /// Sets the options to use when clearing the given view.
+    #[inline]
+    pub fn set_view_clear(&self, id: u8, flags: ClearFlags, rgba: u32, depth: f32, stencil: u8) {
+        unsafe { bgfx_sys::bgfx_set_view_clear(id, flags.bits(), rgba, depth, stencil) }
+    }
+
+    /// Sets the rectangle to display the given view in.
+    #[inline]
+    pub fn set_view_rect(&self, id: u8, x: u16, y: u16, width: u16, height: u16) {
+        unsafe { bgfx_sys::bgfx_set_view_rect(id, x, y, width, height) }
+    }
+
+    /// Sets the view and projection matrices for the given view.
+    #[inline]
+    pub fn set_view_transform(&self, id: u8, view: &[f32; 16], proj: &[f32; 16]) {
+        unsafe {
+            bgfx_sys::bgfx_set_view_transform(id,
+                                              view.as_ptr() as *const libc::c_void,
+                                              proj.as_ptr() as *const libc::c_void)
+        }
+    }
+
+    /// Submit a primitive for rendering. Returns the number of draw calls used.
     #[inline]
     pub fn submit(&self, view: u8, program: &Program) -> u32 {
         unsafe { bgfx_sys::bgfx_submit(view, program.handle, 0) }
     }
 
-    /// Gets the type of the renderer in use.
+    /// Touches a view. ( ͡° ͜ʖ ͡°)
     #[inline]
-    pub fn get_renderer_type(&self) -> RendererType {
-        unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
+    pub fn touch(&self, id: u8) {
+        unsafe {
+            bgfx_sys::bgfx_touch(id);
+        }
     }
 
 }
@@ -630,20 +699,26 @@ impl Drop for Bgfx {
 }
 
 /// Pump the render thread.
+///
+/// This should be called repeatedly on the render thread.
 #[inline]
 pub fn render_frame() -> RenderFrame {
     unsafe { RenderFrame::from_u32(bgfx_sys::bgfx_render_frame()).unwrap() }
 }
 
-/// Platform data.
+/// Platform data initializer.
+///
+/// This should be applied *only once*, before bgfx is used.
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```should_panic
+/// // Note: The default value for all of these options is null. If that is what you want, you may
+/// // choose not to call said setter.
 /// bgfx::PlatformData::new()
 ///     .context(std::ptr::null_mut())
-///     .display(std::ptr::null_mut())
-///     .window(std::ptr::null_mut())
+///     .display(std::ptr::null_mut()) // Must be non-null on unix platforms
+///     .window(std::ptr::null_mut()) // Must be non-null
 ///     .apply()
 ///     .expect("Could not set platform data");
 /// ```
@@ -664,6 +739,20 @@ impl PlatformData {
                 backBuffer: ptr::null_mut(),
                 backBufferDS: ptr::null_mut(),
             },
+        }
+    }
+
+    /// Apply the platform configuration.
+    pub fn apply(&mut self) -> Result<(), BgfxError> {
+        if self.data.ndt == ptr::null_mut() && cfg!(target_os = "linux") {
+            Err(BgfxError::InvalidDisplay)
+        } else if self.data.nwh == ptr::null_mut() {
+            Err(BgfxError::InvalidWindow)
+        } else {
+            unsafe {
+                bgfx_sys::bgfx_set_platform_data(&mut self.data);
+            }
+            Ok(())
         }
     }
 
@@ -688,24 +777,13 @@ impl PlatformData {
         self
     }
 
-    /// Apply the platform configuration.
-    pub fn apply(&mut self) -> Result<(), BgfxError> {
-        if self.data.ndt == ptr::null_mut() && cfg!(target_os = "linux") {
-            Err(BgfxError::InvalidDisplay)
-        } else if self.data.nwh == ptr::null_mut() {
-            Err(BgfxError::InvalidWindow)
-        } else {
-            unsafe {
-                bgfx_sys::bgfx_set_platform_data(&mut self.data);
-            }
-            Ok(())
-        }
-    }
 }
 
-/// Initializes BGFX.
+/// Initializes bgfx.
 ///
-/// This must be called on the main thread after setting the platform data. See `PlatformData`.
+/// This must be called on the main thread after setting the platform data. See [`PlatformData`].
+///
+/// [`PlatformData`]: struct.PlatformData.html
 pub fn init(renderer: RendererType,
             vendor_id: Option<u16>,
             device_id: Option<u16>)

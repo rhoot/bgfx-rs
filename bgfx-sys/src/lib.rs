@@ -1,6 +1,8 @@
 // Copyright (c) 2015-2016, Johan Sköld.
 // License: http://opensource.org/licenses/ISC
 
+//! Raw FFI bgfx bindings.
+
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
