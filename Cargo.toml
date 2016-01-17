@@ -12,5 +12,5 @@ path = "bgfx-sys/"
 
 [dev-dependencies]
 cgmath = "0.7.0"
-glutin = { git = "https://github.com/rhoot/glutin.git", rev = "c27e979" }
+glutin = { git = "https://github.com/rhoot/glutin.git", rev = "c71b14a" }
 time = "0.1.33"

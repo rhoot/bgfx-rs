@@ -137,7 +137,7 @@ fn init_bgfx_platform(window: &Window) {
     use glutin::os::macos::WindowExt;
 
     PlatformData::new()
-        .window(window.get_nswindow())
+        .window(window.get_nswindow() as *mut libc::c_void)
         .apply()
         .unwrap();
 }
