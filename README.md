@@ -22,9 +22,9 @@ cargo run --example 01-cubes
 
 **OSX Note:** There is currently no really clean way to exit the examples in
 OSX, and closing the window may in fact cause a crash. This is due to
-limitations in [glutin] (specifically [#468] and [#520]). This only effects
-the examples, and not the crate itself. The best way of closing them is to
-simply `Ctrl-C` in the console.
+limitations in [glutin][glutin] (specifically [#468] and [#520]). This only
+effects the examples, and not the crate itself. The best way of closing them
+is to simply `Ctrl-C` in the console.
 
 License
 -------
