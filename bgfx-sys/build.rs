@@ -2,8 +2,9 @@
 // License: http://opensource.org/licenses/ISC
 
 use std::env;
+use std::io::{Read, Write};
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 fn main() {
     let target = env::var("TARGET").unwrap();
@@ -126,8 +127,38 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
             println!("cargo:rustc-link-lib=framework=Cocoa");
             println!("cargo:rustc-link-lib=framework=QuartzCore");
             println!("cargo:rustc-link-lib=framework=OpenGL");
-            println!("cargo:rustc-link-lib=framework=Metal");
+
+            if should_link_metal() {
+                println!("cargo:rustc-link-lib=framework=Metal");
+            }
         }
         _ => unreachable!(),
     }
+}
+
+fn should_link_metal() -> bool {
+    let test = "#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__\nv=__ENVIRONMENT_MAC_OS_X_VER\
+                SION_MIN_REQUIRED__\n#else\nv=1\n#endif";
+
+    let mut cc = Command::new("cc")
+                     .arg("-xc")
+                     .arg("-E")
+                     .arg("-")
+                     .stdin(Stdio::piped())
+                     .stdout(Stdio::piped())
+                     .spawn()
+                     .unwrap();
+
+    {
+        let mut stdin = cc.stdin.take().unwrap();
+        stdin.write_fmt(format_args!("{}", test)).unwrap();
+    }
+
+    let output = cc.wait_with_output().unwrap();
+    let output_str = String::from_utf8(output.stdout).unwrap();
+    let ver_line = output_str.lines().find(|l| l.starts_with("v=")).unwrap();
+    let ver_str = &ver_line[2..];
+    let ver = ver_str.parse::<u32>().unwrap();
+
+    ver >= 101100
 }
