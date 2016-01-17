@@ -19,7 +19,7 @@ fn main() {
 
     match compiler {
         "msvc" => build_msvc(bitness),
-        "gnu" || "darwin" => build_gmake(bitness, &profile, platform),
+        "gnu" | "darwin" => build_gmake(bitness, &profile, platform),
         _ => panic!("Unsupported compiler"),
     }
 }
