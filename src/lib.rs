@@ -9,7 +9,7 @@
 //!
 //! ## Limitations
 //!
-//! - So far, only Windows and Linux are supported.
+//! - So far, only Windows, Linux, and OSX are supported.
 //! - Far from all bgfx functionality is exposed. As more examples get ported, more functionality
 //!   will be as well.
 //!

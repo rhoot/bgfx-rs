@@ -19,8 +19,8 @@ fn main() {
 
     match compiler {
         "msvc" => build_msvc(bitness),
-        "gnu" => build_gnu(bitness, &profile, platform),
-        _ => unreachable!(),
+        "gnu" || "darwin" => build_gmake(bitness, &profile, platform),
+        _ => panic!("Unsupported compiler"),
     }
 }
 
@@ -62,16 +62,18 @@ fn build_msvc(bitness: u32) {
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }
 
-fn build_gnu(bitness: u32, profile: &str, platform: &str) {
+fn build_gmake(bitness: u32, profile: &str, platform: &str) {
     let project_name = match platform {
         "pc-windows" => "gmake-mingw-gcc",
         "unknown-linux" => "gmake-linux",
-        _ => unreachable!(),
+        "apple" => "gmake-osx",
+        _ => panic!("Unsupported OS"),
     };
 
     let output_name = match platform {
         "pc-windows" => format!("win{}_mingw-gcc", bitness),
         "unknown-linux" => format!("linux{}_gcc", bitness),
+        "apple" => format!("osx{}_clang", bitness),
         _ => unreachable!(),
     };
 
@@ -119,6 +121,12 @@ fn build_gnu(bitness: u32, profile: &str, platform: &str) {
         "unknown-linux" => {
             println!("cargo:rustc-link-lib=GL");
             println!("cargo:rustc-link-lib=X11");
+        }
+        "apple" => {
+            println!("cargo:rustc-link-lib=framework=Cocoa");
+            println!("cargo:rustc-link-lib=framework=QuartzCore");
+            println!("cargo:rustc-link-lib=framework=OpenGL");
+            println!("cargo:rustc-link-lib=framework=Metal");
         }
         _ => unreachable!(),
     }

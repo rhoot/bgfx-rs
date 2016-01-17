@@ -110,7 +110,7 @@ pub fn load_program<'a, 'b>(bgfx: &'a Bgfx,
 }
 
 /// Set the platform data to be used by BGFX.
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn init_bgfx_platform(window: &Window) {
     use glutin::os::unix::WindowExt;
 
@@ -128,6 +128,16 @@ fn init_bgfx_platform(window: &Window) {
 
     PlatformData::new()
         .window(window.get_hwnd())
+        .apply()
+        .unwrap();
+}
+
+#[cfg(target_os = "macos")]
+fn init_bgfx_platform(window: &Window) {
+    use glutin::os::macos::WindowExt;
+
+    PlatformData::new()
+        .window(window.get_nswindow())
         .apply()
         .unwrap();
 }
