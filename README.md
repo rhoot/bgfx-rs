@@ -1,4 +1,4 @@
-bgfx-rs
+bgfx-rs [![Build Status](https://travis-ci.org/rhoot/bgfx-rs.svg?branch=master)](https://travis-ci.org/rhoot/bgfx-rs)
 =======
 
 Rust wrapper around [bgfx], providing a clean, safe API for rust applications.
