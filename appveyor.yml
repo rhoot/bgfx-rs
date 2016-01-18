@@ -1,0 +1,31 @@
+environment:
+    matrix:
+      - ARCH: amd64
+        CHANNEL: stable
+        TRIPLE: x86_64-pc-windows-msvc
+      - ARCH: amd64
+        CHANNEL: beta
+        TRIPLE: x86_64-pc-windows-msvc
+      - ARCH: amd64
+        CHANNEL: nightly
+        TRIPLE: x86_64-pc-windows-msvc
+
+matrix:
+    allow_failures:
+      - CHANNEL: nightly
+
+install:
+  - git submodule update --init --recursive
+  - C:\Python35-x64\python.exe scripts/fetch-win-deps.py %CHANNEL% %TRIPLE%
+  - build\rust-%CHANNEL%-%TRIPLE%.exe /VERYSILENT /NORESTART /DIR=C:\Rust\%CHANNEL%
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" %ARCH%
+  - set PATH=%PATH%;%cd%\build
+  - set PATH=%PATH%;C:\Rust\%CHANNEL%\bin
+  - rustc -V
+  - cargo -V
+
+build: false
+
+test_script:
+  - cargo build --verbose
+  - cargo test --verbose

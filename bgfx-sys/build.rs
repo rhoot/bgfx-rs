@@ -35,9 +35,10 @@ fn build_msvc(bitness: u32) {
         _ => panic!(format!("Unknown Visual Studio version: {:?}", vs_version)),
     };
 
-    Command::new("make.exe")
+    Command::new("bx/tools/bin/windows/genie.exe")
         .current_dir("bgfx")
-        .arg(format!(".build/projects/vs{}", vs_release))
+        .arg("--with-dynamic-runtime")
+        .arg(format!("vs{}", vs_release))
         .output()
         .expect("Failed to generate project files");
 
@@ -60,6 +61,8 @@ fn build_msvc(bitness: u32) {
     path.push("bin");
 
     println!("cargo:rustc-link-lib=static=bgfxRelease");
+    println!("cargo:rustc-link-lib=gdi32");
+    println!("cargo:rustc-link-lib=user32");
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }
 

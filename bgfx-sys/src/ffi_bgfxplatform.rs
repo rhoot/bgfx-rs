@@ -25,6 +25,7 @@ pub type bgfx_platform_data_t = Struct_bgfx_platform_data;
 #[repr(C)]
 #[derive(Copy)]
 pub struct Struct_bgfx_internal_data {
+    pub caps: *const Struct_bgfx_caps,
     pub context: *mut ::libc::c_void,
 }
 impl ::std::clone::Clone for Struct_bgfx_internal_data {
