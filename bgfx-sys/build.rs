@@ -25,6 +25,7 @@ fn main() {
     }
 }
 
+/// Builds the bgfx binaries for `msvc` targets.
 fn build_msvc(bitness: u32) {
     let vs_version = env::var("VisualStudioVersion").expect("Visual Studio version not detected");
     let platform = if bitness == 32 { "X86" } else { "X64" };
@@ -66,6 +67,7 @@ fn build_msvc(bitness: u32) {
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 }
 
+/// Builds the bgfx binaries for makefile based targets.
 fn build_gmake(bitness: u32, profile: &str, platform: &str) {
     let project_name = match platform {
         "pc-windows" => "gmake-mingw-gcc",
@@ -82,20 +84,32 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
     };
 
     // Generate makefiles
-    Command::new("make")
-        .current_dir("bgfx")
-        .arg(format!(".build/projects/{}", project_name))
-        .output()
-        .expect("Failed to generate makefiles");
+    let status = Command::new("make")
+                     .arg("-C")
+                     .arg("bgfx")
+                     .arg(format!(".build/projects/{}", project_name))
+                     .status()
+                     .expect("Failed to generate makefiles");
+
+    if status.code().unwrap() != 0 {
+        panic!("Failed to generate makefiles.");
+    }
+
+    // C flags
+    let cflags = if platform == "pc-windows" && bitness == 32 {
+        "-fPIC -DBGFX_CONFIG_MULTITHREADED=1 -mincoming-stack-boundary=2"
+    } else {
+        "-fPIC -DBGFX_CONFIG_MULTITHREADED=1"
+    };
 
     // Build bgfx
     let status = Command::new("make")
-                     .current_dir("bgfx")
-                     .env("CFLAGS", "-fPIC -DBGFX_CONFIG_MULTITHREADED=1")
+                     .env("CFLAGS", cflags)
                      .arg("-R")
                      .arg("-C")
-                     .arg(format!(".build/projects/{}", project_name))
+                     .arg(format!("bgfx/.build/projects/{}", project_name))
                      .arg(format!("config={}{}", profile, bitness))
+                     .arg("verbose=1")
                      .arg("bgfx")
                      .status()
                      .expect("Failed to build bgfx");
@@ -139,6 +153,9 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
     }
 }
 
+/// Determines whether we should link with Metal on OSX. The Metal framework
+/// is only included starting with OSX 10.11. We do this through the C
+/// compiler so we can test the same macro bgfx tests for support with.
 fn should_link_metal() -> bool {
     let test = "#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__\nv=__ENVIRONMENT_MAC_OS_X_VER\
                 SION_MIN_REQUIRED__\n#else\nv=1\n#endif";

@@ -1,28 +1,29 @@
 environment:
     matrix:
-      - ARCH: amd64
-        CHANNEL: stable
-        TRIPLE: x86_64-pc-windows-msvc
-      - ARCH: amd64
-        CHANNEL: beta
-        TRIPLE: x86_64-pc-windows-msvc
-      - ARCH: amd64
-        CHANNEL: nightly
-        TRIPLE: x86_64-pc-windows-msvc
-
-matrix:
-    allow_failures:
-      - CHANNEL: nightly
+      - CHANNEL: stable
+        TARGET: x86_64-pc-windows-msvc
+      - CHANNEL: beta
+        TARGET: x86_64-pc-windows-msvc
+      - CHANNEL: stable
+        TARGET: x86_64-pc-windows-gnu
+      - CHANNEL: beta
+        TARGET: x86_64-pc-windows-gnu
+      - CHANNEL: stable
+        TARGET: i686-pc-windows-gnu
+      - CHANNEL: beta
+        TARGET: i686-pc-windows-gnu
 
 install:
   - git submodule update --init --recursive
-  - C:\Python35-x64\python.exe scripts/fetch-win-deps.py %CHANNEL% %TRIPLE%
-  - build\rust-%CHANNEL%-%TRIPLE%.exe /VERYSILENT /NORESTART /DIR=C:\Rust\%CHANNEL%
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" %ARCH%
-  - set PATH=%PATH%;%cd%\build
-  - set PATH=%PATH%;C:\Rust\%CHANNEL%\bin
-  - rustc -V
-  - cargo -V
+  - ps: scripts\rust-dl.ps1
+  - scripts\rust.exe /VERYSILENT /NORESTART /DIR=C:\Rust
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
+  - set MINGW=C:/msys64/mingw64
+  - set PATH=C:\Rust\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;%PATH%
+  - rustc --version --verbose
+  - cargo --version --verbose
+  - make --version
+  - if %TARGET:~-4%==-gnu x86_64-w64-mingw32-g++ --version
 
 build: false
 
