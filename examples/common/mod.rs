@@ -7,8 +7,9 @@ extern crate libc;
 
 use bgfx::{Bgfx, PlatformData, RenderFrame};
 
-use glutin::{Api, GlContext, GlRequest, Window, WindowBuilder};
+use glutin::{Api, GlRequest, Window, WindowBuilder};
 
+use std;
 use std::env;
 use std::fs::File;
 use std::io::Read;
@@ -112,32 +113,18 @@ pub fn load_program<'a, 'b>(bgfx: &'a Bgfx,
 /// Set the platform data to be used by BGFX.
 #[cfg(target_os = "linux")]
 fn init_bgfx_platform(window: &Window) {
-    use glutin::os::unix::WindowExt;
-
     PlatformData::new()
-        .display(window.get_xlib_display().unwrap())
-        .window(window.get_xlib_window().unwrap())
+        .display(unsafe {window.platform_display() as *mut std::os::raw::c_void })
+        .window(unsafe {window.platform_window() as *mut std::os::raw::c_void })
         .apply()
         .unwrap();
 }
 
 /// Set the platform data to be used by BGFX.
-#[cfg(windows)]
+#[cfg(not(target_os = "linux"))]
 fn init_bgfx_platform(window: &Window) {
-    use glutin::os::windows::WindowExt;
-
     PlatformData::new()
-        .window(window.get_hwnd())
-        .apply()
-        .unwrap();
-}
-
-#[cfg(target_os = "macos")]
-fn init_bgfx_platform(window: &Window) {
-    use glutin::os::macos::WindowExt;
-
-    PlatformData::new()
-        .window(window.get_nswindow() as *mut libc::c_void)
+        .window(unsafe {window.platform_window() as *mut std::os::raw::c_void })
         .apply()
         .unwrap();
 }

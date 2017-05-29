@@ -93,43 +93,34 @@ pub const PCI_ID_NVIDIA: u16 = bgfx_sys::BGFX_PCI_ID_NVIDIA;
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum RendererType {
     /// No rendering.
-    Null = bgfx_sys::BGFX_RENDERER_TYPE_NULL,
+    Noop = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_NOOP as u32,
 
     /// Direct3D 9.0.
-    Direct3D9 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D9,
+    Direct3D9 = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_DIRECT3D9 as u32,
 
     /// Direct3D 11.0.
-    Direct3D11 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D11,
+    Direct3D11 = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_DIRECT3D11 as u32,
 
     /// Direct3D 12.0.
-    Direct3D12 = bgfx_sys::BGFX_RENDERER_TYPE_DIRECT3D12,
+    Direct3D12 = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_DIRECT3D12 as u32,
+
+    /// GNM.
+    GNM = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_GNM as u32,
 
     /// Metal.
-    Metal = bgfx_sys::BGFX_RENDERER_TYPE_METAL,
+    Metal = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_METAL as u32,
 
     /// OpenGLES.
-    OpenGLES = bgfx_sys::BGFX_RENDERER_TYPE_OPENGLES,
+    OpenGLES = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_OPENGLES as u32,
 
     /// OpenGL.
-    OpenGL = bgfx_sys::BGFX_RENDERER_TYPE_OPENGL,
+    OpenGL = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_OPENGL as u32,
 
     /// Vulkan.
-    Vulkan = bgfx_sys::BGFX_RENDERER_TYPE_VULKAN,
+    Vulkan = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_VULKAN as u32,
 
     /// Use the most platform appropriate renderer.
-    Default = bgfx_sys::BGFX_RENDERER_TYPE_COUNT,
-}
-
-impl RendererType {
-
-    fn from_u32(n: u32) -> Option<RendererType> {
-        if n <= bgfx_sys::BGFX_RENDERER_TYPE_COUNT {
-            Some(unsafe { mem::transmute(n) })
-        } else {
-            None
-        }
-    }
-
+    Default = bgfx_sys::bgfx_renderer_type_BGFX_RENDERER_TYPE_COUNT as u32,
 }
 
 /// `render_frame()` results.
@@ -137,25 +128,16 @@ impl RendererType {
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum RenderFrame {
     /// No context is available. This usually means the main thread has exited.
-    NoContext = bgfx_sys::BGFX_RENDER_FRAME_NO_CONTEXT,
+    NoContext = bgfx_sys::bgfx_render_frame_BGFX_RENDER_FRAME_NO_CONTEXT as u32,
 
     /// The render was performed.
-    Render = bgfx_sys::BGFX_RENDER_FRAME_RENDER,
+    Render = bgfx_sys::bgfx_render_frame_BGFX_RENDER_FRAME_RENDER as u32,
+
+    /// The render timed out.
+    Timeout = bgfx_sys::bgfx_render_frame_BGFX_RENDER_FRAME_TIMEOUT as u32,
 
     /// The renderer is exiting.
-    Exiting = bgfx_sys::BGFX_RENDER_FRAME_EXITING,
-}
-
-impl RenderFrame {
-
-    fn from_u32(n: u32) -> Option<RenderFrame> {
-        if n < bgfx_sys::BGFX_RENDER_FRAME_COUNT {
-            Some(unsafe { mem::transmute(n) })
-        } else {
-            None
-        }
-    }
-
+    Exiting = bgfx_sys::bgfx_render_frame_BGFX_RENDER_FRAME_EXITING as u32,
 }
 
 /// Vertex attribute.
@@ -163,52 +145,52 @@ impl RenderFrame {
 #[derive(PartialEq, Eq, Debug, Copy, Clone)]
 pub enum Attrib {
     /// Position.
-    Position = bgfx_sys::BGFX_ATTRIB_POSITION,
+    Position = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_POSITION as u32,
 
     /// Normal.
-    Normal = bgfx_sys::BGFX_ATTRIB_NORMAL,
+    Normal = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_NORMAL as u32,
 
     /// Tangent.
-    Tangent = bgfx_sys::BGFX_ATTRIB_TANGENT,
+    Tangent = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TANGENT as u32,
 
     /// Bitangent.
-    Bitangent = bgfx_sys::BGFX_ATTRIB_BITANGENT,
+    Bitangent = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_BITANGENT as u32,
 
     /// Color 0.
-    Color0 = bgfx_sys::BGFX_ATTRIB_COLOR0,
+    Color0 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_COLOR0 as u32,
 
     /// Color 1.
-    Color1 = bgfx_sys::BGFX_ATTRIB_COLOR1,
+    Color1 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_COLOR1 as u32,
 
     /// Index list.
-    Indices = bgfx_sys::BGFX_ATTRIB_INDICES,
+    Indices = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_INDICES as u32,
 
     /// Bone weight.
-    Weight = bgfx_sys::BGFX_ATTRIB_WEIGHT,
+    Weight = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_WEIGHT as u32,
 
     /// Texture coordinate 0.
-    TexCoord0 = bgfx_sys::BGFX_ATTRIB_TEXCOORD0,
+    TexCoord0 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD0 as u32,
 
     /// Texture coordinate 1.
-    TexCoord1 = bgfx_sys::BGFX_ATTRIB_TEXCOORD1,
+    TexCoord1 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD1 as u32,
 
     /// Texture coordinate 2.
-    TexCoord2 = bgfx_sys::BGFX_ATTRIB_TEXCOORD2,
+    TexCoord2 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD2 as u32,
 
     /// Texture coordinate 3.
-    TexCoord3 = bgfx_sys::BGFX_ATTRIB_TEXCOORD3,
+    TexCoord3 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD3 as u32,
 
     /// Texture coordinate 4.
-    TexCoord4 = bgfx_sys::BGFX_ATTRIB_TEXCOORD4,
+    TexCoord4 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD4 as u32,
 
     /// Texture coordinate 5.
-    TexCoord5 = bgfx_sys::BGFX_ATTRIB_TEXCOORD5,
+    TexCoord5 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD5 as u32,
 
     /// Texture coordinate 6.
-    TexCoord6 = bgfx_sys::BGFX_ATTRIB_TEXCOORD6,
+    TexCoord6 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD6 as u32,
 
     /// Texture coordinate 7.
-    TexCoord7 = bgfx_sys::BGFX_ATTRIB_TEXCOORD7,
+    TexCoord7 = bgfx_sys::bgfx_attrib_BGFX_ATTRIB_TEXCOORD7 as u32,
 }
 
 /// Vertex attribute type.
@@ -285,7 +267,7 @@ impl<'b> Memory<'b> {
     #[inline]
     pub fn copy<'d, T>(_bgfx: &'b Bgfx, data: &'d [T]) -> Memory<'b> {
         unsafe {
-            let handle = bgfx_sys::bgfx_copy(data.as_ptr() as *const libc::c_void,
+            let handle = bgfx_sys::bgfx_copy(data.as_ptr() as *const std::os::raw::c_void,
                                              mem::size_of_val(data) as u32);
             Memory { handle: handle, _phantom: PhantomData }
         }
@@ -302,7 +284,7 @@ impl<'b> Memory<'b> {
         // TODO: The lifetime setup probably isn't 100% complete. Need to figure out how we can
         // guarantee that `data` will outlast `_bgfx`.
         unsafe {
-            let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const libc::c_void,
+            let handle = bgfx_sys::bgfx_make_ref(data.as_ptr() as *const std::os::raw::c_void,
                                                  mem::size_of_val(data) as u32);
             Memory { handle: handle, _phantom: PhantomData }
         }
@@ -326,7 +308,7 @@ impl<'s> Program<'s> {
     #[inline]
     pub fn new(vsh: Shader<'s>, fsh: Shader<'s>) -> Program<'s> {
         unsafe {
-            let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, 0);
+            let handle = bgfx_sys::bgfx_create_program(vsh.handle, fsh.handle, false);
             Program { handle: handle, _vsh: vsh, _fsh: fsh }
         }
     }
@@ -443,18 +425,17 @@ impl VertexDecl {
     /// # Example
     ///
     /// ```
-    /// let decl = bgfx::VertexDecl::new(None)
-    ///                .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-    ///                .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8(true))
-    ///                .end();
+    /// bgfx::VertexDecl::new(None)
+    ///                  .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+    ///                  .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8(true))
+    ///                  .end();
     /// ```
     ///
     /// [`VertexDeclBuilder`]: struct.VertexDeclBuilder.html
     #[inline]
     pub fn new(renderer: Option<RendererType>) -> VertexDeclBuilder {
-        let renderer = renderer.unwrap_or(RendererType::Null) as bgfx_sys::bgfx_renderer_type_t;
-
         unsafe {
+            let renderer = mem::transmute(renderer.unwrap_or(RendererType::Noop));
             let mut descr = VertexDeclBuilder { decl: mem::uninitialized() };
             bgfx_sys::bgfx_vertex_decl_begin(&mut descr.decl, renderer);
             descr
@@ -480,42 +461,42 @@ impl VertexDeclBuilder {
         let kind = match kind {
             AttribType::Uint8(n) => {
                 normalized = n;
-                bgfx_sys::BGFX_ATTRIB_TYPE_UINT8
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_UINT8
             }
             AttribType::Int8(n) => {
                 normalized = n;
                 as_int = true;
-                bgfx_sys::BGFX_ATTRIB_TYPE_UINT8
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_UINT8
             }
             AttribType::Uint10(n) => {
                 normalized = n;
-                bgfx_sys::BGFX_ATTRIB_TYPE_UINT10
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_UINT10
             }
             AttribType::Int10(n) => {
                 normalized = n;
                 as_int = true;
-                bgfx_sys::BGFX_ATTRIB_TYPE_UINT10
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_UINT10
             }
             AttribType::Uint16(n) => {
                 normalized = n;
-                bgfx_sys::BGFX_ATTRIB_TYPE_INT16
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_INT16
             }
             AttribType::Int16(n) => {
                 normalized = n;
                 as_int = true;
-                bgfx_sys::BGFX_ATTRIB_TYPE_INT16
+                bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_INT16
             }
-            AttribType::Half => bgfx_sys::BGFX_ATTRIB_TYPE_HALF,
-            AttribType::Float => bgfx_sys::BGFX_ATTRIB_TYPE_FLOAT,
+            AttribType::Half => bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_HALF,
+            AttribType::Float => bgfx_sys::bgfx_attrib_type_t::BGFX_ATTRIB_TYPE_FLOAT,
         };
 
         unsafe {
             bgfx_sys::bgfx_vertex_decl_add(&mut self.decl,
-                                           attrib as bgfx_sys::bgfx_attrib_t,
+                                           mem::transmute(attrib),
                                            count,
                                            kind,
-                                           if normalized { 1 } else { 0 },
-                                           if as_int { 1 } else { 0 });
+                                           normalized,
+                                           as_int);
         }
 
         self
@@ -566,10 +547,8 @@ impl Bgfx {
     /// Clears the debug text overlay.
     #[inline]
     pub fn dbg_text_clear(&self, attr: Option<u8>, small: Option<bool>) {
-        let small = if small.unwrap_or(false) { 1_u8 } else { 0_u8 };
         let attr = attr.unwrap_or(0);
-
-        unsafe { bgfx_sys::bgfx_dbg_text_clear(attr, small) }
+        unsafe { bgfx_sys::bgfx_dbg_text_clear(attr, small.unwrap_or(false)) }
     }
 
     /// Draws an image to the debug text overlay.
@@ -586,7 +565,7 @@ impl Bgfx {
                                           y,
                                           width,
                                           height,
-                                          data.as_ptr() as *const libc::c_void,
+                                          data.as_ptr() as *const std::os::raw::c_void,
                                           pitch)
         }
     }
@@ -600,14 +579,14 @@ impl Bgfx {
 
     /// Finish the frame, syncing up with the render thread. Returns an incrementing frame counter.
     #[inline]
-    pub fn frame(&self) -> u32 {
-        unsafe { bgfx_sys::bgfx_frame() }
+    pub fn frame(&self, capture: bool) -> u32 {
+        unsafe { bgfx_sys::bgfx_frame(capture) }
     }
 
     /// Gets the type of the renderer in use.
     #[inline]
     pub fn get_renderer_type(&self) -> RendererType {
-        unsafe { RendererType::from_u32(bgfx_sys::bgfx_get_renderer_type()).unwrap() }
+        unsafe { mem::transmute(bgfx_sys::bgfx_get_renderer_type()) }
     }
 
     /// Resets the graphics device to the given size, with the given flags.
@@ -640,15 +619,15 @@ impl Bgfx {
     #[inline]
     pub fn set_transform(&self, mtx: &[f32; 16]) {
         unsafe {
-            bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const libc::c_void, 1);
+            bgfx_sys::bgfx_set_transform(mtx.as_ptr() as *const std::os::raw::c_void, 1);
         }
     }
 
     /// Sets the vertex buffer to use for rendering.
     #[inline]
-    pub fn set_vertex_buffer(&self, vbh: &VertexBuffer) {
+    pub fn set_vertex_buffer(&self, stream: u8, vbh: &VertexBuffer) {
         // TODO: How to solve lifetimes...
-        unsafe { bgfx_sys::bgfx_set_vertex_buffer(vbh.handle, 0, std::u32::MAX) }
+        unsafe { bgfx_sys::bgfx_set_vertex_buffer(stream, vbh.handle, 0, std::u32::MAX) }
     }
 
     /// Sets the options to use when clearing the given view.
@@ -668,15 +647,15 @@ impl Bgfx {
     pub fn set_view_transform(&self, id: u8, view: &[f32; 16], proj: &[f32; 16]) {
         unsafe {
             bgfx_sys::bgfx_set_view_transform(id,
-                                              view.as_ptr() as *const libc::c_void,
-                                              proj.as_ptr() as *const libc::c_void)
+                                              view.as_ptr() as *const std::os::raw::c_void,
+                                              proj.as_ptr() as *const std::os::raw::c_void)
         }
     }
 
     /// Submit a primitive for rendering. Returns the number of draw calls used.
     #[inline]
-    pub fn submit(&self, view: u8, program: &Program) -> u32 {
-        unsafe { bgfx_sys::bgfx_submit(view, program.handle, 0) }
+    pub fn submit(&self, view: u8, program: &Program, preserve_state: bool) -> u32 {
+        unsafe { bgfx_sys::bgfx_submit(view, program.handle, 0, preserve_state) }
     }
 
     /// Touches a view. ( ͡° ͜ʖ ͡°)
@@ -703,7 +682,7 @@ impl Drop for Bgfx {
 /// This should be called repeatedly on the render thread.
 #[inline]
 pub fn render_frame() -> RenderFrame {
-    unsafe { RenderFrame::from_u32(bgfx_sys::bgfx_render_frame()).unwrap() }
+    unsafe { mem::transmute(bgfx_sys::bgfx_render_frame()) }
 }
 
 /// Platform data initializer.
@@ -723,7 +702,7 @@ pub fn render_frame() -> RenderFrame {
 ///     .expect("Could not set platform data");
 /// ```
 pub struct PlatformData {
-    data: bgfx_sys::Struct_bgfx_platform_data,
+    data: bgfx_sys::bgfx_platform_data,
 }
 
 impl PlatformData {
@@ -732,12 +711,13 @@ impl PlatformData {
     #[inline]
     pub fn new() -> PlatformData {
         PlatformData {
-            data: bgfx_sys::Struct_bgfx_platform_data {
+            data: bgfx_sys::bgfx_platform_data {
                 ndt: ptr::null_mut(),
                 nwh: ptr::null_mut(),
                 context: ptr::null_mut(),
                 backBuffer: ptr::null_mut(),
                 backBufferDS: ptr::null_mut(),
+                session: ptr::null_mut(),
             },
         }
     }
@@ -758,21 +738,21 @@ impl PlatformData {
 
     /// Sets the GL context to use.
     #[inline]
-    pub fn context(&mut self, context: *mut libc::c_void) -> &mut Self {
+    pub fn context(&mut self, context: *mut std::os::raw::c_void) -> &mut Self {
         self.data.context = context;
         self
     }
 
     /// Sets the X11 display to use on unix systems.
     #[inline]
-    pub fn display(&mut self, display: *mut libc::c_void) -> &mut Self {
+    pub fn display(&mut self, display: *mut std::os::raw::c_void) -> &mut Self {
         self.data.ndt = display;
         self
     }
 
     /// Sets the handle to the window to use.
     #[inline]
-    pub fn window(&mut self, window: *mut libc::c_void) -> &mut Self {
+    pub fn window(&mut self, window: *mut std::os::raw::c_void) -> &mut Self {
         self.data.nwh = window;
         self
     }
@@ -788,17 +768,16 @@ pub fn init(renderer: RendererType,
             vendor_id: Option<u16>,
             device_id: Option<u16>)
             -> Result<Bgfx, BgfxError> {
-    let renderer = renderer as bgfx_sys::bgfx_renderer_type_t;
     let vendor = vendor_id.unwrap_or(PCI_ID_NONE);
     let device = device_id.unwrap_or(0);
 
     unsafe {
-        let success = bgfx_sys::bgfx_init(renderer,
+        let success = bgfx_sys::bgfx_init(mem::transmute(renderer),
                                           vendor,
                                           device,
                                           ptr::null_mut(),
                                           ptr::null_mut());
 
-        if success != 0 { Ok(Bgfx::new()) } else { Err(BgfxError::InitFailed) }
+        if success { Ok(Bgfx::new()) } else { Err(BgfxError::InitFailed) }
     }
 }

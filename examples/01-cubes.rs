@@ -185,20 +185,20 @@ impl<'a> Cubes<'a> {
                     self.bgfx.set_transform(mtx.as_ref());
 
                     // Set vertex and index buffer.
-                    self.bgfx.set_vertex_buffer(self.vbh.as_ref().unwrap());
+                    self.bgfx.set_vertex_buffer(0, self.vbh.as_ref().unwrap());
                     self.bgfx.set_index_buffer(self.ibh.as_ref().unwrap());
 
                     // Set render states.
                     self.bgfx.set_state(STATE_DEFAULT, None);
 
                     // Submit primitive for rendering to view 0.
-                    self.bgfx.submit(0, self.program.as_ref().unwrap());
+                    self.bgfx.submit(0, self.program.as_ref().unwrap(), false);
                 }
             }
 
             // Advance to next frame. Rendering thread will be kicked to process submitted
             // rendering primitives.
-            self.bgfx.frame();
+            self.bgfx.frame(false);
 
             true
         } else {

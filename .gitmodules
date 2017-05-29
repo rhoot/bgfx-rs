@@ -4,3 +4,6 @@
 [submodule "bgfx-sys/bx"]
 	path = bgfx-sys/bx
 	url = https://github.com/bkaradzic/bx.git
+[submodule "bgfx-sys/bimg"]
+	path = bgfx-sys/bimg
+	url = https://github.com/bkaradzic/bimg.git

@@ -12,5 +12,5 @@ path = "bgfx-sys/"
 
 [dev-dependencies]
 cgmath = "0.7.0"
-glutin = { git = "https://github.com/tomaka/glutin.git", rev = "0297efb" }
+glutin = "0.7.1"
 time = "0.1.33"

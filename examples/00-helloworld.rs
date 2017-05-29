@@ -46,7 +46,7 @@ fn example(events: EventQueue) {
 
         // Advance to next frame. Rendering thread will be kicked to
         // process submitted rendering primitives.
-        bgfx.frame();
+        bgfx.frame(false);
     }
 
     // bgfx will automatically be shut down when the local `bgfx` binding

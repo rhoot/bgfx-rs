@@ -5,10 +5,10 @@
 
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
 
 extern crate libc;
 
-pub type va_list  = ::libc::c_void;
 pub type size_t   = ::libc::size_t;
 pub type int32_t  = i32;
 pub type uint8_t  = u8;
@@ -17,7 +17,6 @@ pub type uint32_t = u32;
 pub type uint64_t = u64;
 
 include!("ffi_bgfx.rs");
-include!("ffi_bgfxplatform.rs");
 
 pub const BGFX_PCI_ID_NONE:                 u16 = 0x0000;
 pub const BGFX_PCI_ID_SOFTWARE_RASTERIZER:  u16 = 0x0001;
@@ -73,13 +72,11 @@ pub const BGFX_DEBUG_TEXT:                  u32 = 0x00000008;
 
 pub const BGFX_RESET_NONE:                  u32 = 0x00000000;
 pub const BGFX_RESET_FULLSCREEN:            u32 = 0x00000001;
-pub const BGFX_RESET_FULLSCREEN_SHIFT:      u32 = 0;
 pub const BGFX_RESET_FULLSCREEN_MASK:       u32 = 0x00000001;
 pub const BGFX_RESET_MSAA_X2:               u32 = 0x00000010;
 pub const BGFX_RESET_MSAA_X4:               u32 = 0x00000020;
 pub const BGFX_RESET_MSAA_X8:               u32 = 0x00000030;
 pub const BGFX_RESET_MSAA_X16:              u32 = 0x00000040;
-pub const BGFX_RESET_MSAA_SHIFT:            u32 = 4;
 pub const BGFX_RESET_MSAA_MASK:             u32 = 0x00000070;
 pub const BGFX_RESET_VSYNC:                 u32 = 0x00000080;
 pub const BGFX_RESET_MAXANISOTROPY:         u32 = 0x00000100;
@@ -104,12 +101,10 @@ pub const BGFX_BUFFER_COMPUTE_FORMAT_16X4:  u16 = 0x0006;
 pub const BGFX_BUFFER_COMPUTE_FORMAT_32X1:  u16 = 0x0007;
 pub const BGFX_BUFFER_COMPUTE_FORMAT_32X2:  u16 = 0x0008;
 pub const BGFX_BUFFER_COMPUTE_FORMAT_32X4:  u16 = 0x0009;
-pub const BGFX_BUFFER_COMPUTE_FORMAT_SHIFT: u16 = 0;
 pub const BGFX_BUFFER_COMPUTE_FORMAT_MASK:  u16 = 0x000f;
 pub const BGFX_BUFFER_COMPUTE_TYPE_UINT:    u16 = 0x0010;
 pub const BGFX_BUFFER_COMPUTE_TYPE_INT:     u16 = 0x0020;
 pub const BGFX_BUFFER_COMPUTE_TYPE_FLOAT:   u16 = 0x0030;
-pub const BGFX_BUFFER_COMPUTE_TYPE_SHIFT:   u16 = 4;
 pub const BGFX_BUFFER_COMPUTE_TYPE_MASK:    u16 = 0x0030;
 pub const BGFX_BUFFER_COMPUTE_READ:         u16 = 0x0100;
 pub const BGFX_BUFFER_COMPUTE_WRITE:        u16 = 0x0200;
@@ -136,7 +131,6 @@ pub const BGFX_STATE_DEPTH_TEST_GREATER:    u64 = 0x0000000000000050_u64;
 pub const BGFX_STATE_DEPTH_TEST_NOTEQUAL:   u64 = 0x0000000000000060_u64;
 pub const BGFX_STATE_DEPTH_TEST_NEVER:      u64 = 0x0000000000000070_u64;
 pub const BGFX_STATE_DEPTH_TEST_ALWAYS:     u64 = 0x0000000000000080_u64;
-pub const BGFX_STATE_DEPTH_TEST_SHIFT:      u64 = 4_u64;
 pub const BGFX_STATE_DEPTH_TEST_MASK:       u64 = 0x00000000000000f0_u64;
 pub const BGFX_STATE_BLEND_ZERO:            u64 = 0x0000000000001000_u64;
 pub const BGFX_STATE_BLEND_ONE:             u64 = 0x0000000000002000_u64;
@@ -151,29 +145,23 @@ pub const BGFX_STATE_BLEND_INV_DST_COLOR:   u64 = 0x000000000000a000_u64;
 pub const BGFX_STATE_BLEND_SRC_ALPHA_SAT:   u64 = 0x000000000000b000_u64;
 pub const BGFX_STATE_BLEND_FACTOR:          u64 = 0x000000000000c000_u64;
 pub const BGFX_STATE_BLEND_INV_FACTOR:      u64 = 0x000000000000d000_u64;
-pub const BGFX_STATE_BLEND_SHIFT:           u64 = 12_u64;
 pub const BGFX_STATE_BLEND_MASK:            u64 = 0x000000000ffff000_u64;
 pub const BGFX_STATE_BLEND_EQUATION_ADD:    u64 = 0x0000000000000000_u64;
 pub const BGFX_STATE_BLEND_EQUATION_SUB:    u64 = 0x0000000010000000_u64;
 pub const BGFX_STATE_BLEND_EQUATION_REVSUB: u64 = 0x0000000020000000_u64;
 pub const BGFX_STATE_BLEND_EQUATION_MIN:    u64 = 0x0000000030000000_u64;
 pub const BGFX_STATE_BLEND_EQUATION_MAX:    u64 = 0x0000000040000000_u64;
-pub const BGFX_STATE_BLEND_EQUATION_SHIFT:  u64 = 28_u64;
 pub const BGFX_STATE_BLEND_EQUATION_MASK:   u64 = 0x00000003f0000000_u64;
 pub const BGFX_STATE_BLEND_INDEPENDENT:     u64 = 0x0000000400000000_u64;
 pub const BGFX_STATE_CULL_CW:               u64 = 0x0000001000000000_u64;
 pub const BGFX_STATE_CULL_CCW:              u64 = 0x0000002000000000_u64;
-pub const BGFX_STATE_CULL_SHIFT:            u64 = 36_u64;
 pub const BGFX_STATE_CULL_MASK:             u64 = 0x0000003000000000_u64;
-pub const BGFX_STATE_ALPHA_REF_SHIFT:       u64 = 40_u64;
 pub const BGFX_STATE_ALPHA_REF_MASK:        u64 = 0x0000ff0000000000_u64;
 pub const BGFX_STATE_PT_TRISTRIP:           u64 = 0x0001000000000000_u64;
 pub const BGFX_STATE_PT_LINES:              u64 = 0x0002000000000000_u64;
 pub const BGFX_STATE_PT_LINESTRIP:          u64 = 0x0003000000000000_u64;
 pub const BGFX_STATE_PT_POINTS:             u64 = 0x0004000000000000_u64;
-pub const BGFX_STATE_PT_SHIFT:              u64 = 48_u64;
 pub const BGFX_STATE_PT_MASK:               u64 = 0x0007000000000000_u64;
-pub const BGFX_STATE_POINT_SIZE_SHIFT:      u64 = 52_u64;
 pub const BGFX_STATE_POINT_SIZE_MASK:       u64 = 0x0ff0000000000000_u64;
 pub const BGFX_STATE_MSAA:                  u64 = 0x1000000000000000_u64;
 pub const BGFX_STATE_RESERVED_MASK:         u64 = 0xe000000000000000_u64;

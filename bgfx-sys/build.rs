@@ -2,7 +2,7 @@
 // License: http://opensource.org/licenses/ISC
 
 use std::env;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
@@ -33,6 +33,7 @@ fn build_msvc(bitness: u32) {
     let vs_release = match vs_version.as_ref() {
         "12.0" => "2013",
         "14.0" => "2015",
+        "15.0" => "2017",
         _ => panic!(format!("Unknown Visual Studio version: {:?}", vs_version)),
     };
 
@@ -47,7 +48,7 @@ fn build_msvc(bitness: u32) {
                      .current_dir("bgfx")
                      .arg("/p:Configuration=Release")
                      .arg(format!("/p:Platform={}", platform))
-                     .arg(format!(".build/projects/vs{}/bgfx.vcxproj", vs_release))
+                     .arg(format!(".build/projects/vs{}/bgfx.sln", vs_release))
                      .status()
                      .expect("Failed to build bgfx");
 
@@ -61,6 +62,8 @@ fn build_msvc(bitness: u32) {
     path.push(format!("win{}_vs{}", bitness, vs_release));
     path.push("bin");
 
+    println!("cargo:rustc-link-lib=static=bxRelease");
+    println!("cargo:rustc-link-lib=static=bimgRelease");
     println!("cargo:rustc-link-lib=static=bgfxRelease");
     println!("cargo:rustc-link-lib=gdi32");
     println!("cargo:rustc-link-lib=user32");
@@ -118,6 +121,22 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
         panic!("Failed to build bgfx.");
     }
 
+    // Build bimg
+    let status = Command::new("make")
+                     .env("CFLAGS", cflags)
+                     .arg("-R")
+                     .arg("-C")
+                     .arg(format!("bgfx/.build/projects/{}", project_name))
+                     .arg(format!("config={}{}", profile, bitness))
+                     .arg("verbose=1")
+                     .arg("bimg")
+                     .status()
+                     .expect("Failed to build bimg");
+
+    if status.code().unwrap() != 0 {
+        panic!("Failed to build bimg.");
+    }
+
     // Output linker config
     let mut path = PathBuf::from(env::current_dir().unwrap());
     path.push("bgfx");
@@ -127,6 +146,8 @@ fn build_gmake(bitness: u32, profile: &str, platform: &str) {
 
     let config = if profile == "debug" { "Debug" } else { "Release" };
     println!("cargo:rustc-link-lib=bgfx{}", config);
+    println!("cargo:rustc-link-lib=bimg{}", config);
+    println!("cargo:rustc-link-lib=bx{}", config);
     println!("cargo:rustc-link-lib=stdc++");
     println!("cargo:rustc-link-search=native={}", path.as_os_str().to_str().unwrap());
 
