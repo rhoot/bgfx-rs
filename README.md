@@ -6,6 +6,12 @@ Rust wrapper around [bgfx], providing a clean, safe API for rust applications.
 *Please read the [crate documentation][docs] for build requirements and crate
 limitations before using.*
 
+**Note:** I was originally using this crate as a way of learning Rust. Since I
+personally stopped using Rust again however, this crate has ended up more or
+less unmaintained. There are a couple of forks that have some more work put
+into it already, but if someone wants to take over the project for real,
+please let me know so I can direct users to your fork instead.
+
 Documentation
 -------------
 
